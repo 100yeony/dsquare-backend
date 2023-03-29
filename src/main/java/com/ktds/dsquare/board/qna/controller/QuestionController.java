@@ -2,6 +2,7 @@ package com.ktds.dsquare.board.qna.controller;
 
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.QuestionDto;
+import com.ktds.dsquare.board.qna.dto.QuestionRequest;
 import com.ktds.dsquare.board.qna.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+//@RequestMapping("/board/questions")
 public class QuestionController {
 
     @Autowired
@@ -61,4 +63,22 @@ public class QuestionController {
             return ResponseEntity.ok(questionService.searchByTitleOrContent(keyword));
         }
     }
+
+    @PostMapping("/board/questions")
+    public ResponseEntity<Void> createQuestion(@RequestBody QuestionRequest request){
+        questionService.createQuestion(request.getId(),
+                request.getWriterId(),
+                request.getCateId(),
+                request.getTitle(),
+                request.getContent(),
+                request.getCreateDate(),
+                request.getLastUpdateDate(),
+                request.getViewCnt(),
+                request.getAtcId(),
+                request.getDeleteYn());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+
+
 }

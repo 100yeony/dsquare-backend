@@ -1,6 +1,7 @@
 package com.ktds.dsquare.board.qna.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import lombok.*;
 
 import javax.persistence.*;
@@ -15,6 +16,7 @@ public class Question {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long qid;
+    private Long id;
 
     @Column(nullable = false)
     private Long writerId;
@@ -44,6 +46,9 @@ public class Question {
     @JsonManagedReference //직렬화
     @OneToMany(mappedBy = "qid", cascade = CascadeType.REMOVE)
     private List<Answer> answerList;
+
+//    @OneToMany(mappedBy = "question")
+//    private List<Answer> answerList;
 
 
 }
