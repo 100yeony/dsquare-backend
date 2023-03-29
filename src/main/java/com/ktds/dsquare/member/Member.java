@@ -26,7 +26,7 @@ public class Member {
     private String nickname;
 
     private String ktMail;
-    @Column(nullable = false)
+    @Column(columnDefinition = "CHAR", nullable = false)
     private String contact;
 
     private Long activityScore;
