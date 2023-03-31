@@ -1,11 +1,8 @@
 package com.ktds.dsquare.board.qna.service;
 
-import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.board.qna.dto.AnswerDto;
 import com.ktds.dsquare.board.qna.dto.QuestionDto;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
-import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +40,14 @@ public class QuestionService {
         question.setLastUpdateDate(LocalDateTime.now());
         question.setAtcId(request.getAtcId());
 
+        questionRepository.save(question);
+    }
+
+    // 질문글 삭제
+    public void deleteQuestion(Long questionId) {
+        Question question = questionRepository.findById(questionId).orElseThrow(() -> new RuntimeException("Update Fail"));
+        question.setDeleteYn(true);
+        question.setLastUpdateDate(LocalDateTime.now());
         questionRepository.save(question);
     }
 

@@ -24,8 +24,15 @@ public class AnswerController {
     @PostMapping("/board/questions/{qid}/answers/{answerId}")
     public ResponseEntity<Void> updateAnswer(@PathVariable Long qid, @PathVariable Long answerId,
                                              @RequestBody AnswerDto request) {
-        answerService.updateAnswer(qid, answerId, request);
+        answerService.updateAnswer(answerId, request);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
+
+    // 답변글 삭제
+    @DeleteMapping("/board/questions/{questionId}/answers/{answerId}")
+    public ResponseEntity<Void> deleteAnswer(@PathVariable Long questionId, @PathVariable Long answerId){
+        answerService.deleteAnswer(answerId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }

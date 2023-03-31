@@ -5,7 +5,6 @@ import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.AnswerDto;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,13 +37,21 @@ public class AnswerService {
     }
 
     // 답변글 수정
-    public void updateAnswer(Long qid, Long answerId, AnswerDto request) {
+    public void updateAnswer(Long answerId, AnswerDto request) {
         Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new RuntimeException("Update Fail"));
 
         answer.setContent(request.getContent());
         answer.setLastUpdateDate(LocalDateTime.now());
         answer.setAtcId(request.getAtcId());
 
+        answerRepository.save(answer);
+    }
+
+    // 답변글 삭제
+    public void deleteAnswer(Long answerId) {
+        Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new RuntimeException("Update Fail"));
+        answer.setDeleteYn(true);
+        answer.setLastUpdateDate(LocalDateTime.now());
         answerRepository.save(answer);
     }
 

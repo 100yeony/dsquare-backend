@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-//@RequestMapping("/board/questions")
 public class QuestionController {
 
     @Autowired
@@ -25,7 +24,14 @@ public class QuestionController {
     @PostMapping("/board/questions/{questionId}")
     public ResponseEntity<Void> updateQuestion(@PathVariable Long questionId, @RequestBody QuestionDto request){
         questionService.updateQuestion(questionId, request);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    // 질문글 삭제
+    @DeleteMapping("/board/questions/{questionId}")
+    public ResponseEntity<Void> deleteQuestion(@PathVariable Long questionId){
+        questionService.deleteQuestion(questionId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }
