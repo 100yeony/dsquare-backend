@@ -6,15 +6,12 @@ import com.ktds.dsquare.board.qna.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-//@RequestMapping("/board/questions")
 public class QuestionController {
 
     @Autowired
@@ -35,8 +32,33 @@ public class QuestionController {
 
     //read - 질문글&답변글 상세 조회
     @GetMapping("/board/questions/{qid}")
-    public Optional<Question> getQnADetail(@PathVariable("qid") Long qid){
+    public Optional<Question> getQnADetail(@PathVariable("qid") Long qid) {
         return questionService.getQuestionDetail(qid);
     }
 
+    // 질문글 수정
+    @PostMapping("/board/questions/{qid}")
+    public ResponseEntity<Void> updateQuestion(@PathVariable("qid") Long qid, @RequestBody QuestionDto request){
+        questionService.updateQuestion(qid, request);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    // 질문글 삭제
+    @DeleteMapping("/board/questions/{qid}")
+    public ResponseEntity<Void> deleteQuestion(@PathVariable("qid") Long qid){
+        questionService.deleteQuestion(qid);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    //search - Q&A 통합검색(사용자, 제목+내용)
+    @GetMapping("/board/search")
+    public ResponseEntity<List<Question>> search(@RequestParam String keyword, @RequestParam(required = false) Long writerId){
+        if(writerId != null){
+            return ResponseEntity.ok(questionService.searchByWriterId(writerId));
+//        } else if {
+
+        } else {
+            return ResponseEntity.ok(questionService.searchByTitleOrContent(keyword));
+        }
+    }
 }
