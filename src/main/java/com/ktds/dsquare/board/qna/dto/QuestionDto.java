@@ -4,20 +4,21 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.bytebuddy.asm.Advice;
 
 import java.time.LocalDateTime;
 
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
-public class AnswerRequest {
+public class QuestionDto {
 
-    private Long id;
-    private Long questionId;
+    private Long qid;
     private Long writerId;
+    private Integer cateId;
+    private String title;
+    private String content;
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
-    private String content;
+    private Long viewCnt;
     private Long atcId;
     private Boolean deleteYn;
 

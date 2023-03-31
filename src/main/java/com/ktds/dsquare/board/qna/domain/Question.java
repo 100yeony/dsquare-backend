@@ -13,7 +13,7 @@ import java.util.List;
 public class Question {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long qid;
 
     @Column(nullable = false)
     private Long writerId;
@@ -40,7 +40,7 @@ public class Question {
     /*
         cascade = CascadeType.REMOVE: 질문을 삭제하면 답변도 모두 함께 삭제되는 옵션
      */
-//    @OneToMany(mappedBy = "question")
+//    @OneToMany(mappedBy = "qid", cascade = CascadeType.REMOVE)
 //    private List<Answer> answerList;
 
 

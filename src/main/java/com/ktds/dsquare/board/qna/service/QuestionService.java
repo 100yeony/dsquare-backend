@@ -1,6 +1,7 @@
 package com.ktds.dsquare.board.qna.service;
 
 import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.board.qna.dto.QuestionDto;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,20 +14,19 @@ public class QuestionService {
 
     @Autowired
     private QuestionRepository questionRepository;
-    public void createQuestion(Long id, Long writerId, Integer cateId,
-                               String title, String content, LocalDateTime createDate,
-                               LocalDateTime lastUpdateDate, Long viewCnt,
-                               Long atcId, Boolean deleteYn){
+
+
+    public void createQuestion(QuestionDto dto){
         Question question = new Question();
-        question.setId(id);
-        question.setWriterId(writerId);
-        question.setCateId(cateId);
-        question.setTitle(title);
-        question.setContent(content);
-        question.setCreateDate(createDate.now());
-        question.setLastUpdateDate(lastUpdateDate.now());
+        question.setQid(dto.getQid());
+        question.setWriterId(dto.getWriterId());
+        question.setCateId(dto.getCateId());
+        question.setTitle(dto.getTitle());
+        question.setContent(dto.getContent());
+        question.setCreateDate(dto.getCreateDate().now());
+        question.setLastUpdateDate(dto.getLastUpdateDate().now());
         question.setViewCnt(0L);
-        question.setAtcId(atcId);
+        question.setAtcId(dto.getAtcId());
         question.setDeleteYn(false);
 
         questionRepository.save(question);

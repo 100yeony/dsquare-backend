@@ -9,17 +9,15 @@ import java.time.LocalDateTime;
 
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
-public class QuestionRequest {
+public class AnswerDto {
 
     private Long id;
     private Long writerId;
-    private Integer cateId;
-    private String title;
-    private String content;
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
-    private Long viewCnt;
+    private String content;
     private Long atcId;
     private Boolean deleteYn;
+    private Long qid;
 
 }
