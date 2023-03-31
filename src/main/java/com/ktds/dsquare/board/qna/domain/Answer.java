@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.qna.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -29,9 +30,10 @@ public class Answer {
     @Column(nullable = false)
     private boolean deleteYn;
 
-    @ManyToOne
+    @JsonBackReference //직렬화 X
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "qid")
-    private Question question;
+    private Question qid;
 
 }
 

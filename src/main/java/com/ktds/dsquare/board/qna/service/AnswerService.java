@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AnswerService {
@@ -20,6 +22,7 @@ public class AnswerService {
     @Autowired
     private QuestionRepository questionRepository;
 
+    //create - 답변글 작성
     public void createAnswer(Long qid, AnswerDto dto) {
         Answer answer = new Answer();
         answer.setId(dto.getId());
@@ -30,10 +33,16 @@ public class AnswerService {
         answer.setAtcId(dto.getAtcId());
         answer.setDeleteYn(false);
 
-
         Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Question not found"));
-        answer.setQuestion(question);
+        answer.setQid(question);
 
         answerRepository.save(answer);
     }
+
+//    //read - 답변글 전체 조회(답변글은 상세조회 x)
+//    public List<Answer> getAnswers(Long qid){
+//        List<Answer> answer = this.answerRepository.findAllByQid(qid);
+//        return answer;
+//    }
+
 }
