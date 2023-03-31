@@ -31,7 +31,7 @@ public class AnswerService {
         answer.setDeleteYn(false);
 
         Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Question not found"));
-        answer.setQuestion(question);
+        answer.setQid(question);
 
         answerRepository.save(answer);
     }
@@ -49,7 +49,7 @@ public class AnswerService {
 
     // 답변글 삭제
     public void deleteAnswer(Long answerId) {
-        Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new RuntimeException("Update Fail"));
+        Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new RuntimeException("Delete Fail"));
         answer.setDeleteYn(true);
         answer.setLastUpdateDate(LocalDateTime.now());
         answerRepository.save(answer);

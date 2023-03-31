@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class QuestionService {
@@ -14,8 +16,8 @@ public class QuestionService {
     @Autowired
     private QuestionRepository questionRepository;
 
-    // 질문글  작성
-    public void createQuestion(QuestionDto dto){
+    //create - 질문글 작성
+    public void createQuestion(QuestionDto dto) {
         Question question = new Question();
         question.setQid(dto.getQid());
         question.setWriterId(dto.getWriterId());
@@ -31,9 +33,22 @@ public class QuestionService {
         questionRepository.save(question);
     }
 
+    //read - 질문글 전체 조회
+    public List<Question> getAllQuestions() {
+        return questionRepository.findAll();
+    }
+
+    //read - 질문글 상세 조회
+    public Optional<Question> getQuestionDetail(Long qid) {
+        /*Question question = questionRepository.findById(qid)
+                .orElseThrow(() -> new RuntimeException("Question not found"));*/
+        return questionRepository.findById(qid);
+    }
+
+
     // 질문글 수정
-    public void updateQuestion(Long questionId, QuestionDto request) {
-        Question question = questionRepository.findById(questionId).orElseThrow(() -> new RuntimeException("Update Fail"));
+    public void updateQuestion(Long qid, QuestionDto request) {
+        Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Update Fail"));
 
         question.setTitle(request.getTitle());
         question.setContent(request.getContent());
@@ -44,11 +59,20 @@ public class QuestionService {
     }
 
     // 질문글 삭제
-    public void deleteQuestion(Long questionId) {
-        Question question = questionRepository.findById(questionId).orElseThrow(() -> new RuntimeException("Update Fail"));
+    public void deleteQuestion(Long qid) {
+        Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Update Fail"));
         question.setDeleteYn(true);
         question.setLastUpdateDate(LocalDateTime.now());
         questionRepository.save(question);
     }
 
+
+    //search - Q&A 통합 검색(사용자, 제목+내용)
+    public List<Question> searchByWriterId(Long writerId) {
+        return questionRepository.findByWriterId(writerId);
+    }
+
+    public List<Question> searchByTitleOrContent(String keyword) {
+        return questionRepository.findByTitleContainingOrContentContaining(keyword, keyword);
+    }
 }

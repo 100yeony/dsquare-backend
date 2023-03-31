@@ -13,9 +13,9 @@ public class AnswerController {
     @Autowired
     private AnswerService answerService;
 
-    // 답변글 작성
-    @PostMapping("/board/questions/{qid}/answers")
-    public ResponseEntity<Void> createAnswer(@PathVariable Long qid, @RequestBody AnswerDto request) {
+    //create - 답변글 작성
+    @PostMapping("/board/questions/{qid}/answer")
+    public ResponseEntity<Void> createAnswer(@PathVariable("qid") Long qid, @RequestBody AnswerDto request){
         answerService.createAnswer(qid, request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

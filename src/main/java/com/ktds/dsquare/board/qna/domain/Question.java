@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.qna.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -39,8 +40,9 @@ public class Question {
     /*
         cascade = CascadeType.REMOVE: 질문을 삭제하면 답변도 모두 함께 삭제되는 옵션
      */
-//    @OneToMany(mappedBy = "qid", cascade = CascadeType.REMOVE)
-//    private List<Answer> answerList;
+    @JsonManagedReference //직렬화
+    @OneToMany(mappedBy = "qid", cascade = CascadeType.REMOVE)
+    private List<Answer> answerList;
 
 
 }
