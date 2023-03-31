@@ -13,11 +13,19 @@ public class QuestionController {
 
     @Autowired
     private QuestionService questionService;
+
+    // 질문글 작성
     @PostMapping("/board/questions")
     public ResponseEntity<Void> createQuestion(@RequestBody QuestionDto request){
         questionService.createQuestion(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    // 질문글 수정
+    @PostMapping("/board/questions/{questionId}")
+    public ResponseEntity<Void> updateQuestion(@PathVariable Long questionId, @RequestBody QuestionDto request){
+        questionService.updateQuestion(questionId, request);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
 
 }

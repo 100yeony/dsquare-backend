@@ -20,6 +20,7 @@ public class AnswerService {
     @Autowired
     private QuestionRepository questionRepository;
 
+    // 답변글 작성
     public void createAnswer(Long qid, AnswerDto dto) {
         Answer answer = new Answer();
         answer.setId(dto.getId());
@@ -30,10 +31,21 @@ public class AnswerService {
         answer.setAtcId(dto.getAtcId());
         answer.setDeleteYn(false);
 
-
         Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Question not found"));
         answer.setQuestion(question);
 
         answerRepository.save(answer);
     }
+
+    // 답변글 수정
+    public void updateAnswer(Long qid, Long answerId, AnswerDto request) {
+        Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new RuntimeException("Update Fail"));
+
+        answer.setContent(request.getContent());
+        answer.setLastUpdateDate(LocalDateTime.now());
+        answer.setAtcId(request.getAtcId());
+
+        answerRepository.save(answer);
+    }
+
 }

@@ -10,7 +10,7 @@ spring:
   ### Spring Data JPA ###
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true

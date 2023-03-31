@@ -1,6 +1,8 @@
 package com.ktds.dsquare.board.qna.service;
 
+import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.board.qna.dto.AnswerDto;
 import com.ktds.dsquare.board.qna.dto.QuestionDto;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import net.bytebuddy.asm.Advice;
@@ -15,7 +17,7 @@ public class QuestionService {
     @Autowired
     private QuestionRepository questionRepository;
 
-
+    // 질문글  작성
     public void createQuestion(QuestionDto dto){
         Question question = new Question();
         question.setQid(dto.getQid());
@@ -30,6 +32,18 @@ public class QuestionService {
         question.setDeleteYn(false);
 
         questionRepository.save(question);
-
     }
+
+    // 질문글 수정
+    public void updateQuestion(Long questionId, QuestionDto request) {
+        Question question = questionRepository.findById(questionId).orElseThrow(() -> new RuntimeException("Update Fail"));
+
+        question.setTitle(request.getTitle());
+        question.setContent(request.getContent());
+        question.setLastUpdateDate(LocalDateTime.now());
+        question.setAtcId(request.getAtcId());
+
+        questionRepository.save(question);
+    }
+
 }
