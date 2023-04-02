@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor @AllArgsConstructor
@@ -34,6 +35,12 @@ public class Member {
 
     private LocalDateTime lastLoginDate;
     private LocalDateTime lastPwChangeDate;
+
+    private String role;
+
+    public List<String> getRole() {
+        return List.of(role);
+    }
 
 
     public static Member toEntity(SignupRequest dto) {
