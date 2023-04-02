@@ -16,6 +16,15 @@ spring:
         format_sql: true
     show-sql: true
 
-
   main:
     allow-bean-definition-overriding: true
+
+### Logging Configuration ###
+logging:
+  ### Level ###
+  level:
+    root: info
+    com.ktds.dsquare:
+      auth: debug
+      auth.jwt: debug
+
