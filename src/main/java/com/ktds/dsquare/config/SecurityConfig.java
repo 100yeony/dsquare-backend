@@ -91,7 +91,7 @@ public class SecurityConfig {
         @Override
         public void configure(HttpSecurity http) {
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
-            http.addFilter(new CustomUsernamePasswordAuthenticationFilter(authenticationManager));
+            http.addFilter(new CustomUsernamePasswordAuthenticationFilter(authenticationManager, bCryptPasswordEncoder()));
             http.addFilter(new AuthenticationAuthorizationFilter(authenticationManager, memberRepository));
         }
     }
