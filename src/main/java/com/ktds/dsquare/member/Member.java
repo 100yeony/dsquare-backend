@@ -51,6 +51,7 @@ public class Member {
                 .contact(dto.getContact())
                 .activityScore(0L)
                 .lastLoginDate(LocalDateTime.now())
+                .role("USER")
                 .build();
     }
 
