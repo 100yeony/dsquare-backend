@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -38,7 +39,7 @@ public class AuthenticationAuthorizationFilter extends BasicAuthenticationFilter
 
         try {
             UserDetails principal = authenticate(request);
-            authorize(principal);
+            if (principal != null) authorize(principal);
         } catch (Exception e) {
             log.error("Error while authentication", e);
 //            response.sendError(HttpStatus.BAD_REQUEST.value(), e.getMessage()); // 적용되지 않음. Spring Security Flow 검토 필요
@@ -48,7 +49,11 @@ public class AuthenticationAuthorizationFilter extends BasicAuthenticationFilter
         filterChain.doFilter(request, response);
     }
     private UserDetails authenticate(HttpServletRequest request) throws UsernameNotFoundException {
-        DecodedJWT authToken = JwtService.verifyToken(request.getHeader(JwtProperties.HEADER()));
+        String authHeader = request.getHeader(JwtProperties.HEADER());
+        if (!StringUtils.hasText(authHeader))
+            return null;
+
+        DecodedJWT authToken = JwtService.verifyToken(authHeader);
         String username = JwtService.getClaim(authToken, "username");
         Member member = memberRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("No such user with username [ " + username + "]"));
