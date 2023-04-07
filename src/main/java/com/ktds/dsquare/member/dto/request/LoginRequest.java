@@ -8,7 +8,7 @@ import java.io.IOException;
 
 @NoArgsConstructor @AllArgsConstructor
 @Builder
-@Getter
+@Getter @Setter
 public class LoginRequest {
 
     private String email;

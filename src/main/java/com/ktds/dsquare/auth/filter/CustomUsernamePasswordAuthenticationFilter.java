@@ -14,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -29,6 +30,8 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 
     private final AuthenticationManager authenticationManager;
 
+    private final BCryptPasswordEncoder passwordEncoder;
+
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         log.info("Attempting authentication");
@@ -40,7 +43,9 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
     }
     private LoginRequest getLoginInfo(HttpServletRequest request) {
         try {
-            return LoginRequest.convert(request);
+            LoginRequest loginRequest = LoginRequest.convert(request);
+            loginRequest.setPw(passwordEncoder.encode(loginRequest.getPw()));
+            return loginRequest;
         } catch (IOException e) {
             log.warn("IOException while getting login information", e);
             return LoginRequest.builder()
