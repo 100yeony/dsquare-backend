@@ -12,6 +12,12 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 @EnableWebSecurity(debug = false)
 @RequiredArgsConstructor
@@ -25,11 +31,25 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("*"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         /* CSRF */
         configureCsrf(http);
         /* Session */
         configureSession(http);
+        /* CORS */
+        configureCors(http);
         /* Http Basic Authentication */
         configureHttpBasic(http);
         /* Request Authorization */
@@ -47,6 +67,9 @@ public class SecurityConfig {
     }
     private void configureSession(HttpSecurity http) throws Exception {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    }
+    private void configureCors(HttpSecurity http) throws Exception {
+        http.cors().configurationSource(corsConfigurationSource());
     }
     private void configureHttpBasic(HttpSecurity http) throws Exception {
         http.httpBasic().disable();
