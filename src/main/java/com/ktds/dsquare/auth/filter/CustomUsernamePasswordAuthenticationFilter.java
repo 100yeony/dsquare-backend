@@ -43,9 +43,7 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
     }
     private LoginRequest getLoginInfo(HttpServletRequest request) {
         try {
-            LoginRequest loginRequest = LoginRequest.convert(request);
-            loginRequest.setPw(passwordEncoder.encode(loginRequest.getPw()));
-            return loginRequest;
+            return LoginRequest.convert(request);
         } catch (IOException e) {
             log.warn("IOException while getting login information", e);
             return LoginRequest.builder()
