@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -43,6 +44,5 @@ public class Question {
     @JsonManagedReference //직렬화
     @OneToMany(mappedBy = "qid", cascade = CascadeType.REMOVE)
     private List<Answer> answerList;
-
 
 }
