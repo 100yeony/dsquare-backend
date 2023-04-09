@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.qna.service;
 
+import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.QuestionDto;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
@@ -60,10 +61,17 @@ public class QuestionService {
 
     // 질문글 삭제
     public void deleteQuestion(Long qid) {
-        Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Update Fail"));
-        question.setDeleteYn(true);
-        question.setLastUpdateDate(LocalDateTime.now());
-        questionRepository.save(question);
+        Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Delete Fail"));
+
+        List<Answer> answerList = question.getAnswerList();
+        if(answerList.isEmpty()) {
+            question.setDeleteYn(true);
+            question.setLastUpdateDate(LocalDateTime.now());
+            questionRepository.save(question);
+        } else {
+            // 답변글이 이미 존재할 때 => HTTP Status로 처리해줘야 함(추후 수정 필요)
+            throw new RuntimeException("Delete Fail");
+        }
     }
 
 
@@ -75,4 +83,5 @@ public class QuestionService {
     public List<Question> searchByTitleOrContent(String keyword) {
         return questionRepository.findByTitleContainingOrContentContaining(keyword, keyword);
     }
+
 }
