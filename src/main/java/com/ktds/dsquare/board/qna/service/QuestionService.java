@@ -37,13 +37,15 @@ public class QuestionService {
 
     //read - 질문글 전체 조회
     public List<Question> getAllQuestions() {
-        return questionRepository.findAll();
+        // deleteYn = false만 필터링 한 후 qid 기준으로 정렬
+        return questionRepository.findByDeleteYnOrderByQidAsc(false);
     }
 
     //read - 질문글 상세 조회
     public Optional<Question> getQuestionDetail(Long qid) {
         /*Question question = questionRepository.findById(qid)
                 .orElseThrow(() -> new RuntimeException("Question not found"));*/
+        // 삭제된 답변은 안보여야 함(추후 수정 필요)
         return questionRepository.findById(qid);
     }
 
