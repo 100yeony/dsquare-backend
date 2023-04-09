@@ -25,8 +25,9 @@ public class QuestionService {
         question.setCateId(dto.getCateId());
         question.setTitle(dto.getTitle());
         question.setContent(dto.getContent());
-        question.setCreateDate(dto.getCreateDate().now());
-        question.setLastUpdateDate(dto.getLastUpdateDate().now());
+        LocalDateTime now = LocalDateTime.now();
+        question.setCreateDate(now);
+        question.setLastUpdateDate(now);
         question.setViewCnt(0L);
         question.setAtcId(dto.getAtcId());
         question.setDeleteYn(false);

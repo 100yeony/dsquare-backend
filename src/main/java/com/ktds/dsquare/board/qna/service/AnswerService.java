@@ -26,8 +26,9 @@ public class AnswerService {
         answer.setId(dto.getId());
         answer.setWriterId(dto.getWriterId());
         answer.setContent(dto.getContent());
-        answer.setCreateDate(dto.getCreateDate().now());
-        answer.setLastUpdateDate(dto.getLastUpdateDate().now());
+        LocalDateTime now = LocalDateTime.now();
+        answer.setCreateDate(now);
+        answer.setLastUpdateDate(now);
         answer.setAtcId(dto.getAtcId());
         answer.setDeleteYn(false);
 
