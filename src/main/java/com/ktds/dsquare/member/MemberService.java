@@ -3,6 +3,7 @@ package com.ktds.dsquare.member;
 import com.ktds.dsquare.member.dto.request.SignupRequest;
 import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -15,9 +16,12 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
+    private final BCryptPasswordEncoder passwordEncoder;
+
 
     @Transactional
     public BriefMemberInfo insertMember(SignupRequest signupRequest) throws Exception {
+        signupRequest.setPw(passwordEncoder.encode(signupRequest.getPw()));
         Member member = Member.toEntity(signupRequest);
         Member savedMember = memberRepository.save(member);
         return BriefMemberInfo.toDto(savedMember);
