@@ -5,11 +5,15 @@ import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import com.ktds.dsquare.member.team.Team;
 import com.ktds.dsquare.member.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,11 +39,22 @@ public class MemberService {
         return BriefMemberInfo.toDto(savedMember);
     }
 
-    public List<BriefMemberInfo> selectAllMember() {
-        List<Member> members = memberRepository.findAll();
+    public List<BriefMemberInfo> selectAllMembers(Map<String, String> params) {
+        List<Member> members = memberRepository.findAll(searchWith(params));
         return members.stream()
                 .map(BriefMemberInfo::toDto)
                 .collect(Collectors.toList());
+    }
+    private static Specification<Member> searchWith(Map<String, String> params) {
+        return ((root, query, builder) -> { // Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder
+            List<Predicate> predicates = new ArrayList<>();
+            if (params.containsKey("email"))
+                predicates.add(
+                        builder.equal(root.get("email"), params.get("email"))
+                );
+
+            return builder.and(predicates.toArray(new Predicate[0]));
+        });
     }
 
 }
