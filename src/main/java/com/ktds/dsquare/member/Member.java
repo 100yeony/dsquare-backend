@@ -1,5 +1,6 @@
 package com.ktds.dsquare.member;
 
+import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.member.dto.request.SignupRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +15,6 @@ import java.util.List;
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "MBR_BAS")
 public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,8 +27,11 @@ public class Member {
     @Column(unique = true, nullable = false)
     private String nickname;
 
+    @OneToOne
+    @JoinColumn(name = "cid")
+    private Category cid;
+
     private String ktMail;
-    @Column(columnDefinition = "CHAR", nullable = false)
     private String contact;
 
     private Long activityScore;

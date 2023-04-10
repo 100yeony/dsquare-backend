@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.qna.domain;
 
+import com.ktds.dsquare.member.Member;
 import lombok.*;
 
 import javax.persistence.*;
@@ -23,4 +24,7 @@ public class Category {
     @Column(nullable = false)
     private Integer depth;
 
+
+    @OneToOne(mappedBy = "cid")
+    private Member mid;
 }

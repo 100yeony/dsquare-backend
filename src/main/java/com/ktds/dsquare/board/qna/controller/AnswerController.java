@@ -42,18 +42,6 @@ public class AnswerController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PostMapping("/board/questions/{id}/answers")
-    public ResponseEntity<Void> creaetAnswer(@RequestBody AnswerRequest request){
-        answerService.createAnswer(request.getId(),
-                request.getQuestionId(),
-                request.getWriterId(),
-                request.getContent(),
-                request.getCreateDate(),
-                request.getLastUpdateDate(),
-                request.getAtcId(),
-                request.getDeleteYn());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
 
 
 

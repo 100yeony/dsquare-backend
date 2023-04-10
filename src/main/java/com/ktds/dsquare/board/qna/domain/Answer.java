@@ -20,8 +20,6 @@ public class Answer {
 //    @Column(unique = true, nullable = false)
 //    private Long questionId;
 
-    @Column(unique = true, nullable = false)
-    private Long questionId;
 
     @Column(nullable = false)
     private Long writerId;

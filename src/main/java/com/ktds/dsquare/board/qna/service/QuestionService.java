@@ -3,19 +3,13 @@ package com.ktds.dsquare.board.qna.service;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
-
 import com.ktds.dsquare.board.qna.dto.QuestionDto;
 import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
-
-import com.ktds.dsquare.board.qna.repository.QuestionRepository;
-import net.bytebuddy.asm.Advice;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -98,26 +92,12 @@ public class QuestionService {
         return questionRepository.findByWriterId(writerId);
     }
 
+//    public List<Question> searchByNickname(String nickname){
+//        return questionRepository.findByNickname(nickname);
+//    }
+
     public List<Question> searchByTitleOrContent(String keyword) {
         return questionRepository.findByTitleContainingOrContentContaining(keyword, keyword);
-
-    public void createQuestion(Long id, Long writerId, Integer cateId,
-                               String title, String content, LocalDateTime createDate,
-                               LocalDateTime lastUpdateDate, Long viewCnt,
-                               Long atcId, Boolean deleteYn){
-        Question question = new Question();
-        question.setId(id);
-        question.setWriterId(writerId);
-        question.setCateId(cateId);
-        question.setTitle(title);
-        question.setContent(content);
-        question.setCreateDate(createDate.now());
-        question.setLastUpdateDate(lastUpdateDate.now());
-        question.setViewCnt(0L);
-        question.setAtcId(atcId);
-        question.setDeleteYn(false);
-
-        questionRepository.save(question);
 
 
     }

@@ -1,3 +1,7 @@
+### Server Configuration ###
+server:
+  port: 8090
+
 ### Spring Configuration ###
 spring:
   ### Datasource ###
@@ -8,9 +12,11 @@ spring:
     password: 1234
 
   ### Spring Data JPA ###
+  ### update || create ###
   jpa:
     hibernate:
       ddl-auto: update
+
     properties:
       hibernate:
         format_sql: true

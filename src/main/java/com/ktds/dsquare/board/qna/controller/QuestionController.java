@@ -2,7 +2,6 @@ package com.ktds.dsquare.board.qna.controller;
 
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.QuestionDto;
-import com.ktds.dsquare.board.qna.dto.QuestionRequest;
 import com.ktds.dsquare.board.qna.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -52,32 +51,12 @@ public class QuestionController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    //search - Q&A 통합검색(사용자, 제목+내용)
-    @GetMapping("/board/search")
-    public ResponseEntity<List<Question>> search(@RequestParam String keyword, @RequestParam(required = false) Long writerId){
-        if(writerId != null){
-            return ResponseEntity.ok(questionService.searchByWriterId(writerId));
-
-        } else {
-            return ResponseEntity.ok(questionService.searchByTitleOrContent(keyword));
-        }
-    }
-
-    @PostMapping("/board/questions")
-    public ResponseEntity<Void> createQuestion(@RequestBody QuestionRequest request){
-        questionService.createQuestion(request.getId(),
-                request.getWriterId(),
-                request.getCateId(),
-                request.getTitle(),
-                request.getContent(),
-                request.getCreateDate(),
-                request.getLastUpdateDate(),
-                request.getViewCnt(),
-                request.getAtcId(),
-                request.getDeleteYn());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-
 
 }
+
+
+
+
+
+
+

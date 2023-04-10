@@ -5,10 +5,6 @@ import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.AnswerDto;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
-
-import com.ktds.dsquare.board.qna.repository.AnswerRepository;
-import lombok.RequiredArgsConstructor;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,24 +54,6 @@ public class AnswerService {
         Answer answer = answerRepository.findById(aid).orElseThrow(() -> new RuntimeException("Delete Fail"));
         answer.setDeleteYn(true);
         answer.setLastUpdateDate(LocalDateTime.now());
-        answerRepository.save(answer);
-    }
-
-
-    public void createAnswer(Long id, Long questionId, Long writerId,
-                             String content, LocalDateTime createDate,
-                             LocalDateTime lastUpdateDate,
-                             Long atcId, Boolean deleteYn){
-        Answer answer = new Answer();
-        answer.setId(id);
-        answer.setQuestionId(questionId);
-        answer.setWriterId(writerId);
-        answer.setContent(content);
-        answer.setCreateDate(createDate.now());
-        answer.setLastUpdateDate(lastUpdateDate.now());
-        answer.setAtcId(atcId);
-        answer.setDeleteYn(false);
-
         answerRepository.save(answer);
     }
 
