@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.qna.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
@@ -19,8 +20,11 @@ public class Question {
     @Column(nullable = false)
     private Long writerId;
 
-    @Column(nullable = false)
-    private Integer cateId;
+//    @Column(nullable = false)
+//    private Integer cateId;
+    @ManyToOne
+    @JoinColumn(name = "cid")
+    private Category cid;
 
     @Column(nullable = false)
     private String title;

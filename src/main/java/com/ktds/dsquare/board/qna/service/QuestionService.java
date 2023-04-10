@@ -1,8 +1,10 @@
 package com.ktds.dsquare.board.qna.service;
 
 import com.ktds.dsquare.board.qna.domain.Answer;
+import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.QuestionDto;
+import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,21 +18,26 @@ public class QuestionService {
 
     @Autowired
     private QuestionRepository questionRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     //create - 질문글 작성
     public void createQuestion(QuestionDto dto) {
         Question question = new Question();
         question.setQid(dto.getQid());
         question.setWriterId(dto.getWriterId());
-        question.setCateId(dto.getCateId());
         question.setTitle(dto.getTitle());
         question.setContent(dto.getContent());
-        LocalDateTime now = LocalDateTime.now();
-        question.setCreateDate(now);
-        question.setLastUpdateDate(now);
         question.setViewCnt(0L);
         question.setAtcId(dto.getAtcId());
         question.setDeleteYn(false);
+
+        LocalDateTime now = LocalDateTime.now();
+        question.setCreateDate(now);
+        question.setLastUpdateDate(now);
+
+        Category category = categoryRepository.findById(dto.getCid()).orElseThrow(() -> new RuntimeException("Update Fail"));
+        question.setCid(category);
 
         questionRepository.save(question);
     }
