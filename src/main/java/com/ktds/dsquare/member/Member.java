@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "MBR_BAS")
 public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +27,6 @@ public class Member {
     private String nickname;
 
     private String ktMail;
-    @Column(columnDefinition = "CHAR", nullable = false)
     private String contact;
 
     private Long activityScore;

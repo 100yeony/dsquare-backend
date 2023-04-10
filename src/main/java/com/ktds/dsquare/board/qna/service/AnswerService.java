@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class AnswerService {
@@ -37,9 +38,14 @@ public class AnswerService {
         answerRepository.save(answer);
     }
 
+    // 답변글 조회
+    public List<Answer> getAnswersByQid(Question qid) {
+        return answerRepository.findByQidAndDeleteYnOrderByIdDesc(qid, false);
+    }
+
     // 답변글 수정
     public void updateAnswer(Long aid, AnswerDto request) {
-        Answer answer = answerRepository.findById(aid).orElseThrow(() -> new RuntimeException("Update Fail"));
+        Answer answer = answerRepository.findById(aid).orElseThrow(() -> new RuntimeException("Answer does not exist"));
 
         answer.setContent(request.getContent());
         answer.setLastUpdateDate(LocalDateTime.now());
@@ -50,7 +56,7 @@ public class AnswerService {
 
     // 답변글 삭제
     public void deleteAnswer(Long aid) {
-        Answer answer = answerRepository.findById(aid).orElseThrow(() -> new RuntimeException("Delete Fail"));
+        Answer answer = answerRepository.findById(aid).orElseThrow(() -> new RuntimeException("Answer does not exist"));
         answer.setDeleteYn(true);
         answer.setLastUpdateDate(LocalDateTime.now());
         answerRepository.save(answer);

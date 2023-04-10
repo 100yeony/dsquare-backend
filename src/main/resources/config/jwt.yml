@@ -5,7 +5,7 @@ jwt:
     refresh-token: "refreshToken"
   algorithm: HS256
   secret: "kt ds 2023 Welcome Project - DSquare"
-  expiration-millisecond: 60000
+  expiration-millisecond: 600_000
   prefix: "Bearer "
 #  claims:
 #    username: username

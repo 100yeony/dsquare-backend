@@ -1,12 +1,9 @@
 package com.ktds.dsquare.board.qna.domain;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -41,12 +38,5 @@ public class Question {
     private Long atcId;
     @Column(nullable = false)
     private Boolean deleteYn;       // 기본값 false
-
-    /*
-        cascade = CascadeType.REMOVE: 질문을 삭제하면 답변도 모두 함께 삭제되는 옵션
-     */
-    @JsonManagedReference //직렬화
-    @OneToMany(mappedBy = "qid", cascade = CascadeType.REMOVE)
-    private List<Answer> answerList;
 
 }

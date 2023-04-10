@@ -4,6 +4,7 @@ import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.QuestionDto;
+import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ public class QuestionService {
 
     @Autowired
     private QuestionRepository questionRepository;
+    @Autowired
+    private AnswerRepository answerRepository;
     @Autowired
     private CategoryRepository categoryRepository;
 
@@ -36,7 +39,7 @@ public class QuestionService {
         question.setCreateDate(now);
         question.setLastUpdateDate(now);
 
-        Category category = categoryRepository.findById(dto.getCid()).orElseThrow(() -> new RuntimeException("Update Fail"));
+        Category category = categoryRepository.findById(dto.getCid()).orElseThrow(() -> new RuntimeException("Category does not exist"));
         question.setCid(category);
 
         questionRepository.save(question);
@@ -45,7 +48,7 @@ public class QuestionService {
     //read - 질문글 전체 조회
     public List<Question> getAllQuestions() {
         // deleteYn = false만 필터링 한 후 qid 기준으로 정렬
-        return questionRepository.findByDeleteYnOrderByQidAsc(false);
+        return questionRepository.findByDeleteYnOrderByQidDesc(false);
     }
 
     //read - 질문글 상세 조회
@@ -59,7 +62,7 @@ public class QuestionService {
 
     // 질문글 수정
     public void updateQuestion(Long qid, QuestionDto request) {
-        Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Update Fail"));
+        Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Update Question Fail"));
 
         question.setTitle(request.getTitle());
         question.setContent(request.getContent());
@@ -71,16 +74,15 @@ public class QuestionService {
 
     // 질문글 삭제
     public void deleteQuestion(Long qid) {
-        Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Delete Fail"));
-
-        List<Answer> answerList = question.getAnswerList();
+        Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Delete Question Fail"));
+        List<Answer> answerList = answerRepository.findByQidAndDeleteYn(question, false);
         if(answerList.isEmpty()) {
             question.setDeleteYn(true);
             question.setLastUpdateDate(LocalDateTime.now());
             questionRepository.save(question);
         } else {
             // 답변글이 이미 존재할 때 => HTTP Status로 처리해줘야 함(추후 수정 필요)
-            throw new RuntimeException("Delete Fail");
+            throw new RuntimeException("Delete Question Fail - Reply exists");
         }
     }
 
