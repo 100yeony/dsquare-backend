@@ -9,7 +9,9 @@ public class SignupRequest {
     private String email;
     private String pw;
     private String nickname;
-    private String ktMail;
+    private String name;
     private String contact;
+    private Long tid;
+    private String ktMail;
 
 }
