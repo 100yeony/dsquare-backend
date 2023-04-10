@@ -14,8 +14,10 @@ public class JwtProperties {
     private static String REFRESH_KEY;
 
     private static SignAlgorithm ALGORITHM;
-    private static String SECRET;
-    private static long EXPIRATION_MILLISECOND;
+    private static String SECRET_ACCESS;
+    private static String SECRET_REFRESH;
+    private static long EXPIRATION_MILLISECOND_ACCESS;
+    private static long EXPIRATION_MILLISECOND_REFRESH;
 
     private static String PREFIX;
 //    private static Map<String, String> CLAIMS;
@@ -28,11 +30,17 @@ public class JwtProperties {
     public static SignAlgorithm ALGORITHM() {
         return ALGORITHM;
     }
-    public static String SECRET() {
-        return SECRET;
+    public static String SECRET_ACCESS() {
+        return SECRET_ACCESS;
     }
-    public static long EXPIRATION_MILLISECOND() {
-        return EXPIRATION_MILLISECOND;
+    public static String SECRET_REFRESH() {
+        return SECRET_REFRESH;
+    }
+    public static long EXPIRATION_MILLISECOND_ACCESS() {
+        return EXPIRATION_MILLISECOND_ACCESS;
+    }
+    public static long EXPIRATION_MILLISECOND_REFRESH() {
+        return EXPIRATION_MILLISECOND_REFRESH;
     }
 
     public static String PREFIX() {
@@ -64,15 +72,25 @@ public class JwtProperties {
         ALGORITHM = algorithm;
         log.debug("ALGORITHM is set\n: {}", ALGORITHM);
     }
-    @Value("${jwt.secret}")
-    private void setSecret(String secret) {
-        SECRET = secret;
-        log.debug("SECRET is set\n: {}", SECRET);
+    @Value("${jwt.secret.access}")
+    private void setSecretAccess(String secretAccess) {
+        SECRET_ACCESS = secretAccess;
+        log.debug("SECRET_ACCESS is set\n: {}", SECRET_ACCESS);
     }
-    @Value("${jwt.expiration-millisecond}")
-    private void setExpirationMillisecond(long expirationMillisecond) {
-        EXPIRATION_MILLISECOND = expirationMillisecond;
-        log.debug("EXPIRATION_MILLISECOND is set\n: {}", EXPIRATION_MILLISECOND);
+    @Value("${jwt.secret.refresh}")
+    private void setSecretRefresh(String secretRefresh) {
+        SECRET_REFRESH = secretRefresh;
+        log.debug("SECRET_REFRESH is set\n: {}", SECRET_REFRESH);
+    }
+    @Value("${jwt.expiration-millisecond.access}")
+    private void setExpirationMillisecondAccess(long expirationMillisecondAccess) {
+        EXPIRATION_MILLISECOND_ACCESS = expirationMillisecondAccess;
+        log.debug("EXPIRATION_MILLISECOND_ACCESS is set\n: {}", EXPIRATION_MILLISECOND_ACCESS);
+    }
+    @Value("${jwt.expiration-millisecond.refresh}")
+    private void setExpirationMillisecondRefresh(long expirationMillisecondRefresh) {
+        EXPIRATION_MILLISECOND_REFRESH = expirationMillisecondRefresh;
+        log.debug("EXPIRATION_MILLISECOND_REFRESH is set\n: {}", EXPIRATION_MILLISECOND_REFRESH);
     }
 
     @Value("${jwt.prefix}")

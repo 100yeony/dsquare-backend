@@ -4,8 +4,13 @@ jwt:
     access-token: "accessToken"
     refresh-token: "refreshToken"
   algorithm: HS256
-  secret: "kt ds 2023 Welcome Project - DSquare"
-  expiration-millisecond: 60000
+  secret:
+    access: kt ds 2023 Welcome Project - DSquare
+    refresh: kt ds 2023 Welcome Project - DSquarefresh
+  expiration-millisecond:
+    # 1min = 60_000 / 1hour = 3600_000 / 1day = 86_400_000 / 1month = 2_592_000_000
+    access: 1_800_000
+    refresh: 2_592_000_000
   prefix: "Bearer "
 #  claims:
 #    username: username
