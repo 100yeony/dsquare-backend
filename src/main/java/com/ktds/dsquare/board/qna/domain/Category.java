@@ -1,12 +1,18 @@
-package com.ktds.dsquare.board.qna;
+package com.ktds.dsquare.board.qna.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
+import lombok.*;
 
+import javax.persistence.*;
+
+@Entity
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Category {
     @Id
     @Column(nullable = false)
-    private Integer id;
+    private Integer cid;
 
     @Column(nullable = false, length = 20)  // unique = true 넣어야할까?
     private String name;
@@ -16,8 +22,5 @@ public class Category {
 
     @Column(nullable = false)
     private Integer depth;
-
-    @Column(nullable = false)
-    private Boolean workYn;     //  기본값은 true
 
 }
