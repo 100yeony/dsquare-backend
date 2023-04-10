@@ -21,24 +21,24 @@ public class AnswerController {
     private AnswerService answerService;
 
     //create - 답변글 작성
-    @PostMapping("/board/questions/{qid}/answer")
+    @PostMapping("/board/questions/{qid}/answers")
     public ResponseEntity<Void> createAnswer(@PathVariable("qid") Long qid, @RequestBody AnswerDto request){
         answerService.createAnswer(qid, request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     // 답변글 수정
-    @PostMapping("/board/questions/{qid}/answers/{answerId}")
-    public ResponseEntity<Void> updateAnswer(@PathVariable Long qid, @PathVariable Long answerId,
+    @PostMapping("/board/questions/{qid}/answers/{aid}")
+    public ResponseEntity<Void> updateAnswer(@PathVariable Long qid, @PathVariable Long aid,
                                              @RequestBody AnswerDto request) {
-        answerService.updateAnswer(answerId, request);
+        answerService.updateAnswer(aid, request);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
     // 답변글 삭제
-    @DeleteMapping("/board/questions/{questionId}/answers/{answerId}")
-    public ResponseEntity<Void> deleteAnswer(@PathVariable Long questionId, @PathVariable Long answerId){
-        answerService.deleteAnswer(answerId);
+    @DeleteMapping("/board/questions/{qid}/answers/{aid}")
+    public ResponseEntity<Void> deleteAnswer(@PathVariable Long qid, @PathVariable Long aid){
+        answerService.deleteAnswer(aid);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

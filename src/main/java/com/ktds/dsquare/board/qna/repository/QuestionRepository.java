@@ -8,6 +8,10 @@ import java.util.List;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question,Long> {
+
     List<Question> findByWriterId(Long writerId);
     List<Question> findByTitleContainingOrContentContaining(String title, String content);
+    List<Question> findByDeleteYn(Boolean deleteYn);
+    List<Question> findByDeleteYnOrderByQidAsc(Boolean deleteYn);
+
 }

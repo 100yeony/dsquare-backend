@@ -57,7 +57,6 @@ public class QuestionController {
     public ResponseEntity<List<Question>> search(@RequestParam String keyword, @RequestParam(required = false) Long writerId){
         if(writerId != null){
             return ResponseEntity.ok(questionService.searchByWriterId(writerId));
-//        } else if {
 
         } else {
             return ResponseEntity.ok(questionService.searchByTitleOrContent(keyword));

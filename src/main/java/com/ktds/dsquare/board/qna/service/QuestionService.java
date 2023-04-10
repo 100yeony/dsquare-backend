@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.qna.service;
 
+import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
 
 import com.ktds.dsquare.board.qna.dto.QuestionDto;
@@ -32,8 +33,9 @@ public class QuestionService {
         question.setCateId(dto.getCateId());
         question.setTitle(dto.getTitle());
         question.setContent(dto.getContent());
-        question.setCreateDate(dto.getCreateDate().now());
-        question.setLastUpdateDate(dto.getLastUpdateDate().now());
+        LocalDateTime now = LocalDateTime.now();
+        question.setCreateDate(now);
+        question.setLastUpdateDate(now);
         question.setViewCnt(0L);
         question.setAtcId(dto.getAtcId());
         question.setDeleteYn(false);
@@ -43,13 +45,15 @@ public class QuestionService {
 
     //read - 질문글 전체 조회
     public List<Question> getAllQuestions() {
-        return questionRepository.findAll();
+        // deleteYn = false만 필터링 한 후 qid 기준으로 정렬
+        return questionRepository.findByDeleteYnOrderByQidAsc(false);
     }
 
     //read - 질문글 상세 조회
     public Optional<Question> getQuestionDetail(Long qid) {
         /*Question question = questionRepository.findById(qid)
                 .orElseThrow(() -> new RuntimeException("Question not found"));*/
+        // 삭제된 답변은 안보여야 함(추후 수정 필요)
         return questionRepository.findById(qid);
     }
 
@@ -68,10 +72,17 @@ public class QuestionService {
 
     // 질문글 삭제
     public void deleteQuestion(Long qid) {
-        Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Update Fail"));
-        question.setDeleteYn(true);
-        question.setLastUpdateDate(LocalDateTime.now());
-        questionRepository.save(question);
+        Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Delete Fail"));
+
+        List<Answer> answerList = question.getAnswerList();
+        if(answerList.isEmpty()) {
+            question.setDeleteYn(true);
+            question.setLastUpdateDate(LocalDateTime.now());
+            questionRepository.save(question);
+        } else {
+            // 답변글이 이미 존재할 때 => HTTP Status로 처리해줘야 함(추후 수정 필요)
+            throw new RuntimeException("Delete Fail");
+        }
     }
 
 
@@ -103,4 +114,5 @@ public class QuestionService {
 
 
     }
+
 }
