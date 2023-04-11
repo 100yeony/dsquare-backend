@@ -1,8 +1,11 @@
 package com.ktds.dsquare.board.qna.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -22,5 +25,14 @@ public class Category {
 
     @Column(nullable = false)
     private Integer depth;
+
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Category parent;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
+    private List<Category> childList;
 
 }

@@ -13,9 +13,9 @@ public class CategoryService {
     @Autowired
     CategoryRepository categoryRepository;
 
-    // 답변글 조회
+    // 카테고리 목록 조회
     public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+        return categoryRepository.findByUpId(null);
     }
 
 }
