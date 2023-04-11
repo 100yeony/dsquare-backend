@@ -20,6 +20,9 @@ public class Question {
     @Column(nullable = false)
     private Long writerId;
 
+    @Column
+    private String nickname;
+
     @ManyToOne
     @JoinColumn(name = "cid")
     private Category cid;
@@ -47,8 +50,14 @@ public class Question {
     @OneToMany(mappedBy = "qid", cascade = CascadeType.REMOVE)
     private List<Answer> answerList;
 
-//    @OneToMany(mappedBy = "question")
-//    private List<Answer> answerList;
+
+    //검색 기능 관련
+    public Integer getCid(){
+        if(cid == null){
+            return null;
+        }
+        return cid.getCid();
+    }
 
 
 }

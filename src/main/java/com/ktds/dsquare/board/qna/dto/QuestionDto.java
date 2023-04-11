@@ -1,6 +1,5 @@
 package com.ktds.dsquare.board.qna.dto;
 
-import com.ktds.dsquare.board.qna.domain.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +13,7 @@ public class QuestionDto {
 
     private Long qid;
     private Long writerId;
+    private String nickname;
     private Integer cid;
     private String title;
     private String content;

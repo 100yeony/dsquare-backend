@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,6 +52,28 @@ public class QuestionController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+
+
+    //search - Q&A 검색(카테고리, 제목+내용, 사용자)
+    //board/questions/search?cid={{cid}}&key={{titleAndContent || member}}&value={{value}}
+
+    @GetMapping("/board/questions/search")
+    @ResponseBody
+    public ResponseEntity<List<Question>> search(@RequestParam(required = false) Integer cid, @RequestParam String key, @RequestParam String value) {
+        if (cid != null) {
+            List<Question> questions = questionService.searchByCid(cid);
+            return ResponseEntity.ok(questions);
+        }
+        if (key.contentEquals("titleAndContent")) {
+            List<Question> questions = questionService.searchByTitleOrContent(value);
+            return ResponseEntity.ok(questions);
+
+        } else if (key.contentEquals("member")) {
+            List<Question> questions = questionService.searchByNickname(value);
+            return ResponseEntity.ok(questions);
+        }
+        return ResponseEntity.ok(Collections.emptyList());
+    }
 
 }
 

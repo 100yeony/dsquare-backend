@@ -28,6 +28,7 @@ public class QuestionService {
         Question question = new Question();
         question.setQid(dto.getQid());
         question.setWriterId(dto.getWriterId());
+        question.setNickname(dto.getNickname());
         question.setTitle(dto.getTitle());
         question.setContent(dto.getContent());
         question.setViewCnt(0L);
@@ -38,7 +39,7 @@ public class QuestionService {
         question.setCreateDate(now);
         question.setLastUpdateDate(now);
 
-        Category category = categoryRepository.findById(dto.getCid()).orElseThrow(() -> new RuntimeException("Update Fail"));
+        Category category = categoryRepository.findById(dto.getCid()).orElseThrow(() -> new RuntimeException("Create Fail"));
         question.setCid(category);
 
         questionRepository.save(question);
@@ -92,14 +93,24 @@ public class QuestionService {
         return questionRepository.findByWriterId(writerId);
     }
 
-//    public List<Question> searchByNickname(String nickname){
-//        return questionRepository.findByNickname(nickname);
-//    }
+    public List<Question> searchByCid(Integer cid){
+        Optional<Category> optionalCategory = categoryRepository.findByCid(cid);
+        if(optionalCategory.isPresent()) {
+            Category category = optionalCategory.get();
+            return questionRepository.findByCid(category);
+        }else{
+            throw new RuntimeException("Category Not Found");
+        }
+
+
+//        return questionRepository.findByCid(cid);
+    }
+    public List<Question> searchByNickname(String nickname){
+        return questionRepository.findByNickname(nickname);
+    }
 
     public List<Question> searchByTitleOrContent(String keyword) {
         return questionRepository.findByTitleContainingOrContentContaining(keyword, keyword);
-
-
     }
 
 }

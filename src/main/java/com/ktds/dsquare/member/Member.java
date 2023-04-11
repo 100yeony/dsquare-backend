@@ -1,5 +1,6 @@
 package com.ktds.dsquare.member;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.member.dto.request.SignupRequest;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,7 @@ public class Member {
     @Column(unique = true, nullable = false)
     private String nickname;
 
+    @JsonBackReference //직렬화 X
     @OneToOne
     @JoinColumn(name = "cid")
     private Category cid;

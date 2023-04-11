@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.qna.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ktds.dsquare.member.Member;
 import lombok.*;
 
@@ -24,7 +25,7 @@ public class Category {
     @Column(nullable = false)
     private Integer depth;
 
-
+    @JsonManagedReference //직렬화
     @OneToOne(mappedBy = "cid")
     private Member mid;
 }
