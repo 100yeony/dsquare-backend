@@ -21,9 +21,6 @@ public class Question {
     @Column(nullable = false)
     private Long writerId;
 
-//    @Column
-//    private String nickname;
-
     @ManyToOne
     @JoinColumn(name = "cid")
     private Category cid;

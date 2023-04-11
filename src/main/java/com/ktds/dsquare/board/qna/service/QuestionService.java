@@ -7,6 +7,7 @@ import com.ktds.dsquare.board.qna.dto.QuestionDto;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
+import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -109,18 +110,13 @@ public class QuestionService {
             throw new RuntimeException("Category Not Found");
         }
     }
-//    public List<Question> searchByName(String value){
-//        //input으로 name을 받으면 question 테이블엔 name이 없으니까 id로 member 테이블에서 이름을 찾아야 함.
-//        // 1. input name
-//        // 2. name으로 member 테이블에서 pk 찾기 - 이름으로 pk 찾기
-//        // 3. return question type -> pk
-//
-//        List<Member> questions = memberRepository.findByName(value);
-//        System.out.println(questions);
-//
-////        return questionRepository.findByName(value);
-//        return questions;
-//    }
+    public List<Question> searchByName(String value){
+        //검색 기능에서 input으로 name을 받으면 question 테이블엔 name이 없으니까 id로 member 테이블에서 이름을 찾아야 함.
+        //member 테이블에서 이름 조회하여 pk 찾기 -> question 테이블에서 writerID로 질문글 찾기
+        Member member = memberRepository.findByName(value);
+        Long mid = member.getId();
+        return questionRepository.findByWriterId(mid);
+    }
 
     public List<Question> searchByTitleOrContent(String keyword) {
         return questionRepository.findByTitleContainingOrContentContaining(keyword, keyword);

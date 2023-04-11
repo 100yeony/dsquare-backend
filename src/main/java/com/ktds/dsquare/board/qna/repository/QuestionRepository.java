@@ -11,9 +11,7 @@ import java.util.List;
 public interface QuestionRepository extends JpaRepository<Question,Long> {
 
     List<Question> findByWriterId(Long writerId);
-
     List<Question> findByCid(Category cid);
-//    List<Question> findByName(String name);
     List<Question> findByTitleContainingOrContentContaining(String title, String content);
     List<Question> findByDeleteYnOrderByQidDesc(Boolean deleteYn);
 
