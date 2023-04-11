@@ -53,12 +53,16 @@ public class QuestionService {
 
     //read - 질문글 상세 조회
     public Optional<Question> getQuestionDetail(Long qid) {
-        /*Question question = questionRepository.findById(qid)
-                .orElseThrow(() -> new RuntimeException("Question not found"));*/
-        // 삭제된 답변은 안보여야 함(추후 수정 필요)
         return questionRepository.findById(qid);
     }
 
+    // 질문글 조회수 증가
+    public void increaseViewCnt(Long qid) {
+        Question question = questionRepository.findById(qid)
+                .orElseThrow(() -> new RuntimeException("Question not found"));
+        question.setViewCnt(question.getViewCnt()+1);
+        questionRepository.save(question);
+    }
 
     // 질문글 수정
     public void updateQuestion(Long qid, QuestionDto request) {

@@ -39,4 +39,8 @@ public class Question {
     @Column(nullable = false)
     private Boolean deleteYn;       // 기본값 false
 
+    private void increaseViewCnt() {
+        this.viewCnt = getViewCnt()+1;
+    }
+
 }
