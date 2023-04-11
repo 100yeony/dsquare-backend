@@ -15,6 +15,9 @@ public interface QuestionRepository extends JpaRepository<Question,Long> {
     List<Question> findByCid(Category cid);
     List<Question> findByNickname(String nickname);
     List<Question> findByTitleContainingOrContentContaining(String title, String content);
-    List<Question> findByDeleteYnOrderByQidAsc(Boolean deleteYn);
+
+    List<Question> findByDeleteYn(Boolean deleteYn);
+    List<Question> findByDeleteYnOrderByQidDesc(Boolean deleteYn);
+
 
 }
