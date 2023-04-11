@@ -26,7 +26,8 @@ public class Member {
     private String pw;
     @Column(unique = true, nullable = false)
     private String nickname;
-
+    @Column(nullable = false)
+    private String name;
     @Column(nullable = false)
     private String contact;
 
@@ -55,10 +56,12 @@ public class Member {
                 .email(dto.getEmail())
                 .pw(dto.getPw())
                 .nickname(dto.getNickname())
-                .ktMail(dto.getKtMail())
+                .name(dto.getName())
                 .contact(dto.getContact())
+                .ktMail(dto.getKtMail())
                 .activityScore(0L)
                 .lastLoginDate(LocalDateTime.now())
+                .lastPwChangeDate(LocalDateTime.now())
                 .role("USER")
                 .build();
     }
