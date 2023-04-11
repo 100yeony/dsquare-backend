@@ -40,7 +40,7 @@ public class AnswerService {
 
     // 답변글 조회
     public List<Answer> getAnswersByQid(Question qid) {
-        return answerRepository.findByQidAndDeleteYnOrderByIdDesc(qid, false);
+        return answerRepository.findByQidAndDeleteYnOrderByIdAsc(qid, false);
     }
 
     // 답변글 수정
