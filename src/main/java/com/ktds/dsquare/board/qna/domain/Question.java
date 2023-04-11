@@ -55,11 +55,15 @@ public class Question {
 
 
     //검색 기능 관련
-    public Integer getCid(){
-        if(cid == null){
+    public Integer getCid() {
+        if (cid == null) {
             return null;
         }
         return cid.getCid();
+    }
+
+    private void increaseViewCnt() {
+        this.viewCnt = getViewCnt()+1;
     }
 
 }

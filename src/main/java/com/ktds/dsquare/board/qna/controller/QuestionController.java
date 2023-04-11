@@ -35,6 +35,7 @@ public class QuestionController {
     //read - 질문글&답변글 상세 조회
     @GetMapping("/board/questions/{qid}")
     public Optional<Question> getQnADetail(@PathVariable("qid") Long qid) {
+        questionService.increaseViewCnt(qid);
         return questionService.getQuestionDetail(qid);
     }
 
