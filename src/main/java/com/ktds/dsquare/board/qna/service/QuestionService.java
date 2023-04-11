@@ -7,6 +7,7 @@ import com.ktds.dsquare.board.qna.dto.QuestionDto;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
+import com.ktds.dsquare.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,14 +25,17 @@ public class QuestionService {
     private AnswerRepository answerRepository;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
 
     //create - 질문글 작성
     public void createQuestion(QuestionDto dto) {
         Question question = new Question();
-        question.setQid(dto.getQid());
+//        question.setQid(dto.getQid());
         question.setWriterId(dto.getWriterId());
-        question.setNickname(dto.getNickname());
+//        question.setNickname(dto.getNickname());
+        //writerId로 member table 조회해서 nickname 가져오기??
         question.setTitle(dto.getTitle());
         question.setContent(dto.getContent());
         question.setViewCnt(0L);
@@ -104,13 +108,19 @@ public class QuestionService {
         }else{
             throw new RuntimeException("Category Not Found");
         }
-
-
-//        return questionRepository.findByCid(cid);
     }
-    public List<Question> searchByNickname(String nickname){
-        return questionRepository.findByNickname(nickname);
-    }
+//    public List<Question> searchByName(String value){
+//        //input으로 name을 받으면 question 테이블엔 name이 없으니까 id로 member 테이블에서 이름을 찾아야 함.
+//        // 1. input name
+//        // 2. name으로 member 테이블에서 pk 찾기 - 이름으로 pk 찾기
+//        // 3. return question type -> pk
+//
+//        List<Member> questions = memberRepository.findByName(value);
+//        System.out.println(questions);
+//
+////        return questionRepository.findByName(value);
+//        return questions;
+//    }
 
     public List<Question> searchByTitleOrContent(String keyword) {
         return questionRepository.findByTitleContainingOrContentContaining(keyword, keyword);

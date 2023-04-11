@@ -1,10 +1,13 @@
 package com.ktds.dsquare.board.qna.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.ktds.dsquare.member.Member;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -14,13 +17,12 @@ public class Question {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long qid;
-    private Long id;
 
     @Column(nullable = false)
     private Long writerId;
 
-    @Column
-    private String nickname;
+//    @Column
+//    private String nickname;
 
     @ManyToOne
     @JoinColumn(name = "cid")
@@ -48,6 +50,11 @@ public class Question {
     @JsonManagedReference //직렬화
     @OneToMany(mappedBy = "qid", cascade = CascadeType.REMOVE)
     private List<Answer> answerList;
+
+    @JsonBackReference //직렬화 X
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id")
+    private Member id;
 
 
     //검색 기능 관련

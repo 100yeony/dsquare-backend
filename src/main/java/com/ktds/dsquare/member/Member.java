@@ -1,7 +1,8 @@
 package com.ktds.dsquare.member;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ktds.dsquare.board.qna.domain.Category;
+import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.member.dto.request.SignupRequest;
 import com.ktds.dsquare.member.team.Team;
 import lombok.AllArgsConstructor;
@@ -26,6 +27,7 @@ public class Member {
     private String email;
     @Column(nullable = false)
     private String pw;
+
     @Column(unique = true, nullable = false)
     private String nickname;
 
@@ -37,6 +39,7 @@ public class Member {
     @ManyToOne(fetch = FetchType.LAZY)
     private Team team;
 
+
     private String ktMail;
 
     private Long activityScore;
@@ -46,10 +49,13 @@ public class Member {
 
     private String role;
 
-    @JsonBackReference //직렬화 X
-    @OneToOne
-    @JoinColumn(name = "cid")
-    private Category cid;
+    @JsonManagedReference //직렬화
+    @OneToMany(mappedBy = "id")
+    private List<Category> cid;
+
+    @JsonManagedReference //직렬화
+    @OneToMany(mappedBy = "id")
+    private List<Question> questionsList;
 
     public List<String> getRole() {
         return List.of(role);
