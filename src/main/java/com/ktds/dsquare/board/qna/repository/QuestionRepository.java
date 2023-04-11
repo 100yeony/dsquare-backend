@@ -12,6 +12,6 @@ public interface QuestionRepository extends JpaRepository<Question,Long> {
     List<Question> findByWriterId(Long writerId);
     List<Question> findByTitleContainingOrContentContaining(String title, String content);
     List<Question> findByDeleteYn(Boolean deleteYn);
-    List<Question> findByDeleteYnOrderByQidDesc(Boolean deleteYn);
+    List<Question> findByDeleteYnOrderByCreateDateDesc(Boolean deleteYn);
 
 }

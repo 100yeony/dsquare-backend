@@ -12,6 +12,6 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
 //    List<Answer> findAllByQid(Long qid);
 
     List<Answer> findByQidAndDeleteYn(Question qid, Boolean deleteYn);
-    List<Answer> findByQidAndDeleteYnOrderByIdAsc(Question qid, Boolean deleteYn);
+    List<Answer> findByQidAndDeleteYnOrderByCreateDateAsc(Question qid, Boolean deleteYn);
 
 }

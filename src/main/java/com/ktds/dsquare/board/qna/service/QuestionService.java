@@ -48,7 +48,7 @@ public class QuestionService {
     //read - 질문글 전체 조회
     public List<Question> getAllQuestions() {
         // deleteYn = false만 필터링 한 후 qid 기준으로 정렬
-        return questionRepository.findByDeleteYnOrderByQidDesc(false);
+        return questionRepository.findByDeleteYnOrderByCreateDateDesc(false);
     }
 
     //read - 질문글 상세 조회
