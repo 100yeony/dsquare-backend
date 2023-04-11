@@ -14,8 +14,7 @@ public class Answer {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-//    @Column(unique = true, nullable = false)
-//    private Long questionId;
+    
     @Column(nullable = false)
     private Long writerId;
 
