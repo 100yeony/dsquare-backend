@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,14 +20,14 @@ public class MemberController {
 
 
     @PostMapping("/account/signup")
-    public ResponseEntity<?> signup(@RequestBody SignupRequest signupRequest) throws Exception {
+    public ResponseEntity<?> signup(@RequestBody SignupRequest signupRequest) {
         log.debug("MemberController ----> signup");
         return new ResponseEntity<>(memberService.insertMember(signupRequest), HttpStatus.OK);
     }
 
     @GetMapping("/member/members")
-    public ResponseEntity<List<BriefMemberInfo>> getAllMember() {
-        return new ResponseEntity<>(memberService.selectAllMember(), HttpStatus.OK);
+    public ResponseEntity<List<BriefMemberInfo>> getAllMembers(@RequestParam Map<String, String> params) {
+        return new ResponseEntity<>(memberService.selectAllMembers(params), HttpStatus.OK);
     }
 
 }
