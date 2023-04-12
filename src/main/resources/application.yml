@@ -1,0 +1,30 @@
+### Server Configuration ###
+server:
+  port: 8090
+
+### Spring Configuration ###
+spring:
+  ### Datasource ###
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/dsquare
+    username: postgres
+    password: 1234
+
+  ### Spring Data JPA ###
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+### Logging Configuration ###
+logging:
+  ### Level ###
+  level:
+    root: info
+    com.ktds.dsquare:
+      auth: debug
+      auth.jwt: debug
