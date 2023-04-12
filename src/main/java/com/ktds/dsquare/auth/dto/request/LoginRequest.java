@@ -1,4 +1,4 @@
-package com.ktds.dsquare.member.dto.request;
+package com.ktds.dsquare.auth.dto.request;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;

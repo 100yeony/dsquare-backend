@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.qna.domain;
 
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
@@ -14,7 +15,8 @@ public class Answer {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
+    //member꺼로 변경 !
     @Column(nullable = false)
     private Long writerId;
 
@@ -25,9 +27,11 @@ public class Answer {
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
 
+    //attchment꺼로 변경!
     private Long atcId;
     @Column(nullable = false)
     private boolean deleteYn;
+
 
     @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)

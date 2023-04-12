@@ -12,9 +12,11 @@ spring:
     password: 1234
 
   ### Spring Data JPA ###
+  ### update || create ###
   jpa:
     hibernate:
       ddl-auto: update
+
     properties:
       hibernate:
         format_sql: true
@@ -30,3 +32,4 @@ logging:
     com.ktds.dsquare:
       auth: debug
       auth.jwt: debug
+

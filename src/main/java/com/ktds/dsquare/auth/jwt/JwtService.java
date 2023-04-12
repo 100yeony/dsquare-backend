@@ -1,89 +1,104 @@
 package com.ktds.dsquare.auth.jwt;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTCreator;
-import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.ktds.dsquare.auth.AuthToken;
+import com.ktds.dsquare.auth.AuthTokenRepository;
+import com.ktds.dsquare.auth.dto.request.TokenRefreshRequest;
+import com.ktds.dsquare.auth.dto.response.LoginResponse;
+import com.ktds.dsquare.common.exception.AccessTokenStillValidException;
+import com.ktds.dsquare.common.exception.RefreshTokenMismatchException;
+import com.ktds.dsquare.member.Member;
+import com.ktds.dsquare.member.MemberRepository;
+import com.ktds.dsquare.util.JwtUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
-import java.util.Date;
-import java.util.HashMap;
+import javax.transaction.Transactional;
 import java.util.Map;
 
 @Service
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class JwtService {
 
-    private static JWTCreator.Builder create() {
-        return JWT.create()
-                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.EXPIRATION_MILLISECOND()));
-    }
-//    private JWTCreator.Builder setHeader(JWTCreator.Builder builder) {
-//        builder.withHeader()
-//    }
-//    private static JWTCreator.Builder setPayload(JWTCreator.Builder builder) {
-//        Map<String, String> claims = JwtProperties.CLAIMS();
-//        for (Map.Entry<String, String> claimEntry : claims.entrySet())
-//            builder.withClaim(claimEntry.getKey(), claimEntry.getValue());
-//        return builder;
-//    }
-    private static Algorithm getAlgorithm() {
-        String secret = JwtProperties.SECRET();
-        switch (JwtProperties.ALGORITHM()) {
-            case HS512:
-                return Algorithm.HMAC512(secret);
-//            case RS256:
-//                return Algorithm.RSA256();
-//            case RS512:
-//                return Algorithm.RSA512();
-            case HS256: default:
-                return Algorithm.HMAC256(secret);
-        }
-    }
-    private static String sign(JWTCreator.Builder builder) {
-        return builder.sign(getAlgorithm());
-    }
+    private final AuthTokenRepository authTokenRepository;
+    private final MemberRepository memberRepository;
 
-    public static String generateAccessToken(UserDetails principal) {
-        JWTCreator.Builder builder = create();
-        builder.withSubject("Access-Token")
-                .withClaim("username", principal.getUsername());
 
-        return sign(builder);
-    }
-    public static String generateRefreshToken(UserDetails principal) {
-        JWTCreator.Builder builder = create();
-        builder.withSubject("Refresh-Token")
-                .withClaim("username", principal.getUsername())
-                .withClaim("Refresh-Token-Key", "Refresh-Token-Value");
+    @Transactional
+    public Map<String, String> generateTokens(UserDetails principal) {
+        Map<String, String> tokens = JwtUtil.generateTokens(principal);
 
-        return sign(builder);
-    }
-    public static Map<String, String> generateTokens(UserDetails principal) {
-        Map<String, String> tokens = new HashMap<>();
-        tokens.put(JwtProperties.ACCESS_KEY(), generateAccessToken(principal));
-        tokens.put(JwtProperties.REFRESH_KEY(), generateRefreshToken(principal));
+        Member member = memberRepository.findByEmail(principal.getUsername()).orElse(null);
+        AuthToken record = authTokenRepository.findByMember(member).orElse(null);
+
+        if (ObjectUtils.isEmpty(record))
+            authTokenRepository.save(AuthToken.toEntity(principal, tokens));
+        else
+            record.refresh(tokens);
         return tokens;
     }
 
-    public static String preprocess(String token) {
-        return token.replace(JwtProperties.PREFIX(), "").strip();
-    }
-    public static DecodedJWT verifyToken(String token) throws RuntimeException {
-        if (!StringUtils.hasText(token))
-            throw new RuntimeException("Authentication token is empty.");
-
-        token = preprocess(token);
-        return JWT.require(getAlgorithm()).build()
-                .verify(token);
+    public Map<String, String> generateTokens(Member member, AuthToken authToken) {
+        Map<String, String> tokens = JwtUtil.generateTokens(member);
+        authToken.refresh(tokens);
+        return tokens;
     }
 
-    public static String getClaim(DecodedJWT jwt, String claim) {
-        return jwt.getClaim(claim).asString();
+    public Member authenticate(String authHeader) throws JWTVerificationException {
+        DecodedJWT jwt = verifyToken(authHeader);
+        String username = getClaim(jwt, "username");
+        return memberRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("No such user with username [ " + username + "]"));
+    }
+    public DecodedJWT verifyToken(String token) throws JWTVerificationException {
+        return JwtUtil.verifyAccessToken(token);
+    }
+
+    public String getClaim(DecodedJWT jwt, String claim) {
+        return JwtUtil.getClaim(jwt, claim);
+    }
+
+    @Transactional
+    public LoginResponse refreshAccessToken(TokenRefreshRequest request) throws Exception {
+        String refreshToken = request.getRefreshToken();
+        try {
+            DecodedJWT jwt = JwtUtil.verifyRefreshToken(refreshToken);
+            Member member = memberRepository.findByEmail(getClaim(jwt, "username"))
+                    .orElseThrow(() -> new UsernameNotFoundException(""));
+            AuthToken authToken = authTokenRepository.findByMember(member)
+                    .orElseThrow(() -> new RuntimeException("Please log in."));
+
+            // 올바르지 않은 토큰
+            if (!authToken.getRefreshToken().equals(refreshToken))
+                throw new RefreshTokenMismatchException();
+            // Access token이 아직 만료되지 않음 (비정상 Refresh 요청)
+            if (!isAccessTokenExpired(authToken.getAccessToken()))
+                throw new AccessTokenStillValidException();
+
+            Map<String, String> freshTokens = generateTokens(member, authToken);
+            return LoginResponse.toDto(freshTokens);
+        } catch (TokenExpiredException e) {
+            throw new RuntimeException("Refresh token is expired.");
+        } catch (UsernameNotFoundException e) {
+            throw new RuntimeException("Invalid token.");
+        }
+    }
+    public boolean isAccessTokenExpired(String accessToken) {
+        try {
+            verifyToken(accessToken);
+        } catch (TokenExpiredException e) {
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
     }
 
 }

@@ -6,18 +6,21 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
-public class AnswerDto {
-
-    private Long id;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class QuestionResponse {
+    private Long qid;
     private Long writerId;
+    private String writerName;
+    private String writerNickname;
+    private Integer cid;
+    private String title;
+    private String content;
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
-    private String content;
+    private Long viewCnt;
     private Long atcId;
     private Boolean deleteYn;
-    private Long qid;
-
 }
