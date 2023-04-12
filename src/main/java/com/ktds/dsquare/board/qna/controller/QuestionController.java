@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 //@RequestMapping("/board/questions")
@@ -34,7 +33,7 @@ public class QuestionController {
 
     //read - 질문글&답변글 상세 조회
     @GetMapping("/board/questions/{qid}")
-    public Optional<Question> getQnADetail(@PathVariable("qid") Long qid) {
+    public Question getQnADetail(@PathVariable("qid") Long qid) {
         questionService.increaseViewCnt(qid);
         return questionService.getQuestionDetail(qid);
     }
@@ -56,10 +55,10 @@ public class QuestionController {
 
 
     //search - Q&A 검색(카테고리, 제목+내용, 사용자(이름))
-    //board/questions/search?cid={{cid}}&key={{titleAndContent || member}}&value={{value}}
-
     @GetMapping("/board/questions/search")
-    @ResponseBody
+    //member controller 참고해서 변경 -> Map<Object>
+    //memberservice specification 참고해서 변경 // service에서 하나의 함수로
+    //notion - jpa동적쿼리 자료 참고
     public ResponseEntity<List<Question>> search(@RequestParam(required = false) Integer cid, @RequestParam String key, @RequestParam String value) {
         if (cid != null) {
             List<Question> questions = questionService.searchByCid(cid);

@@ -2,16 +2,16 @@ package com.ktds.dsquare.board.qna.service;
 
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.repository.CategoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryService {
 
-    @Autowired
-    CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
     // 카테고리 목록 조회
     //childList가 null일땐 안보내기 !
