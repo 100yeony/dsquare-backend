@@ -5,36 +5,33 @@ import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.AnswerRequest;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AnswerService {
 
-    @Autowired
-    private AnswerRepository answerRepository;
-
-
-    @Autowired
-    private QuestionRepository questionRepository;
+    private final AnswerRepository answerRepository;
+    private final QuestionRepository questionRepository;
 
     // 답변글 작성
+    //builder 이용해서 set 함수 사용하지 않기 -> @setter 빼기
+    @Transactional
     public void createAnswer(Long qid, AnswerRequest dto) {
+        Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Question not found"));
         Answer answer = new Answer();
+        answer.setQid(question);
         answer.setId(dto.getId());
         answer.setWriterId(dto.getWriterId());
         answer.setContent(dto.getContent());
-        LocalDateTime now = LocalDateTime.now();
-        answer.setCreateDate(now);
-        answer.setLastUpdateDate(now);
+        answer.setCreateDate(LocalDateTime.now());
         answer.setAtcId(dto.getAtcId());
         answer.setDeleteYn(false);
-
-        Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Question not found"));
-        answer.setQid(question);
 
         answerRepository.save(answer);
     }
@@ -45,22 +42,21 @@ public class AnswerService {
     }
 
     // 답변글 수정
+    @Transactional
     public void updateAnswer(Long aid, AnswerRequest request) {
         Answer answer = answerRepository.findById(aid).orElseThrow(() -> new RuntimeException("Answer does not exist"));
 
         answer.setContent(request.getContent());
         answer.setLastUpdateDate(LocalDateTime.now());
         answer.setAtcId(request.getAtcId());
-
-        answerRepository.save(answer);
     }
 
     // 답변글 삭제
+    @Transactional
     public void deleteAnswer(Long aid) {
         Answer answer = answerRepository.findById(aid).orElseThrow(() -> new RuntimeException("Answer does not exist"));
         answer.setDeleteYn(true);
         answer.setLastUpdateDate(LocalDateTime.now());
-        answerRepository.save(answer);
     }
 
 }

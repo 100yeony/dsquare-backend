@@ -9,34 +9,29 @@ import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
+@RequiredArgsConstructor
 public class QuestionService {
 
-    @Autowired
-    private QuestionRepository questionRepository;
-    @Autowired
-    private AnswerRepository answerRepository;
-    @Autowired
-    private CategoryRepository categoryRepository;
-    @Autowired
-    private MemberRepository memberRepository;
+    private final QuestionRepository questionRepository;
+    private final AnswerRepository answerRepository;
+    private final CategoryRepository categoryRepository;
+    private final MemberRepository memberRepository;
 
 
     //create - 질문글 작성
+    @Transactional
     public void createQuestion(QuestionRequest dto) {
         Question question = new Question();
-//        question.setQid(dto.getQid());
         question.setWriterId(dto.getWriterId());
-//        question.setNickname(dto.getNickname());
-        //writerId로 member table 조회해서 nickname 가져오기??
         question.setTitle(dto.getTitle());
         question.setContent(dto.getContent());
         question.setViewCnt(0L);
@@ -61,19 +56,22 @@ public class QuestionService {
     }
 
     //read - 질문글 상세 조회
-    public Optional<Question> getQuestionDetail(Long qid) {
-        return questionRepository.findById(qid);
+    public Question getQuestionDetail(Long qid) {
+        Question question = questionRepository.findById(qid)
+                .orElseThrow(() -> new RuntimeException("Question not found"));
+        return question;
     }
 
     // 질문글 조회수 증가
+    @Transactional
     public void increaseViewCnt(Long qid) {
         Question question = questionRepository.findById(qid)
                 .orElseThrow(() -> new RuntimeException("Question not found"));
         question.setViewCnt(question.getViewCnt()+1);
-        questionRepository.save(question);
     }
 
     // 질문글 수정
+    @Transactional
     public void updateQuestion(Long qid, QuestionRequest request) {
         Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Update Question Fail"));
 
@@ -81,18 +79,16 @@ public class QuestionService {
         question.setContent(request.getContent());
         question.setLastUpdateDate(LocalDateTime.now());
         question.setAtcId(request.getAtcId());
-
-        questionRepository.save(question);
     }
 
     // 질문글 삭제
+    @Transactional
     public void deleteQuestion(Long qid) {
         Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Delete Question Fail"));
         List<Answer> answerList = answerRepository.findByQidAndDeleteYn(question, false);
         if(answerList.isEmpty()) {
             question.setDeleteYn(true);
             question.setLastUpdateDate(LocalDateTime.now());
-            questionRepository.save(question);
         } else {
             // 답변글이 이미 존재할 때 => HTTP Status로 처리해줘야 함(추후 수정 필요)
             throw new RuntimeException("Delete Question Fail - Reply exists");
@@ -100,19 +96,17 @@ public class QuestionService {
     }
 
 
-    //search - Q&A 통합 검색(사용자, 제목+내용)
+    //search - Q&A 검색(사용자, 제목+내용)
     public List<Question> searchByWriterId(Long writerId) {
         return questionRepository.findByWriterId(writerId);
     }
 
     public List<Question> searchByCid(Integer cid){
-        Optional<Category> optionalCategory = categoryRepository.findByCid(cid);
-        if(optionalCategory.isPresent()) {
-            Category category = optionalCategory.get();
-            return questionRepository.findByCid(category);
-        }else{
-            throw new RuntimeException("Category Not Found");
-        }
+
+        Category category = categoryRepository.findByCid(cid)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+        return questionRepository.findByCid(category);
+
     }
     public List<Question> searchByName(String value){
         //검색 기능에서 input으로 name을 받으면 question 테이블엔 name이 없으니까 id로 member 테이블에서 이름을 찾아야 함.

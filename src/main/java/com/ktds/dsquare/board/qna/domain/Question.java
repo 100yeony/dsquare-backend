@@ -1,13 +1,11 @@
 package com.ktds.dsquare.board.qna.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ktds.dsquare.member.Member;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -41,26 +39,10 @@ public class Question {
     @Column(nullable = false)
     private Boolean deleteYn;       // 기본값 false
 
-    /*
-        cascade = CascadeType.REMOVE: 질문을 삭제하면 답변도 모두 함께 삭제되는 옵션
-     */
-    @JsonManagedReference //직렬화
-    @OneToMany(mappedBy = "qid", cascade = CascadeType.REMOVE)
-    private List<Answer> answerList;
-
     @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id")
     private Member id;
-
-
-    //검색 기능 관련
-    public Integer getCid() {
-        if (cid == null) {
-            return null;
-        }
-        return cid.getCid();
-    }
 
     private void increaseViewCnt() {
         this.viewCnt = getViewCnt()+1;

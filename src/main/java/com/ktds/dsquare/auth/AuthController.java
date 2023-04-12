@@ -1,6 +1,8 @@
 package com.ktds.dsquare.auth;
 
+import com.ktds.dsquare.auth.dto.request.LoginRequest;
 import com.ktds.dsquare.auth.dto.request.TokenRefreshRequest;
+import com.ktds.dsquare.auth.dto.response.LoginResponse;
 import com.ktds.dsquare.auth.jwt.JwtService;
 import com.ktds.dsquare.common.ErrorResponse;
 import com.ktds.dsquare.common.exception.AccessTokenStillValidException;
@@ -10,17 +12,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
-@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final JwtService jwtService;
 
-    @PostMapping("/refresh")
+    /**
+     * API for Swagger
+     */
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+        return new ResponseEntity<>(LoginResponse.toDto(Map.of()), HttpStatus.OK);
+    }
+
+    @PostMapping("/auth/refresh")
     public ResponseEntity<?> refresh(@RequestBody TokenRefreshRequest request) {
         try {
             return new ResponseEntity<>(jwtService.refreshAccessToken(request), HttpStatus.OK);
