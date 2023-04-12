@@ -14,4 +14,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>, JpaSpecif
     List<Member> findAll(Specification<Member> spec);
     Optional<Member> findByEmail(String email);
 
+    //궁금해요 검색 기능 관련
+     Member findByName(String name);
+
 }
