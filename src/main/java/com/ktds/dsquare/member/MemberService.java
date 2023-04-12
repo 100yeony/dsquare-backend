@@ -1,7 +1,9 @@
 package com.ktds.dsquare.member;
 
+import com.ktds.dsquare.member.dto.request.MemberUpdateRequest;
 import com.ktds.dsquare.member.dto.request.SignupRequest;
 import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
+import com.ktds.dsquare.member.dto.response.MemberInfo;
 import com.ktds.dsquare.member.team.Team;
 import com.ktds.dsquare.member.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +11,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -57,6 +60,21 @@ public class MemberService {
         });
     }
 
+    public MemberInfo selectMember(Long id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No such member with ID " + id));
+        return MemberInfo.toDto(member);
+    }
 
+    public MemberInfo updateMember(Long id, MemberUpdateRequest request) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No such member with ID " + id));
+        Team newTeam = teamRepository.findById(request.getTid())
+                .orElseThrow(() -> new EntityNotFoundException("No such team with ID " + request.getTid()));
+
+        member.update(request);
+        member.join(newTeam);
+        return MemberInfo.toDto(memberRepository.save(member));
+    }
 
 }

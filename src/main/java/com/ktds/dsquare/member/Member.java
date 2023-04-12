@@ -3,6 +3,7 @@ package com.ktds.dsquare.member;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.member.dto.request.MemberUpdateRequest;
 import com.ktds.dsquare.member.dto.request.SignupRequest;
 import com.ktds.dsquare.member.team.Team;
 import lombok.AllArgsConstructor;
@@ -27,10 +28,8 @@ public class Member {
     private String email;
     @Column(nullable = false)
     private String pw;
-
     @Column(unique = true, nullable = false)
     private String nickname;
-
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)
@@ -38,7 +37,6 @@ public class Member {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Team team;
-
 
     private String ktMail;
 
@@ -65,14 +63,19 @@ public class Member {
         this.team = team;
     }
 
+    public void update(MemberUpdateRequest request) {
+        if (request.getContact() != null)
+            this.contact = request.getContact();
+    }
+
     public static Member toEntity(SignupRequest dto) {
         return Member.builder()
                 .email(dto.getEmail())
                 .pw(dto.getPw())
-                .name(dto.getName())
                 .nickname(dto.getNickname())
-                .ktMail(dto.getKtMail())
+                .name(dto.getName())
                 .contact(dto.getContact())
+                .ktMail(dto.getKtMail())
                 .activityScore(0L)
                 .lastLoginDate(LocalDateTime.now())
                 .lastPwChangeDate(LocalDateTime.now())
