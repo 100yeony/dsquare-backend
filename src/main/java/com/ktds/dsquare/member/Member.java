@@ -3,6 +3,7 @@ package com.ktds.dsquare.member;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.member.dto.request.MemberUpdateRequest;
 import com.ktds.dsquare.member.dto.request.SignupRequest;
 import com.ktds.dsquare.member.team.Team;
 import lombok.AllArgsConstructor;
@@ -63,6 +64,11 @@ public class Member {
 
     public void join(Team team) {
         this.team = team;
+    }
+
+    public void update(MemberUpdateRequest request) {
+        if (request.getContact() != null)
+            this.contact = request.getContact();
     }
 
     public static Member toEntity(SignupRequest dto) {
