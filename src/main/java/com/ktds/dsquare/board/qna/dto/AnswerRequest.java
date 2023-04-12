@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.bytebuddy.asm.Advice;
 
 import java.time.LocalDateTime;
 
@@ -13,12 +12,12 @@ import java.time.LocalDateTime;
 public class AnswerRequest {
 
     private Long id;
-    private Long questionId;
+    //member 타입으로 변경해서 이름, 닉네임 가져오기
     private Long writerId;
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
     private String content;
     private Long atcId;
     private Boolean deleteYn;
-
+    private Long qid;
 }

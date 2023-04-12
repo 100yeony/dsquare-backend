@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor @AllArgsConstructor
 public class QuestionRequest {
 
-    private Long id;
+    private Long qid;
     private Long writerId;
-    private Integer cateId;
+    private Integer cid;
     private String title;
     private String content;
     private LocalDateTime createDate;

@@ -3,7 +3,7 @@ package com.ktds.dsquare.board.qna.service;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.board.qna.dto.QuestionDto;
+import com.ktds.dsquare.board.qna.dto.QuestionRequest;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
@@ -31,7 +31,7 @@ public class QuestionService {
 
 
     //create - 질문글 작성
-    public void createQuestion(QuestionDto dto) {
+    public void createQuestion(QuestionRequest dto) {
         Question question = new Question();
 //        question.setQid(dto.getQid());
         question.setWriterId(dto.getWriterId());
@@ -74,7 +74,7 @@ public class QuestionService {
     }
 
     // 질문글 수정
-    public void updateQuestion(Long qid, QuestionDto request) {
+    public void updateQuestion(Long qid, QuestionRequest request) {
         Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Update Question Fail"));
 
         question.setTitle(request.getTitle());

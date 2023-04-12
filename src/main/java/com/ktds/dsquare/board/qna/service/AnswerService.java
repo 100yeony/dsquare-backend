@@ -2,7 +2,7 @@ package com.ktds.dsquare.board.qna.service;
 
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.board.qna.dto.AnswerDto;
+import com.ktds.dsquare.board.qna.dto.AnswerRequest;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class AnswerService {
     private QuestionRepository questionRepository;
 
     // 답변글 작성
-    public void createAnswer(Long qid, AnswerDto dto) {
+    public void createAnswer(Long qid, AnswerRequest dto) {
         Answer answer = new Answer();
         answer.setId(dto.getId());
         answer.setWriterId(dto.getWriterId());
@@ -45,7 +45,7 @@ public class AnswerService {
     }
 
     // 답변글 수정
-    public void updateAnswer(Long aid, AnswerDto request) {
+    public void updateAnswer(Long aid, AnswerRequest request) {
         Answer answer = answerRepository.findById(aid).orElseThrow(() -> new RuntimeException("Answer does not exist"));
 
         answer.setContent(request.getContent());

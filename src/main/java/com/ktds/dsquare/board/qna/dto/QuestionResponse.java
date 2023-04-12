@@ -6,14 +6,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
-public class QuestionDto {
-
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class QuestionResponse {
     private Long qid;
     private Long writerId;
-    private String nickname;
+    private String writerName;
+    private String writerNickname;
     private Integer cid;
     private String title;
     private String content;
@@ -22,5 +23,4 @@ public class QuestionDto {
     private Long viewCnt;
     private Long atcId;
     private Boolean deleteYn;
-
 }

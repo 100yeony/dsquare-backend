@@ -1,17 +1,16 @@
 package com.ktds.dsquare.board.qna.controller;
 
 
-import com.ktds.dsquare.board.qna.dto.AnswerDto;
+import com.ktds.dsquare.board.qna.dto.AnswerRequest;
 import com.ktds.dsquare.board.qna.service.AnswerService;
 
-import com.ktds.dsquare.board.qna.dto.AnswerRequest;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.service.AnswerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.board.qna.dto.AnswerDto;
+import com.ktds.dsquare.board.qna.dto.AnswerRequest;
 import com.ktds.dsquare.board.qna.service.AnswerService;
 import com.ktds.dsquare.board.qna.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,7 @@ public class AnswerController {
 
     //create - 답변글 작성
     @PostMapping("/board/questions/{qid}/answers")
-    public ResponseEntity<Void> createAnswer(@PathVariable("qid") Long qid, @RequestBody AnswerDto request){
+    public ResponseEntity<Void> createAnswer(@PathVariable("qid") Long qid, @RequestBody AnswerRequest request){
         answerService.createAnswer(qid, request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -46,7 +45,7 @@ public class AnswerController {
     // 답변글 수정
     @PostMapping("/board/questions/{qid}/answers/{aid}")
     public ResponseEntity<Void> updateAnswer(@PathVariable Long qid, @PathVariable Long aid,
-                                             @RequestBody AnswerDto request) {
+                                             @RequestBody AnswerRequest request) {
         answerService.updateAnswer(aid, request);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }

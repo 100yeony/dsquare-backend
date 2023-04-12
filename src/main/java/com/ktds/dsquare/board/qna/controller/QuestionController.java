@@ -1,7 +1,7 @@
 package com.ktds.dsquare.board.qna.controller;
 
 import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.board.qna.dto.QuestionDto;
+import com.ktds.dsquare.board.qna.dto.QuestionRequest;
 import com.ktds.dsquare.board.qna.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +21,7 @@ public class QuestionController {
 
     //create - 질문글 작성
     @PostMapping("/board/questions")
-    public ResponseEntity<Void> createQuestion(@RequestBody QuestionDto request){
+    public ResponseEntity<Void> createQuestion(@RequestBody QuestionRequest request){
         questionService.createQuestion(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -41,7 +41,7 @@ public class QuestionController {
 
     // 질문글 수정
     @PostMapping("/board/questions/{qid}")
-    public ResponseEntity<Void> updateQuestion(@PathVariable("qid") Long qid, @RequestBody QuestionDto request){
+    public ResponseEntity<Void> updateQuestion(@PathVariable("qid") Long qid, @RequestBody QuestionRequest request){
         questionService.updateQuestion(qid, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
