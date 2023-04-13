@@ -3,7 +3,7 @@ package com.ktds.dsquare.board.qna.controller;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.QuestionRequest;
 import com.ktds.dsquare.board.qna.service.QuestionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,13 +12,12 @@ import java.util.Collections;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 //@RequestMapping("/board/questions")
 public class QuestionController {
 
-    @Autowired
-    private QuestionService questionService;
+    private final QuestionService questionService;
 
-    //create - 질문글 작성
     @PostMapping("/board/questions")
     public ResponseEntity<Void> createQuestion(@RequestBody QuestionRequest request){
         questionService.createQuestion(request);
@@ -27,9 +26,10 @@ public class QuestionController {
 
     //read - 질문글 전체 목록 조회
     @GetMapping("/board/questions")
-    public List<Question> getAllQuestions(){
-        return questionService.getAllQuestions();
+    public List<Question> getAllQuestions(@RequestParam Boolean workYn){
+        return questionService.getAllQuestions(workYn);
     }
+
 
     //read - 질문글&답변글 상세 조회
     @GetMapping("/board/questions/{qid}")
@@ -55,9 +55,7 @@ public class QuestionController {
 
     //search - Q&A 검색(카테고리, 제목+내용, 사용자(이름))
     @GetMapping("/board/questions/search")
-    //member controller 참고해서 변경 -> Map<Object>
-    //memberservice specification 참고해서 변경 // service에서 하나의 함수로
-    //notion - jpa동적쿼리 자료 참고
+    @ResponseBody
     public ResponseEntity<List<Question>> search(@RequestParam(required = false) Integer cid, @RequestParam String key, @RequestParam String value) {
         if (cid != null) {
             List<Question> questions = questionService.searchByCid(cid);

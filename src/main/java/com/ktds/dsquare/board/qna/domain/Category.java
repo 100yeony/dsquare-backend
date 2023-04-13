@@ -35,8 +35,8 @@ public class Category {
     @ManyToOne(fetch = FetchType.LAZY)
     private Category upCategory;
 
-    @OneToMany(mappedBy = "upCategory", fetch = FetchType.LAZY)
-    private List<Category> childList;
+/*    @OneToMany(mappedBy = "upCategory", fetch = FetchType.LAZY)
+    private List<Category> childList;*/
 
     public List<String> getcategoryHierarchy() {
         Deque<String> nameQueue = new ArrayDeque<>();

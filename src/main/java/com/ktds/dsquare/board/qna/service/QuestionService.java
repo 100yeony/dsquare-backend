@@ -4,6 +4,7 @@ import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.QuestionRequest;
+import com.ktds.dsquare.board.qna.dto.QuestionResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
@@ -30,6 +31,7 @@ public class QuestionService {
     //create - 질문글 작성
     @Transactional
     public void createQuestion(QuestionRequest dto) {
+        //workYn
         Question question = new Question();
         question.setWriterId(dto.getWriterId());
         question.setTitle(dto.getTitle());
@@ -43,16 +45,27 @@ public class QuestionService {
         question.setLastUpdateDate(now);
 
         Category category = categoryRepository.findById(dto.getCid()).orElseThrow(() -> new RuntimeException("Category does not exist"));
-
         question.setCid(category);
-
         questionRepository.save(question);
     }
 
     //read - 질문글 전체 조회
-    public List<Question> getAllQuestions() {
+    public List<Question> getAllQuestions(Boolean workYn) {
         // deleteYn = false만 필터링 한 후 qid 기준으로 정렬
-        return questionRepository.findByDeleteYnOrderByCreateDateDesc(false);
+//       List<Question> questions = questionRepository.findByDeleteYnOrderByCreateDateDesc(false);
+//       for(Question question: questions){
+//           Long qid = question.getQid();
+//           int answerCnt = answerRepository.countByQid(qid);
+//       }
+//        List questionRepository1 = questionRepository.findByDeleteYnOrderByCreateDateDesc(false);
+
+        Category category = categoryRepository.findByCid(2)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+        if(workYn.equals(true)){
+            return questionRepository.findByDeleteYnAndCidNotOrderByCreateDateDesc(false, category);
+        }else{
+            return questionRepository.findByDeleteYnAndCidOrderByCreateDateDesc(false, category);
+        }
     }
 
     //read - 질문글 상세 조회
@@ -78,7 +91,7 @@ public class QuestionService {
     @Transactional
     public void deleteQuestion(Long qid) {
         Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Delete Question Fail"));
-        List<Answer> answerList = answerRepository.findByQidAndDeleteYn(question, false);
+        List<Answer> answerList = answerRepository.findByQuestionAndDeleteYn(question, false);
         if(answerList.isEmpty()) {
             question.setDeleteYn(true);
             question.setLastUpdateDate(LocalDateTime.now());

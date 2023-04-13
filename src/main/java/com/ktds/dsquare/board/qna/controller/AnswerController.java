@@ -31,7 +31,7 @@ public class AnswerController {
     @GetMapping("/board/questions/{qid}/answers")
     public List<Answer> getAnswersByQid(@PathVariable Long qid) {
         Question question = questionService.getQuestionDetail(qid);
-        return answerService.getAnswersByQid(question);
+        return answerService.getAnswersByQuestion(question);
     }
 
     // 답변글 수정
@@ -48,10 +48,5 @@ public class AnswerController {
         answerService.deleteAnswer(aid);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-
-
-
-
-
 
 }

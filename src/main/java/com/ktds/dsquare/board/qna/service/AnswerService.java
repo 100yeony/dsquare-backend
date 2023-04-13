@@ -20,12 +20,11 @@ public class AnswerService {
     private final QuestionRepository questionRepository;
 
     // 답변글 작성
-    //builder 이용해서 set 함수 사용하지 않기 -> @setter 빼기
     @Transactional
     public void createAnswer(Long qid, AnswerRequest dto) {
         Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Question not found"));
         Answer answer = new Answer();
-        answer.setQid(question);
+        answer.setQuestion(question);
         answer.setId(dto.getId());
         answer.setWriterId(dto.getWriterId());
         answer.setContent(dto.getContent());
@@ -37,8 +36,8 @@ public class AnswerService {
     }
 
     // 답변글 조회
-    public List<Answer> getAnswersByQid(Question qid) {
-        return answerRepository.findByQidAndDeleteYnOrderByCreateDateAsc(qid, false);
+    public List<Answer> getAnswersByQuestion(Question qid) {
+        return answerRepository.findByQuestionAndDeleteYnOrderByCreateDateAsc(qid, false);
     }
 
     // 답변글 수정
