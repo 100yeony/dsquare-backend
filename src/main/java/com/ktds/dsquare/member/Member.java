@@ -51,7 +51,7 @@ public class Member {
     private String role;
 
     @JsonManagedReference //직렬화
-    @OneToMany(mappedBy = "id")
+    @OneToMany(mappedBy = "member")
     private List<Category> cid;
 
     @JsonManagedReference //직렬화
