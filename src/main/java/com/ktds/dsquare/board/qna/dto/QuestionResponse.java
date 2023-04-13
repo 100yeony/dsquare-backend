@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.qna.dto;
 
+import com.ktds.dsquare.board.qna.domain.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,10 +13,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class QuestionResponse {
     private Long qid;
-    private Long writerId;
-    private String writerName;
-    private String writerNickname;
-    private Integer cid;
+    private WriterInfo writerInfo;
+    private Category category;
     private String title;
     private String content;
     private LocalDateTime createDate;

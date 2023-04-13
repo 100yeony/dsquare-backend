@@ -16,7 +16,7 @@ public class CategoryService {
     // 카테고리 목록 조회
     //childList가 null일땐 안보내기 !
     public List<Category> getAllCategories() {
-        return categoryRepository.findByUpId(null);
+        return categoryRepository.findByUpCategory(null);
     }
 
 }

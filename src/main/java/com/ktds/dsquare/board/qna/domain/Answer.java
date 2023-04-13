@@ -16,9 +16,6 @@ public class Answer {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @Column(unique = true, nullable = false)
-//    private Long questionId;
-
     //member꺼로 변경 !
     @Column(nullable = false)
     private Long writerId;
@@ -34,7 +31,6 @@ public class Answer {
     private Long atcId;
     @Column(nullable = false)
     private boolean deleteYn;
-
 
     @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)
