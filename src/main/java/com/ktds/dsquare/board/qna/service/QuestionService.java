@@ -119,13 +119,12 @@ public class QuestionService {
     public void deleteQuestion(Long qid) {
         Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Delete Question Fail"));
         List<Answer> answerList = answerRepository.findByQuestionAndDeleteYn(question, false);
-        if(answerList.isEmpty()) {
-            question.setDeleteYn(true);
-            question.setLastUpdateDate(LocalDateTime.now());
-        } else {
-            // 답변글이 이미 존재할 때 => HTTP Status로 처리해줘야 함(추후 수정 필요)
-            throw new RuntimeException("Delete Question Fail - Reply exists");
-        }
+
+        // 답변글이 이미 존재할 때 => HTTP Status로 처리해줘야 함(추후 수정 필요)
+        if(!answerList.isEmpty()) throw new RuntimeException("Delete Question Fail - Reply exists");
+
+        question.setDeleteYn(true);
+        question.setLastUpdateDate(LocalDateTime.now());
     }
 
 
