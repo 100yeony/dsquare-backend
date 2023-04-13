@@ -49,7 +49,4 @@ public class Question {
         this.viewCnt += 1;
     }
 
-    @Transient
-    private Long answerCnt;
-
 }

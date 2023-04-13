@@ -3,6 +3,7 @@ package com.ktds.dsquare.board.qna.service;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.dto.QuestionRequest;
 import com.ktds.dsquare.board.qna.dto.QuestionResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
@@ -10,13 +11,13 @@ import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
-import com.ktds.dsquare.member.MemberService;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -28,7 +29,6 @@ public class QuestionService {
     private final AnswerRepository answerRepository;
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
-    private final MemberService memberService;
 
 
     //create - 질문글 작성
@@ -53,20 +53,33 @@ public class QuestionService {
     }
 
     //read - 질문글 전체 조회
-    public List<Question> getAllQuestions(Boolean workYn) {
+    public List<BriefQuestionResponse> getAllQuestions(Boolean workYn) {
         // deleteYn = false만 필터링 한 후 qid 기준으로 정렬
-        Category category = categoryRepository.findByCid(2)
+        Category notWorkCategory = categoryRepository.findByCid(2)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
         List<Question> questions;
-        if(workYn) questions = questionRepository.findByDeleteYnAndCidNotOrderByCreateDateDesc(false, category);
-        else questions = questionRepository.findByDeleteYnAndCidOrderByCreateDateDesc(false, category);
+        List<BriefQuestionResponse> briefQuestions = new ArrayList<>();
+        if(workYn) questions = questionRepository.findByDeleteYnAndCidNotOrderByCreateDateDesc(false, notWorkCategory);
+        else questions = questionRepository.findByDeleteYnAndCidOrderByCreateDateDesc(false, notWorkCategory);
 
-        for (Question question : questions) {
-            List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(question, false);
-            question.setAnswerCnt((long) answers.size());
+        for (Question Q : questions) {
+            Long writerId = Q.getWriterId();
+
+            Category category = Q.getCid();
+            Member member = memberRepository.findById(writerId)
+                    .orElseThrow(() -> new RuntimeException("Member not found"));
+            List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(Q, false);
+            Boolean managerAnswerYn = false;
+            for (Answer A : answers) {
+               if (category.getManagerId() == A.getWriterId()) {
+                   managerAnswerYn = true;
+                   break;
+               }
+            }
+            briefQuestions.add(BriefQuestionResponse.toDto(Q, MemberInfo.toDto(member), category, (long)answers.size(), managerAnswerYn));
         }
-        return questions;
+        return briefQuestions;
     }
 
     //read - 질문글 상세 조회

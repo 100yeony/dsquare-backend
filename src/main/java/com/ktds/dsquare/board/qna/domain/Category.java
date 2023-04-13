@@ -42,4 +42,9 @@ public class Category {
 
         return new ArrayList<>(nameQueue);
     }
+
+    public Long getManagerId() {
+        if(member!=null) return member.getId();
+        else return null;
+    }
 }

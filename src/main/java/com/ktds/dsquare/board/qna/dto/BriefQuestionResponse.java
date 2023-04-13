@@ -21,22 +21,26 @@ public class BriefQuestionResponse {
     private String content;
     private LocalDateTime createDate; //정렬 기준
     private Long viewCnt;
-    private Integer answerCnt;
+    private Long answerCnt;
     private Boolean managerAnswerYn;
     private Boolean atcYn;
 
 
-    public static QuestionResponse toDto(Question question, MemberInfo writerInfo){
-        return QuestionResponse.builder()
+    public static BriefQuestionResponse toDto(Question question, MemberInfo writerInfo, Category category, Long answerCnt, Boolean managerAnswerYn){
+        return BriefQuestionResponse.builder()
                 .qid(question.getQid())
                 .writerInfo(writerInfo)
                 .title(question.getTitle())
+                .category(category)
                 .content(question.getContent())
                 .createDate(LocalDateTime.now())
-                .lastUpdateDate(LocalDateTime.now())
                 .viewCnt(question.getViewCnt())
-                .atcId(question.getAtcId())
+                .atcYn(question.getAtcId()!=null)
+                .answerCnt(answerCnt)
+                .managerAnswerYn(managerAnswerYn)
                 .build();
     }
 }
 
+// q1, 2 -> cid 4 -> 담당자 번호 1 -> 답변 쓴 사람 리스트:
+// q3 ~ 5 -> cid 2 -> 담당자 번호 null -> 답변 쓴 사람 리스트:
