@@ -22,4 +22,5 @@ public class QuestionResponse {
     private Long viewCnt;
     private Long atcId;
     private Boolean deleteYn;
+    private Long answerCnt;
 }
