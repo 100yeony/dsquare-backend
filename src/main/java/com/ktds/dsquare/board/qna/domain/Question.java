@@ -44,8 +44,8 @@ public class Question {
     @JoinColumn(name = "id")
     private Member id;
 
-    private void increaseViewCnt() {
-        this.viewCnt = getViewCnt()+1;
+    public void increaseViewCnt() {
+        this.viewCnt += 1;
     }
 
 }

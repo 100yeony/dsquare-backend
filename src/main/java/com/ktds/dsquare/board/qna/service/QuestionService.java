@@ -59,15 +59,8 @@ public class QuestionService {
     public Question getQuestionDetail(Long qid) {
         Question question = questionRepository.findById(qid)
                 .orElseThrow(() -> new RuntimeException("Question not found"));
+        question.increaseViewCnt();
         return question;
-    }
-
-    // 질문글 조회수 증가
-    @Transactional
-    public void increaseViewCnt(Long qid) {
-        Question question = questionRepository.findById(qid)
-                .orElseThrow(() -> new RuntimeException("Question not found"));
-        question.setViewCnt(question.getViewCnt()+1);
     }
 
     // 질문글 수정
