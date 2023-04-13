@@ -32,7 +32,6 @@ public class Answer {
     @Column(nullable = false)
     private boolean deleteYn;
 
-
     @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "qid")
