@@ -4,7 +4,6 @@ import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.QuestionRequest;
-import com.ktds.dsquare.board.qna.dto.QuestionResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
@@ -57,11 +56,16 @@ public class QuestionService {
         // deleteYn = false만 필터링 한 후 qid 기준으로 정렬
         Category category = categoryRepository.findByCid(2)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
-        if(workYn.equals(true)){
-            return questionRepository.findByDeleteYnAndCidNotOrderByCreateDateDesc(false, category);
-        }else{
-            return questionRepository.findByDeleteYnAndCidOrderByCreateDateDesc(false, category);
+
+        List<Question> questions;
+        if(workYn) questions = questionRepository.findByDeleteYnAndCidNotOrderByCreateDateDesc(false, category);
+        else questions = questionRepository.findByDeleteYnAndCidOrderByCreateDateDesc(false, category);
+
+        for (Question question : questions) {
+            List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(question, false);
+            question.setAnswerCnt((long) answers.size());
         }
+        return questions;
     }
 
     //read - 질문글 상세 조회
