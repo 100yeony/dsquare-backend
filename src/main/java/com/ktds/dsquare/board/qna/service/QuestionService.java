@@ -10,6 +10,8 @@ import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
+import com.ktds.dsquare.member.MemberService;
+import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,7 @@ public class QuestionService {
     private final AnswerRepository answerRepository;
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
 
     //create - 질문글 작성
@@ -52,13 +55,6 @@ public class QuestionService {
     //read - 질문글 전체 조회
     public List<Question> getAllQuestions(Boolean workYn) {
         // deleteYn = false만 필터링 한 후 qid 기준으로 정렬
-//       List<Question> questions = questionRepository.findByDeleteYnOrderByCreateDateDesc(false);
-//       for(Question question: questions){
-//           Long qid = question.getQid();
-//           int answerCnt = answerRepository.countByQid(qid);
-//       }
-//        List questionRepository1 = questionRepository.findByDeleteYnOrderByCreateDateDesc(false);
-
         Category category = categoryRepository.findByCid(2)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
         if(workYn.equals(true)){
@@ -69,11 +65,23 @@ public class QuestionService {
     }
 
     //read - 질문글 상세 조회
-    public Question getQuestionDetail(Long qid) {
+    public QuestionResponse getQuestionDetail(Long qid) {
         Question question = questionRepository.findById(qid)
                 .orElseThrow(() -> new RuntimeException("Question not found"));
         question.increaseViewCnt();
-        return question;
+
+        Long writerId = question.getWriterId();
+
+        Member member = memberRepository.findById(writerId)
+                .orElseThrow(() -> new RuntimeException("Member not found"));
+        MemberInfo writer = MemberInfo.toDto(member);
+
+        return QuestionResponse.toDto(question, writer);
+    }
+
+    public Question getQuestionById(Long qid){
+        return questionRepository.findById(qid)
+                .orElseThrow(() -> new RuntimeException("Question not found"));
     }
 
     // 질문글 수정

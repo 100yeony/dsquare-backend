@@ -30,8 +30,8 @@ public class AnswerController {
     // qid와 연결된 답변 모두 조회
     @GetMapping("/board/questions/{qid}/answers")
     public List<Answer> getAnswersByQid(@PathVariable Long qid) {
-        Question question = questionService.getQuestionDetail(qid);
-        return answerService.getAnswersByQuestion(question);
+        Question question = questionService.getQuestionById(qid);
+        return answerService.getAnswersByQuestion(qid);
     }
 
     // 답변글 수정

@@ -36,7 +36,7 @@ public class AnswerService {
     }
 
     // 답변글 조회
-    public List<Answer> getAnswersByQuestion(Question qid) {
+    public List<Answer> getAnswersByQuestion(Long qid) {
         return answerRepository.findByQuestionAndDeleteYnOrderByCreateDateAsc(qid, false);
     }
 

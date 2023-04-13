@@ -2,6 +2,7 @@ package com.ktds.dsquare.board.qna.controller;
 
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.QuestionRequest;
+import com.ktds.dsquare.board.qna.dto.QuestionResponse;
 import com.ktds.dsquare.board.qna.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,7 @@ public class QuestionController {
 
     //read - 질문글&답변글 상세 조회
     @GetMapping("/board/questions/{qid}")
-    public Question getQnADetail(@PathVariable("qid") Long qid) {
+    public QuestionResponse getQnADetail(@PathVariable("qid") Long qid) {
         return questionService.getQuestionDetail(qid);
     }
 
