@@ -31,12 +31,12 @@ public class Category {
     @JoinColumn(name = "member")
     private Member member;
 
+    @OneToMany(mappedBy = "upCategory", fetch = FetchType.LAZY)
+    private List<Category> childList;
+
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     private Category upCategory;
-
-/*    @OneToMany(mappedBy = "upCategory", fetch = FetchType.LAZY)
-    private List<Category> childList;*/
 
     public List<String> getcategoryHierarchy() {
         Deque<String> nameQueue = new ArrayDeque<>();
