@@ -8,10 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Getter
@@ -32,7 +29,7 @@ public class Category {
     private Member member;
 
     @OneToMany(mappedBy = "upCategory", fetch = FetchType.LAZY)
-    private List<Category> childList;
+    private Set<Category> childList;
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)

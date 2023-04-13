@@ -12,24 +12,24 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuestionResponse {
+public class BriefQuestionResponse {
 
     private Long qid;
     private MemberInfo writerInfo;
     private Category category;
     private String title;
     private String content;
-    private LocalDateTime createDate;
-    private LocalDateTime lastUpdateDate;
+    private LocalDateTime createDate; //정렬 기준
     private Long viewCnt;
-    private Long atcId;
+    private Integer answerCnt;
+    private Boolean managerAnswerYn;
+    private Boolean atcYn;
 
 
-    public static QuestionResponse toDto(Question question, MemberInfo writerInfo, Category category){
+    public static QuestionResponse toDto(Question question, MemberInfo writerInfo){
         return QuestionResponse.builder()
                 .qid(question.getQid())
                 .writerInfo(writerInfo)
-                .category(category)
                 .title(question.getTitle())
                 .content(question.getContent())
                 .createDate(LocalDateTime.now())
@@ -38,17 +38,5 @@ public class QuestionResponse {
                 .atcId(question.getAtcId())
                 .build();
     }
-
-/*    public Question getQuestion(){
-        return this.question;
-    }
-    // Question 엔티티와 일대일로 매핑되는 필드
-    private List<Answer> answers;
-    public List<Answer> getAnswers() {
-        return this.answers;
-    }
-    public void setAnswers(List<Answer> answers) {
-        this.answers = answers;
-    }*/
-
 }
+
