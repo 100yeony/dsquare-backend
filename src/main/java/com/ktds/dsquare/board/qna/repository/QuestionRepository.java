@@ -18,7 +18,5 @@ public interface QuestionRepository extends JpaRepository<Question,Long> {
     List<Question> findByDeleteYnAndCidOrderByCreateDateDesc(Boolean deleteYn, Category cid);
     List<Question> findByDeleteYnAndCidNotOrderByCreateDateDesc(Boolean deleteYn, Category cid);
 
-    Question findById(Question id);
-    Question findQuestionById(Long id);
 
 }
