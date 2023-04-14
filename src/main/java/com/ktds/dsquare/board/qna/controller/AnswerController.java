@@ -5,7 +5,6 @@ import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.AnswerRequest;
 import com.ktds.dsquare.board.qna.dto.AnswerResponse;
 import com.ktds.dsquare.board.qna.service.AnswerService;
-import com.ktds.dsquare.board.qna.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,6 @@ import java.util.List;
 public class AnswerController {
 
     private final AnswerService answerService;
-    private final QuestionService questionService;
 
     //create - 답변글 작성
     @PostMapping("/board/questions/{qid}/answers")
