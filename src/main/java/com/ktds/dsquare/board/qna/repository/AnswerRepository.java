@@ -9,9 +9,7 @@ import java.util.List;
 
 @Repository
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
-//    List<Answer> findAllByQid(Long qid);
-
-    List<Answer> findByQidAndDeleteYn(Question qid, Boolean deleteYn);
-    List<Answer> findByQidAndDeleteYnOrderByCreateDateAsc(Question qid, Boolean deleteYn);
+    List<Answer> findByQuestionAndDeleteYn(Question qid, Boolean deleteYn);
+    List<Answer> findByQuestionAndDeleteYnOrderByCreateDateAsc(Question qid, Boolean deleteYn);
 
 }

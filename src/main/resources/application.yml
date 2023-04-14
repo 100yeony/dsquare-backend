@@ -15,12 +15,18 @@ spring:
   ### update || create ###
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
 
     properties:
       hibernate:
         format_sql: true
     show-sql: true
+
+  mvc:
+    # Config for Swagger
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
   main:
     allow-bean-definition-overriding: true
 

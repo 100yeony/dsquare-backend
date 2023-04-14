@@ -13,31 +13,32 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuestionResponse {
+public class BriefQuestionResponse {
 
     private Long qid;
     private MemberInfo writerInfo;
     private CategoryResponse category;
     private String title;
     private String content;
-    private LocalDateTime createDate;
-    private LocalDateTime lastUpdateDate;
+    private LocalDateTime createDate; //정렬 기준
     private Long viewCnt;
-    private Long atcId;
+    private Long answerCnt;
+    private Boolean managerAnswerYn;
+    private Boolean atcYn;
 
 
-    public static QuestionResponse toDto(Question question, MemberInfo writerInfo, CategoryResponse category){
-        return QuestionResponse.builder()
+    public static BriefQuestionResponse toDto(Question question, MemberInfo writerInfo, CategoryResponse category, Long answerCnt, Boolean managerAnswerYn){
+        return BriefQuestionResponse.builder()
                 .qid(question.getQid())
                 .writerInfo(writerInfo)
-                .category(category)
                 .title(question.getTitle())
+                .category(category)
                 .content(question.getContent())
                 .createDate(LocalDateTime.now())
-                .lastUpdateDate(LocalDateTime.now())
                 .viewCnt(question.getViewCnt())
-                .atcId(question.getAtcId())
+                .atcYn(question.getAtcId()!=null)
+                .answerCnt(answerCnt)
+                .managerAnswerYn(managerAnswerYn)
                 .build();
     }
-
 }

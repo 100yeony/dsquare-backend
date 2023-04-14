@@ -1,25 +1,39 @@
 package com.ktds.dsquare.board.qna.dto;
 
+import com.ktds.dsquare.board.qna.domain.Answer;
+import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 @Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Component
 public class AnswerResponse {
-    private Long id;
-    //member 이름, 닉네임 가져오기
-    private Long writerId;
-    private String writerName;
-    private String writerNickname;
+    private Long aid;
+    private MemberInfo writerInfo;
     private LocalDateTime createDate;
-    private LocalDateTime lastUpdateDate;
     private String content;
     private Long atcId;
-    private Boolean deleteYn;
     private Long qid;
+
+    public static AnswerResponse toDto(Answer answer, MemberInfo writerInfo){
+        Question q = answer.getQuestion();
+        Long qid = q.getQid();
+        return AnswerResponse.builder()
+                .aid(answer.getId())
+                .writerInfo(writerInfo)
+                .content(answer.getContent())
+                .createDate(LocalDateTime.now())
+                .atcId(answer.getAtcId())
+                .qid(qid)
+                .build();
+    }
+
 }

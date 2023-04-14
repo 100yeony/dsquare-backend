@@ -1,6 +1,7 @@
 package com.ktds.dsquare.member;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.member.dto.request.MemberUpdateRequest;
@@ -28,10 +29,8 @@ public class Member {
     private String email;
     @Column(nullable = false)
     private String pw;
-
     @Column(unique = true, nullable = false)
     private String nickname;
-
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)
@@ -39,7 +38,6 @@ public class Member {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Team team;
-
 
     private String ktMail;
 
@@ -51,12 +49,16 @@ public class Member {
     private String role;
 
     @JsonManagedReference //직렬화
-    @OneToMany(mappedBy = "id")
+    @OneToMany(mappedBy = "manager")
     private List<Category> cid;
 
     @JsonManagedReference //직렬화
     @OneToMany(mappedBy = "id")
     private List<Question> questionsList;
+
+    @JsonManagedReference //직렬화
+    @OneToMany(mappedBy = "writer")
+    private List<Answer> answerList;
 
     public List<String> getRole() {
         return List.of(role);
@@ -75,10 +77,10 @@ public class Member {
         return Member.builder()
                 .email(dto.getEmail())
                 .pw(dto.getPw())
-                .name(dto.getName())
                 .nickname(dto.getNickname())
-                .ktMail(dto.getKtMail())
+                .name(dto.getName())
                 .contact(dto.getContact())
+                .ktMail(dto.getKtMail())
                 .activityScore(0L)
                 .lastLoginDate(LocalDateTime.now())
                 .lastPwChangeDate(LocalDateTime.now())
