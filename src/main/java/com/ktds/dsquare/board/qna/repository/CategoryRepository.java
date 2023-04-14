@@ -12,4 +12,5 @@ public interface CategoryRepository  extends JpaRepository<Category,Integer> {
     Optional<Category> findByCid(Integer cid);
     List<Category> findByUpCategory(Category upCategory);
 
+    Optional<Category> findByCid(Category cid);
 }

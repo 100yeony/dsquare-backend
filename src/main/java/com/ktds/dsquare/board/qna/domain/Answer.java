@@ -32,7 +32,7 @@ public class Answer {
 
     @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "question")
+    @JoinColumn(name = "qid")
     private Question question;
 
 }

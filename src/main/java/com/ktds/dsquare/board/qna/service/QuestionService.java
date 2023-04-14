@@ -48,7 +48,7 @@ public class QuestionService {
         question.setLastUpdateDate(now);
 
         Category category = categoryRepository.findById(dto.getCid()).orElseThrow(() -> new RuntimeException("Category does not exist"));
-        question.setCategory(category);
+        question.setCid(category);
         questionRepository.save(question);
     }
 
@@ -60,13 +60,13 @@ public class QuestionService {
 
         List<Question> questions;
         List<BriefQuestionResponse> briefQuestions = new ArrayList<>();
-        if(workYn) questions = questionRepository.findByDeleteYnAndCategoryNotOrderByCreateDateDesc(false, notWorkCategory);
-        else questions = questionRepository.findByDeleteYnAndCategoryOrderByCreateDateDesc(false, notWorkCategory);
+        if(workYn) questions = questionRepository.findByDeleteYnAndCidNotOrderByCreateDateDesc(false, notWorkCategory);
+        else questions = questionRepository.findByDeleteYnAndCidOrderByCreateDateDesc(false, notWorkCategory);
 
         for (Question Q : questions) {
             Long writerId = Q.getWriterId();
 
-            Category category = Q.getCategory();
+            Category category = Q.getCid();
             Member member = memberRepository.findById(writerId)
                     .orElseThrow(() -> new RuntimeException("Member not found"));
             List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(Q, false);
@@ -93,7 +93,8 @@ public class QuestionService {
         Member member = memberRepository.findById(writerId)
                 .orElseThrow(() -> new RuntimeException("Member not found"));
         MemberInfo writer = MemberInfo.toDto(member);
-        return QuestionResponse.toDto(question, writer, question.getCategory());
+
+        return QuestionResponse.toDto(question, writer, question.getCid());
     }
 
     public Question getQuestionById(Long qid){
@@ -137,7 +138,7 @@ public class QuestionService {
 
         Category category = categoryRepository.findByCid(cid)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
-        return questionRepository.findByCategory(category);
+        return questionRepository.findByCid(category);
 
     }
     public List<Question> searchByName(String value){
