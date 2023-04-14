@@ -1,7 +1,6 @@
 package com.ktds.dsquare.board.qna.dto;
 
 import com.ktds.dsquare.board.qna.domain.Category;
-import com.ktds.dsquare.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +17,7 @@ import java.util.List;
 public class CategoryResponse {
     private Integer cid;
     private String name;
-    private Member member;
+    private Long managerId;
 //    private Category upCategory;
     private List<String> categoryHierarchy;
     public static CategoryResponse toDto(Category category){
@@ -27,7 +26,7 @@ public class CategoryResponse {
         return CategoryResponse.builder()
                 .cid(category.getCid())
                 .name(category.getName())
-                .member(category.getMember())
+                .managerId(category.getManagerId())
                 .categoryHierarchy(category.getcategoryHierarchy())
                 .build();
     }

@@ -4,6 +4,7 @@ import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
+import com.ktds.dsquare.board.qna.dto.CategoryResponse;
 import com.ktds.dsquare.board.qna.dto.QuestionRequest;
 import com.ktds.dsquare.board.qna.dto.QuestionResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
@@ -29,6 +30,7 @@ public class QuestionService {
     private final AnswerRepository answerRepository;
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
+    private final CategoryResponse categoryResponse;
 
 
     //create - 질문글 작성
@@ -76,7 +78,7 @@ public class QuestionService {
                    break;
                }
             }
-            briefQuestions.add(BriefQuestionResponse.toDto(Q, MemberInfo.toDto(member), category, (long)answers.size(), managerAnswerYn));
+            briefQuestions.add(BriefQuestionResponse.toDto(Q, MemberInfo.toDto(member), categoryResponse.toDto(category), (long)answers.size(), managerAnswerYn));
         }
         return briefQuestions;
     }
@@ -91,7 +93,7 @@ public class QuestionService {
         Member member = memberRepository.findById(writerId)
                 .orElseThrow(() -> new RuntimeException("Member not found"));
         MemberInfo writer = MemberInfo.toDto(member);
-        return QuestionResponse.toDto(question, writer, question.getCid());
+        return QuestionResponse.toDto(question, writer, categoryResponse.toDto(question.getCid()));
     }
 
     public Question getQuestionById(Long qid){

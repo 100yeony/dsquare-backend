@@ -1,6 +1,5 @@
 package com.ktds.dsquare.board.qna.dto;
 
-import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.AllArgsConstructor;
@@ -18,7 +17,7 @@ public class BriefQuestionResponse {
 
     private Long qid;
     private MemberInfo writerInfo;
-    private Category category;
+    private CategoryResponse category;
     private String title;
     private String content;
     private LocalDateTime createDate; //정렬 기준
@@ -28,7 +27,7 @@ public class BriefQuestionResponse {
     private Boolean atcYn;
 
 
-    public static BriefQuestionResponse toDto(Question question, MemberInfo writerInfo, Category category, Long answerCnt, Boolean managerAnswerYn){
+    public static BriefQuestionResponse toDto(Question question, MemberInfo writerInfo, CategoryResponse category, Long answerCnt, Boolean managerAnswerYn){
         return BriefQuestionResponse.builder()
                 .qid(question.getQid())
                 .writerInfo(writerInfo)
