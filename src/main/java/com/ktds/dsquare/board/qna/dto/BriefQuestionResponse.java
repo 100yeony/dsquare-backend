@@ -25,7 +25,6 @@ public class BriefQuestionResponse {
     private Boolean managerAnswerYn;
     private Boolean atcYn;
 
-
     public static BriefQuestionResponse toDto(Question question, MemberInfo writerInfo, Category category, Long answerCnt, Boolean managerAnswerYn){
         return BriefQuestionResponse.builder()
                 .qid(question.getQid())
@@ -41,6 +40,3 @@ public class BriefQuestionResponse {
                 .build();
     }
 }
-
-// q1, 2 -> cid 4 -> 담당자 번호 1 -> 답변 쓴 사람 리스트:
-// q3 ~ 5 -> cid 2 -> 담당자 번호 null -> 답변 쓴 사람 리스트:

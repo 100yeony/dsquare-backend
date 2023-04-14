@@ -20,8 +20,8 @@ public class Question {
     private Long writerId;
 
     @ManyToOne
-    @JoinColumn(name = "cid")
-    private Category cid;
+    @JoinColumn(name = "category")
+    private Category category;
 
     @Column(nullable = false)
     private String title;
