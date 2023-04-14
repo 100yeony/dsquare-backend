@@ -23,7 +23,6 @@ public class CategoryService {
 
         List<Category> categoryList = categoryRepository.findAll();
         for(Category c:categoryList){
-            System.out.println("======>"+c);
             categoryResponses.add(categoryResponse.toDto(c));
         }
         return categoryResponses;

@@ -73,7 +73,7 @@ public class QuestionService {
             List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(Q, false);
             Boolean managerAnswerYn = false;
             for (Answer A : answers) {
-               if (category.getManagerId() == A.getWriterId()) {
+               if (category.getManagerId() == A.getWriter().getId()) {
                    managerAnswerYn = true;
                    break;
                }

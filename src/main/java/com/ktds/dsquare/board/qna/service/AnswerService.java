@@ -30,10 +30,11 @@ public class AnswerService {
     @Transactional
     public void createAnswer(Long qid, AnswerRequest dto) {
         Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Question not found"));
+        Member writer = memberRepository.findById(dto.getWriterId()).orElseThrow(() -> new RuntimeException("Question not found"));
         Answer answer = new Answer();
         answer.setQuestion(question);
         answer.setId(dto.getId());
-        answer.setWriterId(dto.getWriterId());
+        answer.setWriter(writer);
         answer.setContent(dto.getContent());
         answer.setCreateDate(LocalDateTime.now());
         answer.setAtcId(dto.getAtcId());
@@ -46,10 +47,10 @@ public class AnswerService {
         List<AnswerResponse> answerResponses = new ArrayList<>();
         List<Answer> answers = answerRepository.findByQuestionAndDeleteYnOrderByCreateDateAsc(qid, false);
         for(Answer answer:answers){
-            Member member = memberRepository.findById(answer.getWriterId())
-                    .orElseThrow(() -> new RuntimeException("Member not found"));
-            MemberInfo writer = MemberInfo.toDto(member);
-            answerResponses.add(AnswerResponse.toDto(answer, writer));
+//            Member member = memberRepository.findById(answer.getWriterId())
+//                    .orElseThrow(() -> new RuntimeException("Member not found"));
+//            MemberInfo writer = MemberInfo.toDto(member);
+            answerResponses.add(AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter())));
         }
         return answerResponses;
     }

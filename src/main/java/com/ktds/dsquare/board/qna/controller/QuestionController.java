@@ -54,7 +54,6 @@ public class QuestionController {
 
     //search - Q&A 검색(카테고리, 제목+내용, 사용자(이름))
     @GetMapping("/board/questions/search")
-    @ResponseBody
     public ResponseEntity<List<Question>> search(@RequestParam(required = false) Integer cid, @RequestParam String key, @RequestParam String value) {
         if (cid != null) {
             List<Question> questions = questionService.searchByCid(cid);

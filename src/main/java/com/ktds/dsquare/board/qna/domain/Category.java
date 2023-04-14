@@ -26,7 +26,7 @@ public class Category {
     @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member")
-    private Member member;
+    private Member manager;
 
     @OneToMany(mappedBy = "upCategory", fetch = FetchType.LAZY)
     private Set<Category> childList;
@@ -43,7 +43,7 @@ public class Category {
     }
 
     public Long getManagerId() {
-        if(member!=null) return member.getId();
+        if(manager!=null) return manager.getId();
         else return null;
     }
 }

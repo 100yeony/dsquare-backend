@@ -2,6 +2,7 @@ package com.ktds.dsquare.board.qna.domain;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.ktds.dsquare.member.Member;
 import lombok.*;
 
 import javax.persistence.*;
@@ -16,8 +17,9 @@ public class Answer {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long writerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "writer")
+    private Member writer;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
