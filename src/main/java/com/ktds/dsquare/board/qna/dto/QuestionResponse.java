@@ -25,7 +25,6 @@ public class QuestionResponse {
     private LocalDateTime lastUpdateDate;
     private Long viewCnt;
     private Long atcId;
-    private Question question;
 
 
     public static QuestionResponse toDto(Question question, MemberInfo writerInfo, Category category){

@@ -21,22 +21,20 @@ public class AnswerResponse {
     private LocalDateTime createDate;
     private String content;
     private Long atcId;
-    private Question question;
-//    private Long qid;
-
+    private Long qid;
 
 
     public static AnswerResponse toDto(Answer answer, MemberInfo writerInfo){
+        Question q = answer.getQuestion();
+        Long qid = q.getQid();
         return AnswerResponse.builder()
                 .aid(answer.getId())
                 .writerInfo(writerInfo)
                 .content(answer.getContent())
                 .createDate(LocalDateTime.now())
                 .atcId(answer.getAtcId())
-//                .question(question)
-                .question(answer.getQuestion())
+                .qid(qid)
                 .build();
-
     }
 
 
