@@ -21,9 +21,7 @@ public class CategoryResponse {
 //    private Category upCategory;
     private List<String> categoryHierarchy;
     public static CategoryResponse toDto(Category category){
-
-
-        return CategoryResponse.builder()
+       return CategoryResponse.builder()
                 .cid(category.getCid())
                 .name(category.getName())
                 .managerId(category.getManagerId())

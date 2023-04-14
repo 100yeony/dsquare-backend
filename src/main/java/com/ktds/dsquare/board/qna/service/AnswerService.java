@@ -47,14 +47,10 @@ public class AnswerService {
         List<AnswerResponse> answerResponses = new ArrayList<>();
         List<Answer> answers = answerRepository.findByQuestionAndDeleteYnOrderByCreateDateAsc(qid, false);
         for(Answer answer:answers){
-//            Member member = memberRepository.findById(answer.getWriterId())
-//                    .orElseThrow(() -> new RuntimeException("Member not found"));
-//            MemberInfo writer = MemberInfo.toDto(member);
             answerResponses.add(AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter())));
         }
         return answerResponses;
     }
-
 
     // 답변글 수정
     @Transactional

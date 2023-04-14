@@ -137,8 +137,8 @@ public class QuestionService {
         Category category = categoryRepository.findByCid(cid)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
         return questionRepository.findByCid(category);
-
     }
+
     public List<Question> searchByName(String value){
         Member member = memberRepository.findByName(value);
         Long mid = member.getId();
