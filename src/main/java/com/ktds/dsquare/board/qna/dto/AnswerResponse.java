@@ -23,7 +23,6 @@ public class AnswerResponse {
     private Long atcId;
     private Long qid;
 
-
     public static AnswerResponse toDto(Answer answer, MemberInfo writerInfo){
         Question q = answer.getQuestion();
         Long qid = q.getQid();
@@ -36,7 +35,5 @@ public class AnswerResponse {
                 .qid(qid)
                 .build();
     }
-
-
 
 }

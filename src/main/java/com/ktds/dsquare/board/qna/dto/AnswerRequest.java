@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 public class AnswerRequest {
 
     private Long id;
-    //member 타입으로 변경해서 이름, 닉네임 가져오기
     private Long writerId;
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;

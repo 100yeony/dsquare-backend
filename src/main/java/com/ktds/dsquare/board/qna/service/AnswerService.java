@@ -38,7 +38,6 @@ public class AnswerService {
         answer.setCreateDate(LocalDateTime.now());
         answer.setAtcId(dto.getAtcId());
         answer.setDeleteYn(false);
-
         answerRepository.save(answer);
     }
 
@@ -50,7 +49,6 @@ public class AnswerService {
             Member member = memberRepository.findById(answer.getWriterId())
                     .orElseThrow(() -> new RuntimeException("Member not found"));
             MemberInfo writer = MemberInfo.toDto(member);
-
             answerResponses.add(AnswerResponse.toDto(answer, writer));
         }
         return answerResponses;
@@ -61,7 +59,6 @@ public class AnswerService {
     @Transactional
     public void updateAnswer(Long aid, AnswerRequest request) {
         Answer answer = answerRepository.findById(aid).orElseThrow(() -> new RuntimeException("Answer does not exist"));
-
         answer.setContent(request.getContent());
         answer.setLastUpdateDate(LocalDateTime.now());
         answer.setAtcId(request.getAtcId());

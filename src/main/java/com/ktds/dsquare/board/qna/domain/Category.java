@@ -39,7 +39,6 @@ public class Category {
         Deque<String> nameQueue = new ArrayDeque<>();
         for (Category category = this; category != null; category = category.getUpCategory())
             nameQueue.offerFirst(category.getName());
-
         return new ArrayList<>(nameQueue);
     }
 

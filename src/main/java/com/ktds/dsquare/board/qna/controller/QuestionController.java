@@ -65,8 +65,6 @@ public class QuestionController {
             return ResponseEntity.ok(questions);
 
         } else if (key.contentEquals("member")) {
-            //궁금해요 게시판은 사용자 이름으로 검색(member 테이블에서 이름 조회하여 pk 찾기 -> question 테이블에서 writerID로 질문글 찾기)
-            //소통해요 게시판은 닉네임으로 검색
             List<Question> questions = questionService.searchByName(value);
             return ResponseEntity.ok(questions);
         }

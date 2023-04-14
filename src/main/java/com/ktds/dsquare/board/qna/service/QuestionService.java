@@ -65,7 +65,6 @@ public class QuestionService {
 
         for (Question Q : questions) {
             Long writerId = Q.getWriterId();
-
             Category category = Q.getCid();
             Member member = memberRepository.findById(writerId)
                     .orElseThrow(() -> new RuntimeException("Member not found"));
@@ -89,11 +88,9 @@ public class QuestionService {
         question.increaseViewCnt();
 
         Long writerId = question.getWriterId();
-
         Member member = memberRepository.findById(writerId)
                 .orElseThrow(() -> new RuntimeException("Member not found"));
         MemberInfo writer = MemberInfo.toDto(member);
-
         return QuestionResponse.toDto(question, writer, question.getCid());
     }
 
@@ -135,15 +132,12 @@ public class QuestionService {
     }
 
     public List<Question> searchByCid(Integer cid){
-
         Category category = categoryRepository.findByCid(cid)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
         return questionRepository.findByCid(category);
 
     }
     public List<Question> searchByName(String value){
-        //검색 기능에서 input으로 name을 받으면 question 테이블엔 name이 없으니까 id로 member 테이블에서 이름을 찾아야 함.
-        //member 테이블에서 이름 조회하여 pk 찾기 -> question 테이블에서 writerID로 질문글 찾기
         Member member = memberRepository.findByName(value);
         Long mid = member.getId();
         return questionRepository.findByWriterId(mid);
