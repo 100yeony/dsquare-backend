@@ -2,10 +2,8 @@ package com.ktds.dsquare.board.qna.controller;
 
 
 import com.ktds.dsquare.board.qna.domain.Answer;
-import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.AnswerRequest;
 import com.ktds.dsquare.board.qna.service.AnswerService;
-import com.ktds.dsquare.board.qna.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +16,6 @@ import java.util.List;
 public class AnswerController {
 
     private final AnswerService answerService;
-    private final QuestionService questionService;
 
     //create - 답변글 작성
     @PostMapping("/board/questions/{qid}/answers")
@@ -30,7 +27,6 @@ public class AnswerController {
     // qid와 연결된 답변 모두 조회
     @GetMapping("/board/questions/{qid}/answers")
     public List<Answer> getAnswersByQid(@PathVariable Long qid) {
-        Question question = questionService.getQuestionById(qid);
         return answerService.getAnswersByQuestion(qid);
     }
 

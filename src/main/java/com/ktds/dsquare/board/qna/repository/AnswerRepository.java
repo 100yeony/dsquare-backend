@@ -10,7 +10,6 @@ import java.util.List;
 @Repository
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
     List<Answer> findByQuestionAndDeleteYn(Question qid, Boolean deleteYn);
-    List<Answer> findByQuestionAndDeleteYnOrderByCreateDateAsc(Long qid, Boolean deleteYn);
+    List<Answer> findByQuestionAndDeleteYnOrderByCreateDateAsc(Question question, Boolean deleteYn);
 
-//    Integer countByQid(Long qid);
 }

@@ -37,7 +37,8 @@ public class AnswerService {
 
     // 답변글 조회
     public List<Answer> getAnswersByQuestion(Long qid) {
-        return answerRepository.findByQuestionAndDeleteYnOrderByCreateDateAsc(qid, false);
+        Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Question not found"));
+        return answerRepository.findByQuestionAndDeleteYnOrderByCreateDateAsc(question, false);
     }
 
     // 답변글 수정
