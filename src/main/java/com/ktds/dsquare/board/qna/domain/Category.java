@@ -28,7 +28,7 @@ public class Category {
     @JoinColumn(name = "member")
     private Member member;
 
-    @OneToMany(mappedBy = "upCategory", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "upCategory")
     private Set<Category> childList;
 
     @JsonBackReference
