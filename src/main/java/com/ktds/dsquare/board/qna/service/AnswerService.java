@@ -3,13 +3,18 @@ package com.ktds.dsquare.board.qna.service;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.AnswerRequest;
+import com.ktds.dsquare.board.qna.dto.AnswerResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
+import com.ktds.dsquare.member.Member;
+import com.ktds.dsquare.member.MemberRepository;
+import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,6 +23,8 @@ public class AnswerService {
 
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
+    private final AnswerResponse answerResponse;
+    private final MemberRepository memberRepository;
 
     // 답변글 작성
     @Transactional
@@ -36,9 +43,19 @@ public class AnswerService {
     }
 
     // 답변글 조회
-    public List<Answer> getAnswersByQuestion(Long qid) {
-        return answerRepository.findByQuestionAndDeleteYnOrderByCreateDateAsc(qid, false);
+    public List<AnswerResponse> getAnswersByQuestion(Question qid) {
+        List<AnswerResponse> answerResponses = new ArrayList<>();
+        List<Answer> answers = answerRepository.findByQuestionAndDeleteYnOrderByCreateDateAsc(qid, false);
+        for(Answer answer:answers){
+            Member member = memberRepository.findById(answer.getWriterId())
+                    .orElseThrow(() -> new RuntimeException("Member not found"));
+            MemberInfo writer = MemberInfo.toDto(member);
+
+            answerResponses.add(AnswerResponse.toDto(answer, writer));
+        }
+        return answerResponses;
     }
+
 
     // 답변글 수정
     @Transactional

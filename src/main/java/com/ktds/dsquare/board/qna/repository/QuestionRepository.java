@@ -2,7 +2,6 @@ package com.ktds.dsquare.board.qna.repository;
 
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.board.qna.dto.QuestionResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,6 +18,7 @@ public interface QuestionRepository extends JpaRepository<Question,Long> {
     List<Question> findByDeleteYnAndCidOrderByCreateDateDesc(Boolean deleteYn, Category cid);
     List<Question> findByDeleteYnAndCidNotOrderByCreateDateDesc(Boolean deleteYn, Category cid);
 
-    QuestionResponse findById(Question id);
+    Question findById(Question id);
+    Question findQuestionById(Long id);
 
 }

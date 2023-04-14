@@ -94,7 +94,6 @@ public class QuestionService {
                 .orElseThrow(() -> new RuntimeException("Member not found"));
         MemberInfo writer = MemberInfo.toDto(member);
 
-
         return QuestionResponse.toDto(question, writer, question.getCid());
     }
 
@@ -106,7 +105,8 @@ public class QuestionService {
     // 질문글 수정
     @Transactional
     public void updateQuestion(Long qid, QuestionRequest request) {
-        Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Update Question Fail"));
+        Question question = questionRepository.findById(qid)
+                .orElseThrow(() -> new RuntimeException("Update Question Fail"));
 
         question.setTitle(request.getTitle());
         question.setContent(request.getContent());
@@ -117,7 +117,8 @@ public class QuestionService {
     // 질문글 삭제
     @Transactional
     public void deleteQuestion(Long qid) {
-        Question question = questionRepository.findById(qid).orElseThrow(() -> new RuntimeException("Delete Question Fail"));
+        Question question = questionRepository.findById(qid)
+                .orElseThrow(() -> new RuntimeException("Delete Question Fail"));
         List<Answer> answerList = answerRepository.findByQuestionAndDeleteYn(question, false);
 
         // 답변글이 이미 존재할 때 => HTTP Status로 처리해줘야 함(추후 수정 필요)
