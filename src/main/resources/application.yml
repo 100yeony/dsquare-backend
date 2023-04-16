@@ -15,7 +15,7 @@ spring:
   ### update || create ###
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
     properties:
       hibernate:
