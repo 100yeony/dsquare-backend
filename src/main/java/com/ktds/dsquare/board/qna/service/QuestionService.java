@@ -3,7 +3,10 @@ package com.ktds.dsquare.board.qna.service;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.board.qna.dto.*;
+import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
+import com.ktds.dsquare.board.qna.dto.CategoryResponse;
+import com.ktds.dsquare.board.qna.dto.QuestionRequest;
+import com.ktds.dsquare.board.qna.dto.QuestionResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
@@ -11,6 +14,7 @@ import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -131,31 +135,38 @@ public class QuestionService {
 
 
     /* search - Q&A 검색(카테고리, 사용자, 제목+내용)
-     * 전제조건 : workYn은 무조건 들어옴
+     * 전제조건 : workYn은 필수, deleteYn=false
      * 1. category만 검색하는 경우 -> key,value x
      * 2. category없이 제목+내용 or 작성자로 검색하는 경우 -> cid X
      * 3. 둘 다 검색하는 경우 -> cid, key, value
      * */
     public List<BriefQuestionResponse> search(Boolean workYn, Integer cid, String key, String value){
-        Specification<Question> filter = ((root, query, criteriaBuilder) -> null);
+        //deleteYn = false인 것만 조회
+        Specification<Question> filter = Specification.where(QuestionSpecification.equalNotDeleted(false));
+        //업무 구분
         if(workYn){
+            //업무 - cid=2를 제외한 나머지
             filter = filter.and(QuestionSpecification.notEqualNotWork(2));
         } else{
+            //비업무 - cid=2
             filter = filter.and(QuestionSpecification.equalNotWork(2));
         }
+        //카테고리 검색
         if(cid != null){
             filter = filter.and(QuestionSpecification.equalCid(cid));
         }
-        if(key.equals("member") && value != null){
+        //사용자 이름 검색
+        if(key!=null && key.equals("member") && value != null){
             Member member = memberRepository.findByName(value);
             Long mid = member.getId();
             filter = filter.and(QuestionSpecification.equalWriterId(mid));
         }
-        if(key.equals("titleAndContent") && value != null){
+        //제목+내용 검색
+        if(key!=null && key.equals("titleAndContent") && value != null){
             filter = filter.and(QuestionSpecification.equalTitleAndContentContaining(value));
         }
 
-        List<Question> questionList = questionRepository.findAll(filter);
+        List<Question> questionList = questionRepository.findAll(filter, Sort.by(Sort.Direction.DESC, "createDate"));
         List<BriefQuestionResponse> searchResults = new ArrayList<>();
 
         //BriefQuestionResponse 객체로 만들어줌

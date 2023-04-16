@@ -2,6 +2,7 @@ package com.ktds.dsquare.board.qna.repository;
 
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -21,5 +22,5 @@ public interface QuestionRepository extends JpaRepository<Question,Long>, JpaSpe
     List<Question> findByDeleteYnAndCidNotOrderByCreateDateDesc(Boolean deleteYn, Category cid);
 
     //검색 관련
-    List<Question> findAll(Specification<Question> filter);
+    List<Question> findAll(Specification<Question> filter, Sort sort);
 }
