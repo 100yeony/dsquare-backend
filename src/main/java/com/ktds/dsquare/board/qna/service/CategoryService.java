@@ -1,7 +1,7 @@
 package com.ktds.dsquare.board.qna.service;
 
 import com.ktds.dsquare.board.qna.domain.Category;
-import com.ktds.dsquare.board.qna.dto.CategoryResponse;
+import com.ktds.dsquare.board.qna.dto.BriefCategoryResponse;
 import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,18 +14,16 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final CategoryResponse categoryResponse;
+    private final BriefCategoryResponse briefCategoryResponse;
 
     // 카테고리 목록 조회
-    public List<CategoryResponse> getAllCategories() {
-
-        List<CategoryResponse> categoryResponses = new ArrayList<>();
-
-        List<Category> categoryList = categoryRepository.findAll();
-        for(Category c:categoryList){
-            categoryResponses.add(categoryResponse.toDto(c));
+    public List<BriefCategoryResponse> getAllCategories() {
+        List<Category> categories = categoryRepository.findByUpCategory(null);
+        List<BriefCategoryResponse> briefCategoryResponses = new ArrayList<>();
+        for(Category c : categories){
+            briefCategoryResponses.add(briefCategoryResponse.toDto(c));
         }
-        return categoryResponses;
+        return briefCategoryResponses;
     }
 
 }
