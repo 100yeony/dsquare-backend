@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.*;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.ktds.dsquare.auth.CustomUserDetails;
 import com.ktds.dsquare.auth.jwt.JwtProperties;
 import com.ktds.dsquare.member.Member;
 import lombok.extern.slf4j.Slf4j;
@@ -54,18 +55,23 @@ public class JwtUtil {
 
     public static String generateAccessToken(UserDetails principal) {
         JWTCreator.Builder builder = createAccessTokenBase();
+        if (principal instanceof CustomUserDetails)
+            builder.withClaim("id", ((CustomUserDetails)principal).getMember().getId());
         builder.withClaim("username", principal.getUsername());
 
         return sign(builder, JwtProperties.SECRET_ACCESS());
     }
     public static String generateAccessToken(Member member) {
         JWTCreator.Builder builder = createAccessTokenBase();
-        builder.withClaim("username", member.getEmail());
+        builder.withClaim("id", member.getId())
+                .withClaim("username", member.getEmail());
 
         return sign(builder, JwtProperties.SECRET_ACCESS());
     }
     public static String generateRefreshToken(UserDetails principal) {
         JWTCreator.Builder builder = createRefreshTokenBase();
+        if (principal instanceof CustomUserDetails)
+            builder.withClaim("id", ((CustomUserDetails)principal).getMember().getId());
         builder.withClaim("username", principal.getUsername())
                 .withClaim("Refresh-Token-Key", "Refresh-Token-Value");
 
@@ -73,7 +79,8 @@ public class JwtUtil {
     }
     public static String generateRefreshToken(Member member) {
         JWTCreator.Builder builder = createRefreshTokenBase();
-        builder.withClaim("username", member.getEmail())
+        builder.withClaim("id", member.getId())
+                .withClaim("username", member.getEmail())
                 .withClaim("Refresh-Token-Key", "Refresh-Token-Value");
 
         return sign(builder, JwtProperties.SECRET_REFRESH());
