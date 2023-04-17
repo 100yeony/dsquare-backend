@@ -1,6 +1,6 @@
 package com.ktds.dsquare.board.qna.controller;
 
-import com.ktds.dsquare.board.qna.dto.CategoryResponse;
+import com.ktds.dsquare.board.qna.dto.BriefCategoryResponse;
 import com.ktds.dsquare.board.qna.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +16,7 @@ public class CategoryController {
 
     // 카테고리 목록 조회
     @GetMapping("/board/categories")
-    public List<CategoryResponse> getAllQuestions(){
+    public List<BriefCategoryResponse> getAllQuestions(){
         return categoryService.getAllCategories();
     }
 

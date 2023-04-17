@@ -1,3 +1,5 @@
+
+
 package com.ktds.dsquare.board.qna.service;
 
 import com.ktds.dsquare.board.qna.domain.Answer;
@@ -14,7 +16,11 @@ import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -24,6 +30,8 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@RestController
+@ResponseBody
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
@@ -38,7 +46,8 @@ public class QuestionService {
     public void createQuestion(QuestionRequest dto) {
         //workYn
         Question question = new Question();
-        question.setWriterId(dto.getWriterId());
+        Member writer = memberRepository.findById(dto.getWriterId()).orElseThrow(() -> new RuntimeException("Writer does not exist"));
+        question.setWriter(writer);
         question.setTitle(dto.getTitle());
         question.setContent(dto.getContent());
         question.setViewCnt(0L);
@@ -66,17 +75,15 @@ public class QuestionService {
         else questions = questionRepository.findByDeleteYnAndCidOrderByCreateDateDesc(false, notWorkCategory);
 
         for (Question Q : questions) {
-            Long writerId = Q.getWriterId();
             Category category = Q.getCid();
-            Member member = memberRepository.findById(writerId)
-                    .orElseThrow(() -> new RuntimeException("Member not found"));
+            Member member = Q.getWriter();
             List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(Q, false);
             Boolean managerAnswerYn = false;
             for (Answer A : answers) {
-               if (category.getManagerId() == A.getWriter().getId()) {
-                   managerAnswerYn = true;
-                   break;
-               }
+                if (category.getManagerId() == A.getWriter().getId()) {
+                    managerAnswerYn = true;
+                    break;
+                }
             }
             briefQuestions.add(BriefQuestionResponse.toDto(Q, MemberInfo.toDto(member), categoryResponse.toDto(category), (long)answers.size(), managerAnswerYn));
         }
@@ -89,9 +96,7 @@ public class QuestionService {
                 .orElseThrow(() -> new RuntimeException("Question not found"));
         question.increaseViewCnt();
 
-        Long writerId = question.getWriterId();
-        Member member = memberRepository.findById(writerId)
-                .orElseThrow(() -> new RuntimeException("Member not found"));
+        Member member = question.getWriter();
         MemberInfo writer = MemberInfo.toDto(member);
         return QuestionResponse.toDto(question, writer, categoryResponse.toDto(question.getCid()));
     }
@@ -128,25 +133,60 @@ public class QuestionService {
     }
 
 
-    //search - Q&A 검색(사용자, 제목+내용)
-    public List<Question> searchByWriterId(Long writerId) {
-        return questionRepository.findByWriterId(writerId);
+    /* search - Q&A 검색(카테고리, 사용자, 제목+내용)
+     * 전제조건 : workYn은 필수, deleteYn=false
+     * 1. category만 검색하는 경우 -> key,value x
+     * 2. category없이 제목+내용 or 작성자로 검색하는 경우 -> cid X
+     * 3. 둘 다 검색하는 경우 -> cid, key, value
+     * */
+    public List<BriefQuestionResponse> search(Boolean workYn, Integer cid, String key, String value){
+        //deleteYn = false인 것만 조회
+        Specification<Question> filter = Specification.where(QuestionSpecification.equalNotDeleted(false));
+        //업무 구분
+        if(workYn){
+            //업무 - cid=2를 제외한 나머지
+            filter = filter.and(QuestionSpecification.notEqualNotWork(2));
+        } else{
+            //비업무 - cid=2
+            filter = filter.and(QuestionSpecification.equalNotWork(2));
+        }
+        //카테고리 검색
+        if(cid != null){
+            filter = filter.and(QuestionSpecification.equalCid(cid));
+        }
+        //사용자 이름 검색
+        if(key!=null && key.equals("member") && value != null){
+            Member member = memberRepository.findByName(value);
+            Long mid = member.getId();
+            filter = filter.and(QuestionSpecification.equalWriterId(mid));
+        }
+        //제목+내용 검색
+        if(key!=null && key.equals("titleAndContent") && value != null){
+            filter = filter.and(QuestionSpecification.equalTitleAndContentContaining(value));
+        }
+
+        List<Question> questionList = questionRepository.findAll(filter, Sort.by(Sort.Direction.DESC, "createDate"));
+        List<BriefQuestionResponse> searchResults = new ArrayList<>();
+
+        //BriefQuestionResponse 객체로 만들어줌
+        for(Question q: questionList){
+            Member member = q.getWriter();
+            CategoryResponse categoryRes = CategoryResponse.toDto(q.getCid());
+            List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(q, false);
+            Boolean managerAnswerYn = false;
+            for (Answer A : answers) {
+                if (q.getCid().getManagerId() == A.getWriter().getId()) {
+                    managerAnswerYn = true;
+                    break;
+                }
+            }
+            searchResults.add(BriefQuestionResponse.toDto(q, MemberInfo.toDto(member),categoryRes ,(long)answers.size(), managerAnswerYn));
+        }
+
+        return searchResults;
     }
 
-    public List<Question> searchByCid(Integer cid){
-        Category category = categoryRepository.findByCid(cid)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
-        return questionRepository.findByCid(category);
-    }
 
-    public List<Question> searchByName(String value){
-        Member member = memberRepository.findByName(value);
-        Long mid = member.getId();
-        return questionRepository.findByWriterId(mid);
-    }
-
-    public List<Question> searchByTitleOrContent(String keyword) {
-        return questionRepository.findByTitleContainingOrContentContaining(keyword, keyword);
-    }
 
 }
+

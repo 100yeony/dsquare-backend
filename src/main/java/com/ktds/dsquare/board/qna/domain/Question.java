@@ -16,9 +16,6 @@ public class Question {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long qid;
 
-    @Column(nullable = false)
-    private Long writerId;
-
     @ManyToOne
     @JoinColumn(name = "cid")
     private Category cid;
@@ -41,8 +38,8 @@ public class Question {
 
     @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
-    private Member id;
+    @JoinColumn(name = "writer")
+    private Member writer;
 
 
     public void increaseViewCnt() {

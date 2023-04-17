@@ -53,7 +53,7 @@ public class Member {
     private List<Category> cid;
 
     @JsonManagedReference //직렬화
-    @OneToMany(mappedBy = "id")
+    @OneToMany(mappedBy = "qid")
     private List<Question> questionsList;
 
     @JsonManagedReference //직렬화

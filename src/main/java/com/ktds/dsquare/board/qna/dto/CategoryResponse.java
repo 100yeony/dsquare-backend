@@ -18,7 +18,6 @@ public class CategoryResponse {
     private Integer cid;
     private String name;
     private Long managerId;
-//    private Category upCategory;
     private List<String> categoryHierarchy;
     public static CategoryResponse toDto(Category category){
        return CategoryResponse.builder()

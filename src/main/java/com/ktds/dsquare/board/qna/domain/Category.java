@@ -29,7 +29,7 @@ public class Category {
     private Member manager;
 
     @OneToMany(mappedBy = "upCategory")
-    private Set<Category> childList;
+    private List<Category> childList;
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
