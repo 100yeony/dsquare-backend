@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -173,10 +174,9 @@ public class QuestionService {
 
         //BriefQuestionResponse 객체로 만들어줌
         for(Question q: questionList){
-            Long writerId = q.getWriterId();
+            Member member = memberRepository.findById(q.getWriterId())
+                    .orElseThrow(() -> new EntityNotFoundException("Member not found"));
             CategoryResponse categoryRes = CategoryResponse.toDto(q.getCid());
-            Member member = memberRepository.findById(writerId)
-                    .orElseThrow(() -> new RuntimeException("Member not found"));
             List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(q, false);
             Boolean managerAnswerYn = false;
             for (Answer A : answers) {
