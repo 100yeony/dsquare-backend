@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,7 +46,8 @@ public class QuestionService {
     public void createQuestion(QuestionRequest dto) {
         //workYn
         Question question = new Question();
-        question.setWriterId(dto.getWriterId());
+        Member writer = memberRepository.findById(dto.getWriterId()).orElseThrow(() -> new RuntimeException("Writer does not exist"));
+        question.setWriter(writer);
         question.setTitle(dto.getTitle());
         question.setContent(dto.getContent());
         question.setViewCnt(0L);
@@ -75,10 +75,8 @@ public class QuestionService {
         else questions = questionRepository.findByDeleteYnAndCidOrderByCreateDateDesc(false, notWorkCategory);
 
         for (Question Q : questions) {
-            Long writerId = Q.getWriterId();
             Category category = Q.getCid();
-            Member member = memberRepository.findById(writerId)
-                    .orElseThrow(() -> new RuntimeException("Member not found"));
+            Member member = Q.getWriter();
             List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(Q, false);
             Boolean managerAnswerYn = false;
             for (Answer A : answers) {
@@ -98,9 +96,7 @@ public class QuestionService {
                 .orElseThrow(() -> new RuntimeException("Question not found"));
         question.increaseViewCnt();
 
-        Long writerId = question.getWriterId();
-        Member member = memberRepository.findById(writerId)
-                .orElseThrow(() -> new RuntimeException("Member not found"));
+        Member member = question.getWriter();
         MemberInfo writer = MemberInfo.toDto(member);
         return QuestionResponse.toDto(question, writer, categoryResponse.toDto(question.getCid()));
     }
@@ -174,8 +170,7 @@ public class QuestionService {
 
         //BriefQuestionResponse 객체로 만들어줌
         for(Question q: questionList){
-            Member member = memberRepository.findById(q.getWriterId())
-                    .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+            Member member = q.getWriter();
             CategoryResponse categoryRes = CategoryResponse.toDto(q.getCid());
             List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(q, false);
             Boolean managerAnswerYn = false;
