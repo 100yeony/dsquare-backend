@@ -93,6 +93,7 @@ public class QuestionService {
         Question question = questionRepository.findById(qid)
                 .orElseThrow(() -> new RuntimeException("Question not found"));
         question.increaseViewCnt();
+        questionRepository.save(question);
 
         Member member = question.getWriter();
         MemberInfo writer = MemberInfo.toDto(member);
