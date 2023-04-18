@@ -20,7 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -57,7 +56,7 @@ public class QuestionService {
         question.setLastUpdateDate(now);
 
         Category category = categoryRepository.findById(dto.getCid()).orElseThrow(() -> new RuntimeException("Category does not exist"));
-        question.setCid(category);
+        question.setCategory(category);
         questionRepository.save(question);
     }
 
@@ -69,11 +68,11 @@ public class QuestionService {
 
         List<Question> questions;
         List<BriefQuestionResponse> briefQuestions = new ArrayList<>();
-        if(workYn) questions = questionRepository.findByDeleteYnAndCidNotOrderByCreateDateDesc(false, notWorkCategory);
-        else questions = questionRepository.findByDeleteYnAndCidOrderByCreateDateDesc(false, notWorkCategory);
+        if(workYn) questions = questionRepository.findByDeleteYnAndCategoryNotOrderByCreateDateDesc(false, notWorkCategory);
+        else questions = questionRepository.findByDeleteYnAndCategoryOrderByCreateDateDesc(false, notWorkCategory);
 
         for (Question Q : questions) {
-            Category category = Q.getCid();
+            Category category = Q.getCategory();
             Member member = Q.getWriter();
             List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(Q, false);
             Boolean managerAnswerYn = false;
@@ -97,7 +96,7 @@ public class QuestionService {
 
         Member member = question.getWriter();
         MemberInfo writer = MemberInfo.toDto(member);
-        return QuestionResponse.toDto(question, writer, categoryResponse.toDto(question.getCid()));
+        return QuestionResponse.toDto(question, writer, categoryResponse.toDto(question.getCategory()));
     }
 
     public Question getQuestionById(Long qid){
@@ -113,8 +112,8 @@ public class QuestionService {
 
         question.setTitle(request.getTitle());
         question.setContent(request.getContent());
-        Category cid = categoryRepository.findByCid(request.getCid()).orElseThrow(()-> new EntityNotFoundException("category not found"));
-        question.setCid(cid);
+        Category category = categoryRepository.findById(request.getCid()).orElseThrow(()-> new RuntimeException("category not found"));
+        question.setCategory(category);
         question.setLastUpdateDate(LocalDateTime.now());
         question.setAtcId(request.getAtcId());
     }
@@ -151,13 +150,12 @@ public class QuestionService {
             }
             //카테고리 검색 - cid 필터링
             if(cid != null){
-                filter = filter.and(QuestionSpecification.equalCid(cid));
+                filter = filter.and(QuestionSpecification.equalCategory(cid));
             }
         } else{
             //비업무 - cid=2
-            filter = filter.and(QuestionSpecification.equalCid(2));
+            filter = filter.and(QuestionSpecification.equalCategory(2));
         }
-
 
         //사용자 이름 검색(2글자로도 포함된 사람 검색 & 다른 조건과 모두 AND)
         if (key != null && key.equals("member") && value != null) {
@@ -190,11 +188,11 @@ public class QuestionService {
 
         //BriefQuestionResponse 객체로 만들어줌
         for(Question q: questionList){
-            CategoryResponse categoryRes = CategoryResponse.toDto(q.getCid());
+            CategoryResponse categoryRes = CategoryResponse.toDto(q.getCategory());
             List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(q, false);
             Boolean managerAnswerYn = false;
             for (Answer A : answers) {
-                if (q.getCid().getManagerId() == A.getWriter().getId()) {
+                if (q.getCategory().getManagerId() == A.getWriter().getId()) {
                     managerAnswerYn = true;
                     break;
                 }
