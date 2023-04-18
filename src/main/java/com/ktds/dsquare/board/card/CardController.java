@@ -38,8 +38,21 @@ public class CardController {
     //update - 카드주세요 선정
     @PostMapping("board/cards/{cardId}/cardOwner/{cardOwnerId}")
     public ResponseEntity<Void> giveCard(@PathVariable("cardId") Long cardId, @PathVariable("cardOwnerId") Long cardOwnerId){
-        System.out.println("------>"+cardId + cardOwnerId);
         cardService.giveCard(cardId, cardOwnerId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    //update - 카드주세요 글 수정
+    @PostMapping("board/cards/{cardId}")
+    public ResponseEntity<CardResponse> updateCard(@PathVariable("cardId") Long cardId, @RequestBody CardRequest request){
+        cardService.updateCard(cardId, request);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    //delete - 카드주세요 글 삭제
+    @DeleteMapping("board/cards/{cardId}")
+    public ResponseEntity<Void> deleteCard(@PathVariable("cardId") Long cardId){
+        cardService.deleteCard(cardId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

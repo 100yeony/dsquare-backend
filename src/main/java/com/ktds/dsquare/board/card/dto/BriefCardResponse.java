@@ -31,6 +31,7 @@ public class BriefCardResponse {
                 .projTeamInfo(teamInfo)
                 .title(entity.getTitle())
                 .content(entity.getContent())
+                .teammate(entity.getTeammate())
                 .createDate(LocalDateTime.now())
                 .viewCnt(entity.getViewCnt())
                 .build();

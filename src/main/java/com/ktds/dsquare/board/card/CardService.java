@@ -59,7 +59,6 @@ public class CardService {
         for(Card C : cards){
             Member member = C.getCardWriter();
             Team team = C.getProjTeam();
-
             briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team)));
         }
         return briefCards;
@@ -104,4 +103,29 @@ public class CardService {
         card.setSelectedDate(now);
     }
 
+    //update - 카드주세요 글 수정
+    @Transactional
+    public void updateCard(Long cardId, CardRequest request){
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(()-> new EntityNotFoundException("card is not found"));
+
+        Team projTeam = teamRepository.findById(request.getProjTeamId())
+                .orElseThrow(() -> new EntityNotFoundException("team is not found"));
+        card.setProjTeam(projTeam);
+        card.setTitle(request.getTitle());
+        card.setContent(request.getContent());
+        card.setTeammate(request.getTeammate());
+
+        LocalDateTime now = LocalDateTime.now();
+        card.setLastUpdateDate(now);
+    }
+
+    //delete - 카드주세요 글 삭제
+    @Transactional
+    public void deleteCard(Long cardId){
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(()-> new EntityNotFoundException("card is not found"));
+        card.setDeleteYn(true);
+        card.setLastUpdateDate(LocalDateTime.now());
+    }
 }
