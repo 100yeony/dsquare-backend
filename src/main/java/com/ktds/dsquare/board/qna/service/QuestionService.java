@@ -2,20 +2,17 @@
 
 package com.ktds.dsquare.board.qna.service;
 
-import com.ktds.dsquare.board.qna.domain.Answer;
-import com.ktds.dsquare.board.qna.domain.Category;
-import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.board.qna.domain.*;
 import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.dto.CategoryResponse;
 import com.ktds.dsquare.board.qna.dto.QuestionRequest;
 import com.ktds.dsquare.board.qna.dto.QuestionResponse;
-import com.ktds.dsquare.board.qna.repository.AnswerRepository;
-import com.ktds.dsquare.board.qna.repository.CategoryRepository;
-import com.ktds.dsquare.board.qna.repository.QuestionRepository;
+import com.ktds.dsquare.board.qna.repository.*;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -37,7 +34,8 @@ public class QuestionService {
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
     private final CategoryResponse categoryResponse;
-
+    private final TagRepository tagRepository;
+    private final QuestionTagRepository questionTagRepository;
 
     //create - 질문글 작성
     @Transactional
@@ -59,6 +57,8 @@ public class QuestionService {
         Category category = categoryRepository.findById(dto.getCid()).orElseThrow(() -> new RuntimeException("Category does not exist"));
         question.setCid(category);
         questionRepository.save(question);
+
+        insertNewTags(dto.getTags(), question);
     }
 
     //read - 질문글 전체 조회
@@ -117,6 +117,23 @@ public class QuestionService {
         question.setCid(cid);
         question.setLastUpdateDate(LocalDateTime.now());
         question.setAtcId(request.getAtcId());
+
+        // 태그 수정
+        List<QuestionTag> oldQTs = question.getQuestionTags();
+        List<Tag> oldTags = new ArrayList<>();
+        for(QuestionTag oldQT : oldQTs) {
+            oldTags.add(oldQT.getTag());
+        }
+        List<String> newTags = request.getTags();
+
+        for(Tag oldTag : oldTags) {
+            String oldTagName = oldTag.getName();
+            if(!newTags.contains(oldTagName))
+                deleteTag(question, oldTag);
+            else
+                newTags.remove(oldTagName);
+        }
+        insertNewTags(newTags, question);
     }
 
     // 질문글 삭제
@@ -131,6 +148,12 @@ public class QuestionService {
 
         question.setDeleteYn(true);
         question.setLastUpdateDate(LocalDateTime.now());
+
+        // 태그 삭제
+        List<QuestionTag> QTs = question.getQuestionTags();
+        for (QuestionTag QT : QTs) {
+            deleteTag(question, QT.getTag());
+        }
     }
 
 
@@ -203,6 +226,32 @@ public class QuestionService {
         }
 
         return searchResults;
+    }
+
+
+    // 새 태그(키워드) 등록
+    @Transactional
+    public void insertNewTags(List<String> newTags, Question question) {
+        for (String name : newTags) {
+            Tag tag = tagRepository.findByName(name);
+            if(tag == null) {
+                tag = Tag.toEntity(name);
+                tagRepository.save(tag);
+            }
+            QuestionTag qt = QuestionTag.toEntity(question, tag);
+            questionTagRepository.save(qt);
+        }
+    }
+    // 태그 삭제
+    @Transactional
+    public void deleteTag(Question question, Tag tag) {
+        deleteQuestionTag(question, tag);
+        if(questionTagRepository.findByTag(tag) == null) tagRepository.delete(tag);
+    }
+    // 태그 삭제 전 연관관계 삭제
+    @Transactional
+    public void deleteQuestionTag(Question question, Tag tag) {
+        questionTagRepository.deleteByQuestionAndTag(question, tag);
     }
 
 }

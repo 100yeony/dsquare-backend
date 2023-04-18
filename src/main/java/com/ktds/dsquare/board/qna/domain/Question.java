@@ -6,6 +6,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -41,6 +43,8 @@ public class Question {
     @JoinColumn(name = "writer")
     private Member writer;
 
+    @OneToMany(mappedBy = "question")
+    private List<QuestionTag> questionTags = new ArrayList<>();
 
     public void increaseViewCnt() {
         this.viewCnt += 1;
