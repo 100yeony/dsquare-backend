@@ -21,6 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -114,6 +115,8 @@ public class QuestionService {
 
         question.setTitle(request.getTitle());
         question.setContent(request.getContent());
+        Category cid = categoryRepository.findByCid(request.getCid()).orElseThrow(()-> new EntityNotFoundException("category not found"));
+        question.setCid(cid);
         question.setLastUpdateDate(LocalDateTime.now());
         question.setAtcId(request.getAtcId());
     }
