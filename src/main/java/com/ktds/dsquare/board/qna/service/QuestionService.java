@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -202,6 +203,52 @@ public class QuestionService {
 
         return searchResults;
     }
+
+
+    public List<BriefQuestionResponse> searchMap(Map<String, String> params){
+        //deleteYn = false인 것만 조회
+        Specification<Question> filter = Specification.where(QuestionSpecification.equalNotDeleted(false));
+        //업무 구분
+
+        if(params.containsKey("workYn") ){
+            Boolean isWork = Boolean.valueOf(params.get("workYn"));
+            if(isWork){
+                filter = filter.and(QuestionSpecification.notEqualNotWork(2));
+            }
+//            Integer cid = 2;
+            //업무 - cid=2를 제외한 나머지
+//            if(params.containsKey("cid") == null) {
+//                filter = filter.and(QuestionSpecification.notEqualNotWork(2));
+//            }
+            //카테고리 검색 - cid 필터링
+//            if(params.containsKey("cid")){
+//                Integer cidValue = Integer.parseInt(params.get("cid"));
+//                filter = filter.and(QuestionSpecification.equalCid(cidValue));
+//            }
+        }
+
+
+        List<Question> questionList = questionRepository.findAll(filter, Sort.by(Sort.Direction.DESC, "createDate"));
+        List<BriefQuestionResponse> searchResults = new ArrayList<>();
+
+        //BriefQuestionResponse 객체로 만들어줌
+        for(Question q: questionList){
+            CategoryResponse categoryRes = CategoryResponse.toDto(q.getCategory());
+            List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(q, false);
+            Boolean managerAnswerYn = false;
+            for (Answer A : answers) {
+                if (q.getCategory().getManagerId() == A.getWriter().getId()) {
+                    managerAnswerYn = true;
+                    break;
+                }
+            }
+            searchResults.add(BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn));
+        }
+
+        return searchResults;
+    }
+
+
 
 }
 

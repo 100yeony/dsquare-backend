@@ -56,5 +56,9 @@ public class QuestionController {
                                           @RequestParam(required = false) String key, @RequestParam(required = false) String value) {
         return questionService.search(workYn, cid, key, value);
     }
-    
+//    @GetMapping("/board/questions/search")
+//    public List<BriefQuestionResponse> search(Map<String, String> params) {
+//        return questionService.searchMap(params);
+//    }
+
 }
