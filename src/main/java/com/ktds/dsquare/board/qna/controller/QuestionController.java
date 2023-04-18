@@ -51,8 +51,7 @@ public class QuestionController {
     }
 
     //search - Q&A 검색(업무구분, 카테고리, 제목+내용, 사용자(이름))
-    @GetMapping("/board/questions/search")
-    @ResponseBody
+    @PostMapping("/board/questions/search")
     public List<BriefQuestionResponse> search(@RequestParam Boolean workYn, @RequestParam(required = false) Integer cid,
                                           @RequestParam(required = false) String key, @RequestParam(required = false) String value) {
         return questionService.search(workYn, cid, key, value);

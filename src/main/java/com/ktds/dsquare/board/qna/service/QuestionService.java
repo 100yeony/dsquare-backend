@@ -19,19 +19,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
 @Service
 @RequiredArgsConstructor
 @RestController
-@ResponseBody
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
@@ -95,6 +95,7 @@ public class QuestionService {
         Question question = questionRepository.findById(qid)
                 .orElseThrow(() -> new RuntimeException("Question not found"));
         question.increaseViewCnt();
+        questionRepository.save(question);
 
         Member member = question.getWriter();
         MemberInfo writer = MemberInfo.toDto(member);
@@ -114,6 +115,8 @@ public class QuestionService {
 
         question.setTitle(request.getTitle());
         question.setContent(request.getContent());
+        Category cid = categoryRepository.findByCid(request.getCid()).orElseThrow(()-> new EntityNotFoundException("category not found"));
+        question.setCid(cid);
         question.setLastUpdateDate(LocalDateTime.now());
         question.setAtcId(request.getAtcId());
     }
@@ -145,20 +148,39 @@ public class QuestionService {
         //업무 구분
         if(workYn){
             //업무 - cid=2를 제외한 나머지
-            filter = filter.and(QuestionSpecification.notEqualNotWork(2));
+            if(cid == null) {
+                filter = filter.and(QuestionSpecification.notEqualNotWork(2));
+            }
+            //카테고리 검색 - cid 필터링
+            if(cid != null){
+                filter = filter.and(QuestionSpecification.equalCid(cid));
+            }
         } else{
             //비업무 - cid=2
-            filter = filter.and(QuestionSpecification.equalNotWork(2));
+            filter = filter.and(QuestionSpecification.equalCid(2));
         }
-        //카테고리 검색
-        if(cid != null){
-            filter = filter.and(QuestionSpecification.equalCid(cid));
-        }
-        //사용자 이름 검색
-        if(key!=null && key.equals("member") && value != null){
-            Member member = memberRepository.findByName(value);
-            Long mid = member.getId();
-            filter = filter.and(QuestionSpecification.equalWriterId(mid));
+
+
+        //사용자 이름 검색(2글자로도 포함된 사람 검색 & 다른 조건과 모두 AND)
+        if (key != null && key.equals("member") && value != null) {
+            List<Member> members = memberRepository.findByNameContaining(value);
+            try {
+                if (members.size() > 0) {
+                    List<Member> writerIds = new ArrayList<>();
+                    for (Member M : members) {
+                        Member m = memberRepository.findById(M.getId())
+                                .orElseThrow(() -> new RuntimeException("Member Not Found"));
+                        writerIds.add(m);
+                    }
+                    filter = filter.and(QuestionSpecification.inWriter(writerIds));
+                } else {
+                    // 매칭되는 멤버가 없으면 빈 리스트 반환
+                    return Collections.emptyList();
+                }
+            } catch (RuntimeException ex) {
+                // Exception이 발생한 경우 빈 리스트 반환
+                return Collections.emptyList();
+            }
         }
         //제목+내용 검색
         if(key!=null && key.equals("titleAndContent") && value != null){
@@ -170,7 +192,6 @@ public class QuestionService {
 
         //BriefQuestionResponse 객체로 만들어줌
         for(Question q: questionList){
-            Member member = q.getWriter();
             CategoryResponse categoryRes = CategoryResponse.toDto(q.getCid());
             List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(q, false);
             Boolean managerAnswerYn = false;
@@ -180,13 +201,11 @@ public class QuestionService {
                     break;
                 }
             }
-            searchResults.add(BriefQuestionResponse.toDto(q, MemberInfo.toDto(member),categoryRes ,(long)answers.size(), managerAnswerYn));
+            searchResults.add(BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn));
         }
 
         return searchResults;
     }
-
-
 
 }
 
