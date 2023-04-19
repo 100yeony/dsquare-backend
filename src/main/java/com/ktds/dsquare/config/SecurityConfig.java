@@ -89,7 +89,7 @@ public class SecurityConfig {
     }
     private void configureRequestAuthorization(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/account/signup").permitAll()
+                .antMatchers("/account/signup", "/account/find-pw").permitAll()
                 .antMatchers("/auth/refresh").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated();
