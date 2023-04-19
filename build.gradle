@@ -45,6 +45,11 @@ dependencies {
     // https://mvnrepository.com/artifact/com.github.ulisesbocchio/jasypt-spring-boot-starter
     implementation group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '3.0.4'
 
+    // ## Mailing ##
+    implementation 'org.springframework.boot:spring-boot-starter-mail:2.5.6'
+//    // https://mvnrepository.com/artifact/org.eclipse.angus/angus-mail
+//    implementation group: 'org.eclipse.angus', name: 'angus-mail', version: '2.0.1'
+
 }
 
 tasks.named('test') {
