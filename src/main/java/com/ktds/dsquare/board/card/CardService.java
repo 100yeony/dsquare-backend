@@ -59,15 +59,24 @@ public class CardService {
         for(Card C : cards){
             Member member = C.getCardWriter();
             Team team = C.getProjTeam();
-            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team)));
+
+            Member owner = C.getCardOwner();
+            CardSelectionInfo selectionInfo;
+            if(owner != null){
+                MemberInfo cardOwner = MemberInfo.toDto(owner);
+                selectionInfo = CardSelectionInfo.toDto(C, cardOwner);
+            }else{
+                selectionInfo = null;
+            }
+
+            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo));
         }
         return briefCards;
     }
 
     //read - 카드주세요 글 상세 조회
     public CardResponse getCardDetail(Long cardId) {
-        Card card = cardRepository.findById(cardId)
-                .orElseThrow(()-> new EntityNotFoundException("card is not found"));
+        Card card = cardRepository.findByDeleteYnAndCardId(false, cardId);
         card.increaseViewCnt();
         cardRepository.save(card);
 
@@ -79,7 +88,6 @@ public class CardService {
 
         Member owner = card.getCardOwner();
         CardSelectionInfo selectionInfo;
-
         if(owner != null){
             MemberInfo cardOwner = MemberInfo.toDto(owner);
             selectionInfo = CardSelectionInfo.toDto(card, cardOwner);
@@ -139,7 +147,17 @@ public class CardService {
 
         for(Card C : cards){
             Member member = C.getCardWriter();
-            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team)));
+
+            Member owner = C.getCardOwner();
+            CardSelectionInfo selectionInfo;
+            if(owner != null){
+                MemberInfo cardOwner = MemberInfo.toDto(owner);
+                selectionInfo = CardSelectionInfo.toDto(C, cardOwner);
+            }else{
+                selectionInfo = null;
+            }
+
+            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo));
         }
         return briefCards;
     }
