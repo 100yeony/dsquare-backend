@@ -128,4 +128,19 @@ public class CardService {
         card.setDeleteYn(true);
         card.setLastUpdateDate(LocalDateTime.now());
     }
+
+    //search - 카드주세요 검색
+    public List<BriefCardResponse> searchCard(Long projTeamId){
+        Team team = teamRepository.findById(projTeamId)
+                .orElseThrow(()-> new EntityNotFoundException("team not found"));
+
+        List<Card> cards = cardRepository.findByDeleteYnAndProjTeamOrderByCreateDateDesc(false, team);
+        List<BriefCardResponse> briefCards = new ArrayList<>();
+
+        for(Card C : cards){
+            Member member = C.getCardWriter();
+            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team)));
+        }
+        return briefCards;
+    }
 }

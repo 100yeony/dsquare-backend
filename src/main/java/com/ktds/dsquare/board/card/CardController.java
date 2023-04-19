@@ -55,4 +55,10 @@ public class CardController {
         cardService.deleteCard(cardId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    //search - 카드주세요 검색
+    @GetMapping("board/cards/search")
+    public ResponseEntity<List<BriefCardResponse>> searchCard(@RequestParam("projTeamId") Long projTeamId){
+        return new ResponseEntity<>(cardService.searchCard(projTeamId), HttpStatus.OK);
+    }
 }
