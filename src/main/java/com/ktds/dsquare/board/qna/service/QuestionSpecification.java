@@ -11,7 +11,7 @@ public class QuestionSpecification {
 
     //삭제되지 않은 글(deleteYn=false)
     public static Specification<Question> equalNotDeleted(Boolean deleteYn){
-        return ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("deleteYn"), false));
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("deleteYn"), deleteYn));
     }
 
     //업무 분류(workYn=true & cid != 2)

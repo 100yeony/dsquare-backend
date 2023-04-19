@@ -28,9 +28,6 @@ public class CardResponse {
     private CardSelectionInfo selectionInfo;
 
     public static CardResponse toDto(Card entity, MemberInfo writerInfo, TeamInfo teamInfo, CardSelectionInfo selectionInfo) {
-        if(selectionInfo == null){
-            selectionInfo = null;
-        }
         return CardResponse.builder()
                 .cardId(entity.getCardId())
                 .writerInfo(writerInfo)

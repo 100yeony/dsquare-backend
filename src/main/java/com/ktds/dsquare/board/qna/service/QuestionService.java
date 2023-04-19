@@ -25,7 +25,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 
 @Service
@@ -36,7 +35,6 @@ public class QuestionService {
     private final AnswerRepository answerRepository;
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
-    private final CategoryResponse categoryResponse;
 
 
     //create - 질문글 작성
@@ -76,14 +74,14 @@ public class QuestionService {
             Category category = Q.getCategory();
             Member member = Q.getWriter();
             List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(Q, false);
-            Boolean managerAnswerYn = false;
+            boolean managerAnswerYn = false;
             for (Answer A : answers) {
-                if (category.getManagerId() == A.getWriter().getId()) {
+                if (category.getManagerId().equals(A.getWriter().getId())) {
                     managerAnswerYn = true;
                     break;
                 }
             }
-            briefQuestions.add(BriefQuestionResponse.toDto(Q, MemberInfo.toDto(member), categoryResponse.toDto(category), (long)answers.size(), managerAnswerYn));
+            briefQuestions.add(BriefQuestionResponse.toDto(Q, MemberInfo.toDto(member), CategoryResponse.toDto(category), (long)answers.size(), managerAnswerYn));
         }
         return briefQuestions;
     }
@@ -97,12 +95,7 @@ public class QuestionService {
 
         Member member = question.getWriter();
         MemberInfo writer = MemberInfo.toDto(member);
-        return QuestionResponse.toDto(question, writer, categoryResponse.toDto(question.getCategory()));
-    }
-
-    public Question getQuestionById(Long qid){
-        return questionRepository.findById(qid)
-                .orElseThrow(() -> new RuntimeException("Question not found"));
+        return QuestionResponse.toDto(question, writer, CategoryResponse.toDto(question.getCategory()));
     }
 
     // 질문글 수정
@@ -183,7 +176,6 @@ public class QuestionService {
         if(key!=null && key.equals("titleAndContent") && value != null){
             filter = filter.and(QuestionSpecification.equalTitleAndContentContaining(value));
         }
-
         List<Question> questionList = questionRepository.findAll(filter, Sort.by(Sort.Direction.DESC, "createDate"));
         List<BriefQuestionResponse> searchResults = new ArrayList<>();
 
@@ -191,64 +183,17 @@ public class QuestionService {
         for(Question q: questionList){
             CategoryResponse categoryRes = CategoryResponse.toDto(q.getCategory());
             List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(q, false);
-            Boolean managerAnswerYn = false;
+            boolean managerAnswerYn = false;
             for (Answer A : answers) {
-                if (q.getCategory().getManagerId() == A.getWriter().getId()) {
+                if (q.getCategory().getManagerId().equals(A.getWriter().getId())) {
                     managerAnswerYn = true;
                     break;
                 }
             }
             searchResults.add(BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn));
         }
-
         return searchResults;
     }
-
-
-    public List<BriefQuestionResponse> searchMap(Map<String, String> params){
-        //deleteYn = false인 것만 조회
-        Specification<Question> filter = Specification.where(QuestionSpecification.equalNotDeleted(false));
-        //업무 구분
-
-        if(params.containsKey("workYn") ){
-            Boolean isWork = Boolean.valueOf(params.get("workYn"));
-            if(isWork){
-                filter = filter.and(QuestionSpecification.notEqualNotWork(2));
-            }
-//            Integer cid = 2;
-            //업무 - cid=2를 제외한 나머지
-//            if(params.containsKey("cid") == null) {
-//                filter = filter.and(QuestionSpecification.notEqualNotWork(2));
-//            }
-            //카테고리 검색 - cid 필터링
-//            if(params.containsKey("cid")){
-//                Integer cidValue = Integer.parseInt(params.get("cid"));
-//                filter = filter.and(QuestionSpecification.equalCid(cidValue));
-//            }
-        }
-
-
-        List<Question> questionList = questionRepository.findAll(filter, Sort.by(Sort.Direction.DESC, "createDate"));
-        List<BriefQuestionResponse> searchResults = new ArrayList<>();
-
-        //BriefQuestionResponse 객체로 만들어줌
-        for(Question q: questionList){
-            CategoryResponse categoryRes = CategoryResponse.toDto(q.getCategory());
-            List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(q, false);
-            Boolean managerAnswerYn = false;
-            for (Answer A : answers) {
-                if (q.getCategory().getManagerId() == A.getWriter().getId()) {
-                    managerAnswerYn = true;
-                    break;
-                }
-            }
-            searchResults.add(BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn));
-        }
-
-        return searchResults;
-    }
-
-
 
 }
 
