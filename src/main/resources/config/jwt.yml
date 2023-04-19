@@ -5,8 +5,8 @@ jwt:
     refresh-token: "refreshToken"
   algorithm: HS256
   secret:
-    access: kt ds 2023 Welcome Project - DSquare
-    refresh: kt ds 2023 Welcome Project - DSquarefresh
+    access: ENC(cvj+QKmYT4eDZWzaJBNSN9Aqv5TYc/eBr1ORX4nQ5cRkQSs1hyx+9usk+mBAHm2S)
+    refresh: ENC(6SwAL86xNWMjWh8JudZ4fGjDFCoV1zr6noXvrG+oj5w4cdREwOc85OjM9QC9XHb0b7/GQ3SjYnc=)
   expiration-millisecond:
     # 1min = 60_000 / 1hour = 3600_000 / 1day = 86_400_000 / 1month = 2_592_000_000
     access: 1_800_000
