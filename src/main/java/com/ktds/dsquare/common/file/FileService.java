@@ -22,7 +22,7 @@ public class FileService {
 
 
     @Transactional
-    public void uploadFile(MultipartFile file) throws IOException {
+    public String uploadFile(MultipartFile file) throws IOException {
         log.info("File description | Original filename : {} | Name : {} | Size : {} | Content Type : {}",
                 file.getOriginalFilename(),
                 file.getName(),
@@ -33,9 +33,10 @@ public class FileService {
 
         final String directory = determineDirectory();
         final String uniqueFilename = generateUniqueFilename(filename);
-        final String filePath = directory + "/" + uniqueFilename;
+        final String filePath = directory + uniqueFilename;
 
-        PutObjectResult result = upload(filePath, file);
+        PutObjectResult result = upload(filePath, file); // TODO here
+        return "https://" + AwsProperties.BUCKET_NAME() + ".s3.amazonaws.com/" + filePath;
     }
     private String removeExtension(String filename) {
         if (!StringUtils.hasText(filename))
@@ -44,7 +45,8 @@ public class FileService {
         return filename.substring(0, filename.lastIndexOf("."));
     }
     private String determineDirectory() {
-        return "/TestDir";
+        // TODO determine directory depending on requesting user
+        return "TestDir/";
     }
     private String generateUniqueFilename(String filename) {
         return filename + "_" + UUID.randomUUID();

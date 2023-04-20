@@ -15,9 +15,8 @@ public class FileController {
 
 
     @PostMapping("/file/upload")
-    public ResponseEntity<?> uploadFile(MultipartFile file) throws Exception {
-        fileService.uploadFile(file);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<String> uploadFile(MultipartFile file) throws Exception {
+        return new ResponseEntity<>(fileService.uploadFile(file), HttpStatus.CREATED);
     }
 
 }
