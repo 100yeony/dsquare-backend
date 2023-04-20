@@ -12,7 +12,6 @@ import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -122,10 +121,10 @@ public class QuestionService {
 
         for(Tag oldTag : oldTags) {
             String oldTagName = oldTag.getName();
-            if(!newTags.contains(oldTagName))
-                deleteTag(question, oldTag);
-            else
+            if(newTags.contains(oldTagName))
                 newTags.remove(oldTagName);
+            else
+                deleteQuestionTagRelation(question, oldTag);
         }
         insertNewTags(newTags, question);
     }
@@ -143,11 +142,6 @@ public class QuestionService {
         question.setDeleteYn(true);
         question.setLastUpdateDate(LocalDateTime.now());
 
-        // 태그 삭제
-        List<QuestionTag> QTs = question.getQuestionTags();
-        for (QuestionTag QT : QTs) {
-            deleteTag(question, QT.getTag());
-        }
     }
 
 
@@ -233,15 +227,10 @@ public class QuestionService {
             questionTagRepository.save(qt);
         }
     }
-    // 태그 삭제
+
+    // 태그-질문 간 연관관계 삭제
     @Transactional
-    public void deleteTag(Question question, Tag tag) {
-        deleteQuestionTag(question, tag);
-        if(questionTagRepository.findByTag(tag) == null) tagRepository.delete(tag);
-    }
-    // 태그 삭제 전 연관관계 삭제
-    @Transactional
-    public void deleteQuestionTag(Question question, Tag tag) {
+    public void deleteQuestionTagRelation(Question question, Tag tag) {
         questionTagRepository.deleteByQuestionAndTag(question, tag);
     }
 
