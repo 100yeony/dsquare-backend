@@ -38,10 +38,6 @@ public class CardService {
                 .orElseThrow(() -> new EntityNotFoundException("team is not found"));
 
         Card card = Card.toEntity(dto, cardWriter, projTeam);
-
-        LocalDateTime now = LocalDateTime.now();
-        card.toDefault(now, null, 0L, false);
-
         cardRepository.save(card);
     }
 

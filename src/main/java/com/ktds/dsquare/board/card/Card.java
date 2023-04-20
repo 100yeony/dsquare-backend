@@ -58,21 +58,17 @@ public class Card {
     private Boolean deleteYn;
 
     public static Card toEntity(CardRequest dto, Member writer, Team projTeam){
+        LocalDateTime now = LocalDateTime.now();
         return Card.builder()
                 .cardWriter(writer)
                 .projTeam(projTeam)
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .teammate(dto.getTeammate())
+                .createDate(now)
+                .viewCnt(0L)
+                .deleteYn(false)
                 .build();
-    }
-
-    public void toDefault(LocalDateTime createDate, LocalDateTime lastUpdateDate,
-                            Long viewCnt, Boolean deleteYn){
-        this.createDate = createDate;
-        this.lastUpdateDate = lastUpdateDate;
-        this.viewCnt = viewCnt;
-        this.deleteYn = deleteYn;
     }
 
     public void selectCard(Member cardOwner, Boolean selectionYn, LocalDateTime selectedDate){
