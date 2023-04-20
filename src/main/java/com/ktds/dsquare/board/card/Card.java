@@ -1,6 +1,7 @@
 package com.ktds.dsquare.board.card;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.ktds.dsquare.board.card.dto.CardRequest;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.team.Team;
 import lombok.*;
@@ -55,6 +56,43 @@ public class Card {
 
     @Column(nullable = false)
     private Boolean deleteYn;
+
+    public static Card toEntity(CardRequest dto, Member writer, Team projTeam){
+        return Card.builder()
+                .cardWriter(writer)
+                .projTeam(projTeam)
+                .title(dto.getTitle())
+                .content(dto.getContent())
+                .teammate(dto.getTeammate())
+                .build();
+    }
+
+    public void toDefault(LocalDateTime createDate, LocalDateTime lastUpdateDate,
+                            Long viewCnt, Boolean deleteYn){
+        this.createDate = createDate;
+        this.lastUpdateDate = lastUpdateDate;
+        this.viewCnt = viewCnt;
+        this.deleteYn = deleteYn;
+    }
+
+    public void selectCard(Member cardOwner, Boolean selectionYn, LocalDateTime selectedDate){
+        this.cardOwner = cardOwner;
+        this.selectionYn = selectionYn;
+        this.selectedDate = selectedDate;
+    }
+
+    public void updateCard(Team projTeam, String title, String content,
+                           String teammate, LocalDateTime lastUpdateDate){
+        this.projTeam = projTeam;
+        this.title = title;
+        this.content = content;
+        this.teammate = teammate;
+        this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public void deleteCard(Boolean deleteYn){
+        this.deleteYn = deleteYn;
+    }
 
     public void increaseViewCnt() {
         this.viewCnt += 1;

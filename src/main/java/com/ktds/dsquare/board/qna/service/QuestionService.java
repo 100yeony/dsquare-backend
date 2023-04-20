@@ -20,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class QuestionService {
     public void createQuestion(QuestionRequest dto) {
         //workYn
         Question question = new Question();
-        Member writer = memberRepository.findById(dto.getWriterId()).orElseThrow(() -> new RuntimeException("Writer does not exist"));
+        Member writer = memberRepository.findById(dto.getWriterId()).orElseThrow(() -> new EntityNotFoundException("Writer does not exist"));
         question.setWriter(writer);
         question.setTitle(dto.getTitle());
         question.setContent(dto.getContent());
@@ -54,7 +55,7 @@ public class QuestionService {
         question.setCreateDate(now);
         question.setLastUpdateDate(now);
 
-        Category category = categoryRepository.findById(dto.getCid()).orElseThrow(() -> new RuntimeException("Category does not exist"));
+        Category category = categoryRepository.findById(dto.getCid()).orElseThrow(() -> new EntityNotFoundException("Category does not exist"));
         question.setCategory(category);
         questionRepository.save(question);
     }
@@ -63,7 +64,7 @@ public class QuestionService {
     public List<BriefQuestionResponse> getAllQuestions(Boolean workYn) {
         // deleteYn = false만 필터링 한 후 qid 기준으로 정렬
         Category notWorkCategory = categoryRepository.findByCid(2)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
 
         List<Question> questions;
         List<BriefQuestionResponse> briefQuestions = new ArrayList<>();
@@ -89,7 +90,7 @@ public class QuestionService {
     //read - 질문글 상세 조회
     public QuestionResponse getQuestionDetail(Long qid) {
         Question question = questionRepository.findById(qid)
-                .orElseThrow(() -> new RuntimeException("Question not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Question not found"));
         question.increaseViewCnt();
         questionRepository.save(question);
 
@@ -102,7 +103,7 @@ public class QuestionService {
     @Transactional
     public void updateQuestion(Long qid, QuestionRequest request) {
         Question question = questionRepository.findById(qid)
-                .orElseThrow(() -> new RuntimeException("Update Question Fail"));
+                .orElseThrow(() -> new EntityNotFoundException("Update Question Fail"));
 
         question.setTitle(request.getTitle());
         question.setContent(request.getContent());
@@ -116,11 +117,11 @@ public class QuestionService {
     @Transactional
     public void deleteQuestion(Long qid) {
         Question question = questionRepository.findById(qid)
-                .orElseThrow(() -> new RuntimeException("Delete Question Fail"));
+                .orElseThrow(() -> new EntityNotFoundException("Delete Question Fail"));
         List<Answer> answerList = answerRepository.findByQuestionAndDeleteYn(question, false);
 
         // 답변글이 이미 존재할 때 => HTTP Status로 처리해줘야 함(추후 수정 필요)
-        if(!answerList.isEmpty()) throw new RuntimeException("Delete Question Fail - Reply exists");
+        if(!answerList.isEmpty()) throw new EntityNotFoundException("Delete Question Fail - Reply exists");
 
         question.setDeleteYn(true);
         question.setLastUpdateDate(LocalDateTime.now());
@@ -159,7 +160,7 @@ public class QuestionService {
                     List<Member> writerIds = new ArrayList<>();
                     for (Member M : members) {
                         Member m = memberRepository.findById(M.getId())
-                                .orElseThrow(() -> new RuntimeException("Member Not Found"));
+                                .orElseThrow(() -> new EntityNotFoundException("Member Not Found"));
                         writerIds.add(m);
                     }
                     filter = filter.and(QuestionSpecification.inWriter(writerIds));
@@ -167,7 +168,7 @@ public class QuestionService {
                     // 매칭되는 멤버가 없으면 빈 리스트 반환
                     return Collections.emptyList();
                 }
-            } catch (RuntimeException ex) {
+            } catch (EntityNotFoundException ex) {
                 // Exception이 발생한 경우 빈 리스트 반환
                 return Collections.emptyList();
             }

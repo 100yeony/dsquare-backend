@@ -69,7 +69,7 @@ public class Member {
     //카드 주인
     @JsonManagedReference //직렬화
     @OneToMany(mappedBy = "cardOwner")
-    private List<Card> cardOwner;
+    private List<Card> ownCard;
 
     public List<String> getRole() {
         return List.of(role);

@@ -33,7 +33,7 @@ public class BriefCardResponse {
                 .title(entity.getTitle())
                 .content(entity.getContent())
                 .teammate(entity.getTeammate())
-                .createDate(LocalDateTime.now())
+                .createDate(entity.getCreateDate())
                 .viewCnt(entity.getViewCnt())
                 .selectionInfo(selectionInfo)
                 .build();

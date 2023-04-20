@@ -30,24 +30,18 @@ public class CardService {
     //create - 카드주세요 글 작성
     @Transactional
     public void createCard(CardRequest dto) {
-        Card card = new Card();
+
         Member cardWriter = memberRepository.findById(dto.getCardWriterId())
-                .orElseThrow(() -> new RuntimeException("cardWriter is not found"));
-        card.setCardWriter(cardWriter);
+                .orElseThrow(() -> new EntityNotFoundException("cardWriter is not found"));
+
         Team projTeam = teamRepository.findById(dto.getProjTeamId())
                 .orElseThrow(() -> new EntityNotFoundException("team is not found"));
-        card.setProjTeam(projTeam);
 
-        card.setTitle(dto.getTitle());
-        card.setContent(dto.getContent());
-        card.setTeammate(dto.getTeammate());
+        Card card = Card.toEntity(dto, cardWriter, projTeam);
 
         LocalDateTime now = LocalDateTime.now();
-        card.setCreateDate(now);
-        card.setLastUpdateDate(now);
+        card.toDefault(now, null, 0L, false);
 
-        card.setViewCnt(0L);
-        card.setDeleteYn(false);
         cardRepository.save(card);
     }
 
@@ -68,7 +62,6 @@ public class CardService {
             }else{
                 selectionInfo = null;
             }
-
             briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo));
         }
         return briefCards;
@@ -79,23 +72,7 @@ public class CardService {
         Card card = cardRepository.findByDeleteYnAndCardId(false, cardId);
         card.increaseViewCnt();
         cardRepository.save(card);
-
-        Member member = card.getCardWriter();
-        MemberInfo writer = MemberInfo.toDto(member);
-
-        Team team = card.getProjTeam();
-        TeamInfo teamInfo = TeamInfo.toDto(team);
-
-        Member owner = card.getCardOwner();
-        CardSelectionInfo selectionInfo;
-        if(owner != null){
-            MemberInfo cardOwner = MemberInfo.toDto(owner);
-            selectionInfo = CardSelectionInfo.toDto(card, cardOwner);
-        }else{
-            selectionInfo = null;
-        }
-
-        return CardResponse.toDto(card, writer, teamInfo, selectionInfo);
+        return CardResponse.toDto(card, card.getCardWriter(), card.getProjTeam(), card.getCardOwner());
     }
 
     //update - 카드주세요 선정
@@ -105,10 +82,9 @@ public class CardService {
                 .orElseThrow(()-> new EntityNotFoundException("card is not found"));
         Member owner = memberRepository.findById(cardOwnerId)
                 .orElseThrow(() -> new EntityNotFoundException("member is not found"));
-        card.setCardOwner(owner);
-        card.setSelectionYn(true);
+
         LocalDateTime now = LocalDateTime.now();
-        card.setSelectedDate(now);
+        card.selectCard(owner, true, now);
     }
 
     //update - 카드주세요 글 수정
@@ -119,13 +95,9 @@ public class CardService {
 
         Team projTeam = teamRepository.findById(request.getProjTeamId())
                 .orElseThrow(() -> new EntityNotFoundException("team is not found"));
-        card.setProjTeam(projTeam);
-        card.setTitle(request.getTitle());
-        card.setContent(request.getContent());
-        card.setTeammate(request.getTeammate());
 
         LocalDateTime now = LocalDateTime.now();
-        card.setLastUpdateDate(now);
+        card.updateCard(projTeam, request.getTitle(), request.getContent(), request.getTeammate(), now);
     }
 
     //delete - 카드주세요 글 삭제
@@ -133,8 +105,7 @@ public class CardService {
     public void deleteCard(Long cardId){
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(()-> new EntityNotFoundException("card is not found"));
-        card.setDeleteYn(true);
-        card.setLastUpdateDate(LocalDateTime.now());
+        card.deleteCard(true);
     }
 
     //search - 카드주세요 검색
@@ -147,7 +118,6 @@ public class CardService {
 
         for(Card C : cards){
             Member member = C.getCardWriter();
-
             Member owner = C.getCardOwner();
             CardSelectionInfo selectionInfo;
             if(owner != null){
@@ -156,7 +126,6 @@ public class CardService {
             }else{
                 selectionInfo = null;
             }
-
             briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo));
         }
         return briefCards;
