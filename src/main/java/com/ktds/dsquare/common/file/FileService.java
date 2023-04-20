@@ -3,6 +3,7 @@ package com.ktds.dsquare.common.file;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
+import com.ktds.dsquare.common.file.dto.FileSavedDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class FileService {
 
 
     @Transactional
-    public String uploadFile(MultipartFile file) throws IOException {
+    public FileSavedDto uploadFile(MultipartFile file) throws IOException {
         log.info("File description | Original filename : {} | Name : {} | Size : {} | Content Type : {}",
                 file.getOriginalFilename(),
                 file.getName(),
@@ -36,7 +37,12 @@ public class FileService {
         final String filePath = directory + uniqueFilename;
 
         PutObjectResult result = upload(filePath, file); // TODO here
-        return "https://" + AwsProperties.BUCKET_NAME() + ".s3.amazonaws.com/" + filePath;
+        return FileSavedDto.builder()
+                .filename(uniqueFilename)
+                .extension(extractExtension(file.getOriginalFilename()))
+                .path(filePath)
+                .url(makeAccessibleUrl(filePath))
+                .build();
     }
     private String removeExtension(String filename) {
         if (!StringUtils.hasText(filename))
@@ -44,8 +50,14 @@ public class FileService {
 
         return filename.substring(0, filename.lastIndexOf("."));
     }
+    public String extractExtension(String filename) {
+        if (!StringUtils.hasText(filename))
+            throw new RuntimeException("Filename is empty!");
+
+        return filename.substring(filename.lastIndexOf(".") + 1);
+    }
     private String determineDirectory() {
-        // TODO determine directory depending on requesting user
+        // TODO determine directory depending on requesting user or something else
         return "TestDir/";
     }
     private String generateUniqueFilename(String filename) {
@@ -75,7 +87,11 @@ public class FileService {
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(file.getContentType());
         metadata.setContentLength(file.getSize());
+        // TODO custom header?로 확장자 추가?
         return metadata;
+    }
+    private String makeAccessibleUrl(String filePath) {
+        return "https://" + AwsProperties.BUCKET_NAME() + ".s3.amazonaws.com/" + filePath;
     }
 
     private void download(String eTag) {

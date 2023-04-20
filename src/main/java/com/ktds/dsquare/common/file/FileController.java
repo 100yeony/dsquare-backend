@@ -1,5 +1,6 @@
 package com.ktds.dsquare.common.file;
 
+import com.ktds.dsquare.common.file.dto.FileSavedDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ public class FileController {
 
 
     @PostMapping("/file/upload")
-    public ResponseEntity<String> uploadFile(MultipartFile file) throws Exception {
+    public ResponseEntity<FileSavedDto> uploadFile(MultipartFile file) throws Exception {
         return new ResponseEntity<>(fileService.uploadFile(file), HttpStatus.CREATED);
     }
 
