@@ -33,8 +33,9 @@ public class QuestionController {
     //read - 질문글 상세 조회
     @GetMapping("/board/questions/{qid}")
     public ResponseEntity<QuestionResponse> getQnADetail(@PathVariable("qid") Long qid) {
-        return new ResponseEntity(questionService.getQuestionDetail(qid), HttpStatus.OK);
+        return ResponseEntity.ok(questionService.getQuestionDetail(qid));
     }
+
 
     // 질문글 수정
     @PostMapping("/board/questions/{qid}")
@@ -52,10 +53,9 @@ public class QuestionController {
 
     //search - Q&A 검색(업무구분, 카테고리, 제목+내용, 사용자(이름))
     @GetMapping("/board/questions/search")
-    public List<BriefQuestionResponse> search(@RequestParam Boolean workYn, @RequestParam(required = false) Integer cid,
+    public List<BriefQuestionResponse> searchQnA(@RequestParam Boolean workYn, @RequestParam(required = false) Integer cid,
                                           @RequestParam(required = false) String key, @RequestParam(required = false) String value) {
-        return questionService.search(workYn, cid, key, value);
+        return questionService.searchQnA(workYn, cid, key, value);
     }
-
 
 }

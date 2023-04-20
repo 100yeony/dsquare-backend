@@ -1,5 +1,7 @@
 package com.ktds.dsquare.member.team;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.ktds.dsquare.board.card.Card;
 import lombok.*;
 
 import javax.persistence.*;
@@ -25,6 +27,10 @@ public class Team {
     private Team upperDepartment;
     @OneToMany(mappedBy = "upperDepartment")
     private List<Team> childDepartments;
+
+    @JsonManagedReference //직렬화
+    @OneToMany(mappedBy = "projTeam")
+    private List<Card> cardList;
 
 
     public List<String> getTeamHierarchy() {

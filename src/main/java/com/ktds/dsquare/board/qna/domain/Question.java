@@ -19,8 +19,8 @@ public class Question {
     private Long qid;
 
     @ManyToOne
-    @JoinColumn(name = "cid")
-    private Category cid;
+    @JoinColumn(name = "category")
+    private Category category;
 
     @Column(nullable = false)
     private String title;
