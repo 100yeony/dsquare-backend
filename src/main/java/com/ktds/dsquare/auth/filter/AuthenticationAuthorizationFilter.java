@@ -5,7 +5,9 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.ktds.dsquare.auth.CustomUserDetails;
 import com.ktds.dsquare.auth.jwt.JwtProperties;
 import com.ktds.dsquare.auth.jwt.JwtService;
+import com.ktds.dsquare.common.ErrorResponse;
 import com.ktds.dsquare.member.Member;
+import com.ktds.dsquare.util.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -78,24 +80,24 @@ public class AuthenticationAuthorizationFilter extends BasicAuthenticationFilter
 
     private void handleTokenExpiration(HttpServletResponse response) throws IOException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
-//        ResponseUtil.writeJsonValue(
-//                response,
-//                ErrorResponse.builder()
-//                        .code("401001")
-//                        .message("Token has expired.")
-//                        .build()
-//        );
+        ResponseUtil.writeJsonValue(
+                response,
+                ErrorResponse.builder()
+                        .code("401001")
+                        .message("Token has expired.")
+                        .build()
+        );
     }
     private void handleTokenVerificationException(HttpServletResponse response, Exception e) throws IOException {
         log.error("Token verification error - ", e);
         response.setStatus(HttpStatus.BAD_REQUEST.value());
-//        ResponseUtil.writeJsonValue(
-//                response,
-//                ErrorResponse.builder()
-//                        .code("400001")
-//                        .message(e.getMessage())
-//                        .build()
-//        );
+        ResponseUtil.writeJsonValue(
+                response,
+                ErrorResponse.builder()
+                        .code("400001")
+                        .message(e.getMessage())
+                        .build()
+        );
     }
 
 }

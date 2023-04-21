@@ -70,7 +70,7 @@ public class SecurityConfig {
         /* Filter Configuration */
         configureFilters(http);
         /* Exception Handling */
-        configureExceptionHandling(http);
+//        configureExceptionHandling(http);
 
         return http.build();
     }
@@ -89,8 +89,6 @@ public class SecurityConfig {
     }
     private void configureRequestAuthorization(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/account/signup").permitAll()
-                .antMatchers("/auth/refresh").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated();
     }
@@ -132,13 +130,20 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> {
+            // Service ignore
+            web.ignoring().antMatchers(
+                    "/account/signup", "/account/find-pw",
+                    "/auth/refresh"
+            );
+            // Swagger ignore
             web.ignoring()
                     .antMatchers("/v2/api-docs",
                             "/configuration/ui",
                             "/swagger-resources/**",
                             "/configuration/security",
                             "/swagger-ui.html",
-                            "/webjars/**");
+                            "/webjars/**"
+                    );
         };
     }
 
