@@ -2,6 +2,7 @@ package com.ktds.dsquare.board.qna.domain;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.ktds.dsquare.board.qna.dto.AnswerRequest;
 import com.ktds.dsquare.member.Member;
 import lombok.*;
 
@@ -36,6 +37,29 @@ public class Answer {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question")
     private Question question;
+
+    public static Answer toEntity(AnswerRequest dto, Member writer, Question question){
+        LocalDateTime now = LocalDateTime.now();
+        return Answer.builder()
+                .writer(writer)
+                .content(dto.getContent())
+                .createDate(now)
+                .atcId(dto.getAtcId())
+                .deleteYn(false)
+                .question(question)
+                .build();
+    }
+
+    public void updateAnswer(String content, Long atcId){
+        LocalDateTime now = LocalDateTime.now();
+        this.content = content;
+        this.lastUpdateDate = now;
+        this.atcId = atcId;
+    }
+
+    public void deleteAnswer(){
+        this.deleteYn = true;
+    }
 
 }
 

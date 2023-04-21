@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,24 +37,11 @@ public class QuestionService {
     //create - 질문글 작성
     @Transactional
     public void createQuestion(QuestionRequest dto) {
-        //workYn
-        Question question = new Question();
         Member writer = memberRepository.findById(dto.getWriterId()).orElseThrow(() -> new EntityNotFoundException("Writer does not exist"));
-        question.setWriter(writer);
-        question.setTitle(dto.getTitle());
-        question.setContent(dto.getContent());
-        question.setViewCnt(0L);
-        question.setAtcId(dto.getAtcId());
-        question.setDeleteYn(false);
-
-        LocalDateTime now = LocalDateTime.now();
-        question.setCreateDate(now);
-        question.setLastUpdateDate(now);
-
         Category category = categoryRepository.findById(dto.getCid()).orElseThrow(() -> new EntityNotFoundException("Category does not exist"));
-        question.setCategory(category);
-        questionRepository.save(question);
+        Question question = Question.toEntity(dto, writer, category);
 
+        questionRepository.save(question);
         insertNewTags(dto.getTags(), question);
     }
 
@@ -76,7 +62,7 @@ public class QuestionService {
             List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(Q, false);
             boolean managerAnswerYn = false;
             for (Answer A : answers) {
-                if (category.getManagerId().equals(A.getWriter().getId())) {
+                if (category.getManager()==A.getWriter()) {
                     managerAnswerYn = true;
                     break;
                 }
@@ -88,28 +74,26 @@ public class QuestionService {
 
     //read - 질문글 상세 조회
     public QuestionResponse getQuestionDetail(Long qid) {
-        Question question = questionRepository.findById(qid)
-                .orElseThrow(() -> new EntityNotFoundException("Question not found"));
+        Question question = questionRepository.findByDeleteYnAndQid(false, qid);
         question.increaseViewCnt();
         questionRepository.save(question);
 
         Member member = question.getWriter();
         MemberInfo writer = MemberInfo.toDto(member);
-        return QuestionResponse.toDto(question, writer, CategoryResponse.toDto(question.getCategory()));
+        CategoryResponse categoryRes = CategoryResponse.toDto(question.getCategory());
+        return QuestionResponse.toDto(question, writer, categoryRes);
     }
 
     // 질문글 수정
     @Transactional
     public void updateQuestion(Long qid, QuestionRequest request) {
-        Question question = questionRepository.findById(qid)
-                .orElseThrow(() -> new EntityNotFoundException("Update Question Fail"));
-
-        question.setTitle(request.getTitle());
-        question.setContent(request.getContent());
-        Category category = categoryRepository.findById(request.getCid()).orElseThrow(()-> new RuntimeException("category not found"));
-        question.setCategory(category);
-        question.setLastUpdateDate(LocalDateTime.now());
-        question.setAtcId(request.getAtcId());
+        Question question = questionRepository.findByDeleteYnAndQid(false, qid);
+        if(question==null){
+            throw new EntityNotFoundException("Question not found. qid is " + qid);
+        }
+        Category category = categoryRepository.findById(request.getCid())
+                .orElseThrow(()-> new EntityNotFoundException("category not found. category is " + request.getCid()));
+        question.updateQuestion(request.getTitle(), request.getContent(), category, request.getAtcId());
 
         // 태그 수정
         List<QuestionTag> oldQTs = question.getQuestionTags();
@@ -138,10 +122,7 @@ public class QuestionService {
 
         // 답변글이 이미 존재할 때 => HTTP Status로 처리해줘야 함(추후 수정 필요)
         if(!answerList.isEmpty()) throw new EntityNotFoundException("Delete Question Fail - Reply exists");
-
-        question.setDeleteYn(true);
-        question.setLastUpdateDate(LocalDateTime.now());
-
+        question.deleteQuestion();
     }
 
 
@@ -169,6 +150,7 @@ public class QuestionService {
             filter = filter.and(QuestionSpecification.equalCategory(2));
         }
 
+
         //사용자 이름 검색(2글자로도 포함된 사람 검색 & 다른 조건과 모두 AND)
         if (key != null && key.equals("member") && value != null) {
             List<Member> members = memberRepository.findByNameContaining(value);
@@ -185,7 +167,7 @@ public class QuestionService {
                     // 매칭되는 멤버가 없으면 빈 리스트 반환
                     return Collections.emptyList();
                 }
-            } catch (EntityNotFoundException ex) {
+            } catch (RuntimeException ex) {
                 // Exception이 발생한 경우 빈 리스트 반환
                 return Collections.emptyList();
             }
@@ -194,6 +176,7 @@ public class QuestionService {
         if(key!=null && key.equals("titleAndContent") && value != null){
             filter = filter.and(QuestionSpecification.equalTitleAndContentContaining(value));
         }
+
         List<Question> questionList = questionRepository.findAll(filter, Sort.by(Sort.Direction.DESC, "createDate"));
         List<BriefQuestionResponse> searchResults = new ArrayList<>();
 
@@ -203,13 +186,14 @@ public class QuestionService {
             List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(q, false);
             boolean managerAnswerYn = false;
             for (Answer A : answers) {
-                if (q.getCategory().getManagerId().equals(A.getWriter().getId())) {
+                if (q.getCategory().getManagerId()==A.getWriter().getId()) {
                     managerAnswerYn = true;
                     break;
                 }
             }
             searchResults.add(BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn));
         }
+
         return searchResults;
     }
 

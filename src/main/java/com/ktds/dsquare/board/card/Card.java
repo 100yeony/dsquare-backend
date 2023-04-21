@@ -86,8 +86,8 @@ public class Card {
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public void deleteCard(Boolean deleteYn){
-        this.deleteYn = deleteYn;
+    public void deleteCard(){
+        this.deleteYn = true;
     }
 
     public void increaseViewCnt() {
