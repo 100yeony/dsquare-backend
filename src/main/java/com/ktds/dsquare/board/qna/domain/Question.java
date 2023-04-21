@@ -1,6 +1,7 @@
 package com.ktds.dsquare.board.qna.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.ktds.dsquare.board.qna.dto.QuestionRequest;
 import com.ktds.dsquare.member.Member;
 import lombok.*;
 
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter @Setter
+@Getter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 public class Question {
@@ -45,6 +46,33 @@ public class Question {
 
     @OneToMany(mappedBy = "question")
     private List<QuestionTag> questionTags = new ArrayList<>();
+
+    public static Question toEntity(QuestionRequest dto, Member writer, Category category){
+        LocalDateTime now = LocalDateTime.now();
+        return Question.builder()
+                .writer(writer)
+                .title(dto.getTitle())
+                .content(dto.getContent())
+                .createDate(now)
+                .viewCnt(0L)
+                .atcId(dto.getAtcId())
+                .deleteYn(false)
+                .category(category)
+                .build();
+    }
+
+    public void updateQuestion(String title, String content, Category category, Long atcId){
+        LocalDateTime now = LocalDateTime.now();
+        this.title = title;
+        this.content = content;
+        this.lastUpdateDate = now;
+        this.category = category;
+        this.atcId = atcId;
+    }
+
+    public void deleteQuestion(){
+        this.deleteYn = true;
+    }
 
     public void increaseViewCnt() {
         this.viewCnt += 1;
