@@ -105,7 +105,7 @@ public class CardService {
     public void deleteCard(Long cardId){
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(()-> new EntityNotFoundException("card is not found"));
-        card.deleteCard(true);
+        card.deleteCard();
     }
 
     //search - 카드주세요 검색
