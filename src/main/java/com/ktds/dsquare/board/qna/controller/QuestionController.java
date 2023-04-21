@@ -1,6 +1,5 @@
 package com.ktds.dsquare.board.qna.controller;
 
-import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.dto.QuestionRequest;
 import com.ktds.dsquare.board.qna.dto.QuestionResponse;
@@ -10,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -35,8 +33,9 @@ public class QuestionController {
     //read - 질문글 상세 조회
     @GetMapping("/board/questions/{qid}")
     public ResponseEntity<QuestionResponse> getQnADetail(@PathVariable("qid") Long qid) {
-        return new ResponseEntity(questionService.getQuestionDetail(qid), HttpStatus.OK);
+        return ResponseEntity.ok(questionService.getQuestionDetail(qid));
     }
+
 
     // 질문글 수정
     @PostMapping("/board/questions/{qid}")
@@ -52,22 +51,11 @@ public class QuestionController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    //search - Q&A 검색(카테고리, 제목+내용, 사용자(이름))
+    //search - Q&A 검색(업무구분, 카테고리, 제목+내용, 사용자(이름))
     @GetMapping("/board/questions/search")
-    public ResponseEntity<List<Question>> search(@RequestParam(required = false) Integer cid, @RequestParam String key, @RequestParam String value) {
-        if (cid != null) {
-            List<Question> questions = questionService.searchByCid(cid);
-            return ResponseEntity.ok(questions);
-        }
-        if (key.contentEquals("titleAndContent")) {
-            List<Question> questions = questionService.searchByTitleOrContent(value);
-            return ResponseEntity.ok(questions);
-
-        } else if (key.contentEquals("member")) {
-            List<Question> questions = questionService.searchByName(value);
-            return ResponseEntity.ok(questions);
-        }
-        return ResponseEntity.ok(Collections.emptyList());
+    public List<BriefQuestionResponse> searchQnA(@RequestParam Boolean workYn, @RequestParam(required = false) Integer cid,
+                                          @RequestParam(required = false) String key, @RequestParam(required = false) String value) {
+        return questionService.searchQnA(workYn, cid, key, value);
     }
 
 }

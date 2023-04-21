@@ -1,6 +1,7 @@
 package com.ktds.dsquare.member;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.ktds.dsquare.board.card.Card;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
@@ -53,12 +54,22 @@ public class Member {
     private List<Category> cid;
 
     @JsonManagedReference //직렬화
-    @OneToMany(mappedBy = "id")
+    @OneToMany(mappedBy = "qid")
     private List<Question> questionsList;
 
     @JsonManagedReference //직렬화
     @OneToMany(mappedBy = "writer")
     private List<Answer> answerList;
+
+    //카드 글 작성자
+    @JsonManagedReference //직렬화
+    @OneToMany(mappedBy = "cardWriter")
+    private List<Card> cardList;
+
+    //카드 주인
+    @JsonManagedReference //직렬화
+    @OneToMany(mappedBy = "cardOwner")
+    private List<Card> ownCard;
 
     public List<String> getRole() {
         return List.of(role);
@@ -71,6 +82,10 @@ public class Member {
     public void update(MemberUpdateRequest request) {
         if (request.getContact() != null)
             this.contact = request.getContact();
+    }
+
+    public void changePassword(String newPassword) {
+        this.pw = newPassword;
     }
 
     public static Member toEntity(SignupRequest dto) {

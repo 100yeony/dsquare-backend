@@ -1,6 +1,7 @@
 package com.ktds.dsquare.board.qna.dto;
 
 import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.board.qna.domain.QuestionTag;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Builder
@@ -24,9 +27,15 @@ public class QuestionResponse {
     private LocalDateTime lastUpdateDate;
     private Long viewCnt;
     private Long atcId;
+    private List<String> tags;
 
 
     public static QuestionResponse toDto(Question question, MemberInfo writerInfo, CategoryResponse category){
+        List<QuestionTag> questionTags = question.getQuestionTags();
+        List<String> tags = new ArrayList<>();
+        for(QuestionTag questionTag : questionTags)
+            tags.add(questionTag.getTag().getName());
+
         return QuestionResponse.builder()
                 .qid(question.getQid())
                 .writerInfo(writerInfo)
@@ -37,6 +46,7 @@ public class QuestionResponse {
                 .lastUpdateDate(LocalDateTime.now())
                 .viewCnt(question.getViewCnt())
                 .atcId(question.getAtcId())
+                .tags(tags)
                 .build();
     }
 

@@ -23,7 +23,6 @@ public class AnswerService {
 
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
-    private final AnswerResponse answerResponse;
     private final MemberRepository memberRepository;
 
     // 답변글 작성

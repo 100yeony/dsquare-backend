@@ -1,6 +1,7 @@
 package com.ktds.dsquare.board.qna.dto;
 
 import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.board.qna.domain.QuestionTag;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Builder
@@ -25,9 +28,14 @@ public class BriefQuestionResponse {
     private Long answerCnt;
     private Boolean managerAnswerYn;
     private Boolean atcYn;
-
+    private List<String> tags;
 
     public static BriefQuestionResponse toDto(Question question, MemberInfo writerInfo, CategoryResponse category, Long answerCnt, Boolean managerAnswerYn){
+        List<QuestionTag> questionTags = question.getQuestionTags();
+        List<String> tags = new ArrayList<>();
+        for(QuestionTag questionTag : questionTags)
+            tags.add(questionTag.getTag().getName());
+
         return BriefQuestionResponse.builder()
                 .qid(question.getQid())
                 .writerInfo(writerInfo)
@@ -39,6 +47,7 @@ public class BriefQuestionResponse {
                 .atcYn(question.getAtcId()!=null)
                 .answerCnt(answerCnt)
                 .managerAnswerYn(managerAnswerYn)
+                .tags(tags)
                 .build();
     }
 }
