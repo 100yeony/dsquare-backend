@@ -49,7 +49,7 @@ public class QuestionService {
     public List<BriefQuestionResponse> getAllQuestions(Boolean workYn) {
         // deleteYn = false만 필터링 한 후 qid 기준으로 정렬
         Category notWorkCategory = categoryRepository.findByCid(2)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
 
         List<Question> questions;
         List<BriefQuestionResponse> briefQuestions = new ArrayList<>();
@@ -62,7 +62,7 @@ public class QuestionService {
             List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(Q, false);
             boolean managerAnswerYn = false;
             for (Answer A : answers) {
-                if (category.getManagerId().equals(A.getWriter().getId())) {
+                if (category.getManager()==A.getWriter()) {
                     managerAnswerYn = true;
                     break;
                 }
@@ -87,10 +87,12 @@ public class QuestionService {
     // 질문글 수정
     @Transactional
     public void updateQuestion(Long qid, QuestionRequest request) {
-        Question question = questionRepository.findById(qid)
-                .orElseThrow(() -> new EntityNotFoundException("Update Question Fail"));
+        Question question = questionRepository.findByDeleteYnAndQid(false, qid);
+        if(question==null){
+            throw new EntityNotFoundException("Question not found. qid is " + qid);
+        }
         Category category = categoryRepository.findById(request.getCid())
-                .orElseThrow(()-> new RuntimeException("category not found"));
+                .orElseThrow(()-> new EntityNotFoundException("category not found. category is " + request.getCid()));
         question.updateQuestion(request.getTitle(), request.getContent(), category, request.getAtcId());
 
         // 태그 수정
@@ -115,11 +117,11 @@ public class QuestionService {
     @Transactional
     public void deleteQuestion(Long qid) {
         Question question = questionRepository.findById(qid)
-                .orElseThrow(() -> new RuntimeException("Delete Question Fail"));
+                .orElseThrow(() -> new EntityNotFoundException("Delete Question Fail"));
         List<Answer> answerList = answerRepository.findByQuestionAndDeleteYn(question, false);
 
         // 답변글이 이미 존재할 때 => HTTP Status로 처리해줘야 함(추후 수정 필요)
-        if(!answerList.isEmpty()) throw new RuntimeException("Delete Question Fail - Reply exists");
+        if(!answerList.isEmpty()) throw new EntityNotFoundException("Delete Question Fail - Reply exists");
         question.deleteQuestion();
     }
 
@@ -130,7 +132,7 @@ public class QuestionService {
      * 2. category없이 제목+내용 or 작성자로 검색하는 경우 -> cid X
      * 3. 둘 다 검색하는 경우 -> cid, key, value
      * */
-    public List<BriefQuestionResponse> search(Boolean workYn, Integer cid, String key, String value){
+    public List<BriefQuestionResponse> searchQnA(Boolean workYn, Integer cid, String key, String value){
         //deleteYn = false인 것만 조회
         Specification<Question> filter = Specification.where(QuestionSpecification.equalNotDeleted(false));
         //업무 구분
@@ -141,11 +143,11 @@ public class QuestionService {
             }
             //카테고리 검색 - cid 필터링
             if(cid != null){
-                filter = filter.and(QuestionSpecification.equalCid(cid));
+                filter = filter.and(QuestionSpecification.equalCategory(cid));
             }
         } else{
             //비업무 - cid=2
-            filter = filter.and(QuestionSpecification.equalCid(2));
+            filter = filter.and(QuestionSpecification.equalCategory(2));
         }
 
 
@@ -157,7 +159,7 @@ public class QuestionService {
                     List<Member> writerIds = new ArrayList<>();
                     for (Member M : members) {
                         Member m = memberRepository.findById(M.getId())
-                                .orElseThrow(() -> new RuntimeException("Member Not Found"));
+                                .orElseThrow(() -> new EntityNotFoundException("Member Not Found"));
                         writerIds.add(m);
                     }
                     filter = filter.and(QuestionSpecification.inWriter(writerIds));
@@ -184,7 +186,7 @@ public class QuestionService {
             List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(q, false);
             boolean managerAnswerYn = false;
             for (Answer A : answers) {
-                if (q.getCategory().getManagerId().equals(A.getWriter().getId())) {
+                if (q.getCategory().getManagerId()==A.getWriter().getId()) {
                     managerAnswerYn = true;
                     break;
                 }

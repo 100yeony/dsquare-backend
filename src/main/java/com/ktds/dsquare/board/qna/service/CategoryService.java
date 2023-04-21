@@ -14,7 +14,6 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final BriefCategoryResponse briefCategoryResponse;
 
     // 카테고리 목록 조회
     public List<BriefCategoryResponse> getAllCategories() {
