@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter @Builder
 @NoArgsConstructor @AllArgsConstructor
@@ -21,5 +22,6 @@ public class QuestionRequest {
     private Long viewCnt;
     private Long atcId;
     private Boolean deleteYn;
+    private List<String> tags;
 
 }
