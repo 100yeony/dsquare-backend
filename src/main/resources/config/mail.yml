@@ -1,0 +1,13 @@
+# https://www.baeldung.com/spring-email
+spring:
+  mail:
+    host: smtp.gmail.com
+    protocol: smtp
+    port: 587
+    username: ENC(pcmpaGl2kVEdk/ayMGFJmEW2YayLJh6WhjLcTlUzoO8=)
+    password: ENC(DMFtb3Y8tYWA3bm7F5UEAN5pwmfEzTzNjQ31S4gwQzU=)
+    properties.mail.smtp:
+      auth: true
+      starttls.required: true
+      starttls.enable: true # to enable a TLS-protected connection - for SMTP servers requiring a TLS connection
+    debug: true

@@ -7,6 +7,7 @@ import com.ktds.dsquare.member.dto.response.MemberInfo;
 import com.ktds.dsquare.member.team.Team;
 import com.ktds.dsquare.member.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -75,6 +77,20 @@ public class MemberService {
         member.update(request);
         member.join(newTeam);
         return MemberInfo.toDto(memberRepository.save(member));
+    }
+
+    @Transactional
+    public void findPassword(String email, String tempPassword) {
+        try {
+            Member member = memberRepository.findByEmail(email).orElse(null);
+            if (member == null)
+                return;
+
+            member.changePassword(passwordEncoder.encode(tempPassword));
+        } catch (Exception e) {
+            log.warn("Error while finding password.");
+            throw e;
+        }
     }
 
 }
