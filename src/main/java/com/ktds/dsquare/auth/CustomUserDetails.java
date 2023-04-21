@@ -32,21 +32,33 @@ public class CustomUserDetails implements UserDetails {
         return member.getEmail();
     }
 
+    /**
+     * Authentication Failed (사용자 계정의 유효 기간이 만료 되었습니다.)
+     */
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    /**
+     * Authentication Failed (사용자 계정이 잠겨 있습니다.)
+     */
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    /**
+     * Authentication Failed (자격 증명 유효 기간이 만료되었습니다.)
+     */
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    /**
+     * Authentication Failed (유효하지 않은 사용자입니다.)
+     */
     @Override
     public boolean isEnabled() {
         return true;

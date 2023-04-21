@@ -67,7 +67,7 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws ServletException, IOException {
         log.info("Authentication Failed ({})", failed.getMessage());
-        super.unsuccessfulAuthentication(request, response, failed); // 이를 수행하면 이후 trace에서 상태 코드가 403으로 바뀌어버림
+        super.unsuccessfulAuthentication(request, response, failed); // 이를 수행하면 이후 trace에서 상태 코드가 403으로 바뀌어버림 --> StandardHostValue의 custom()에서 error page(/error)로 forward를 하며 403으로 변경됨
     }
 
 }
