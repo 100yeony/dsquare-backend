@@ -14,14 +14,13 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final BriefCategoryResponse briefCategoryResponse;
 
     // 카테고리 목록 조회
     public List<BriefCategoryResponse> getAllCategories() {
         List<Category> categories = categoryRepository.findByUpCategory(null);
         List<BriefCategoryResponse> briefCategoryResponses = new ArrayList<>();
         for(Category c : categories){
-            briefCategoryResponses.add(briefCategoryResponse.toDto(c));
+            briefCategoryResponses.add(BriefCategoryResponse.toDto(c));
         }
         return briefCategoryResponses;
     }

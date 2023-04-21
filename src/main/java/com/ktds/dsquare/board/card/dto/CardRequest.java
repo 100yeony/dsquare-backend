@@ -1,25 +1,25 @@
-package com.ktds.dsquare.board.qna.dto;
+package com.ktds.dsquare.board.card.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Getter @Builder
+@Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
-public class QuestionRequest {
+public class CardRequest {
 
-    private Long qid;
-    private Long writerId;
-    private Integer cid;
+    private Long cardId;
+    private Long cardWriterId;
+    private Long projTeamId;
     private String title;
     private String content;
+    private String teammate;
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
     private Long viewCnt;
-    private Long atcId;
     private Boolean deleteYn;
 
 }

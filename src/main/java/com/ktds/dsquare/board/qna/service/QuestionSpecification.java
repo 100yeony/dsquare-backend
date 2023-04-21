@@ -11,17 +11,17 @@ public class QuestionSpecification {
 
     //삭제되지 않은 글(deleteYn=false)
     public static Specification<Question> equalNotDeleted(Boolean deleteYn){
-        return ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("deleteYn"), false));
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("deleteYn"), deleteYn));
     }
 
     //업무 분류(workYn=true & cid != 2)
     public static Specification<Question> notEqualNotWork(Integer cid){
-        return ((root, query, criteriaBuilder) -> criteriaBuilder.notEqual(root.get("cid"), cid));
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.notEqual(root.get("category"), cid));
     }
 
     //비업무(cid=2) & 카테고리 검색(cid)
-    public static Specification<Question> equalCid(Integer cid) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("cid"), cid);
+    public static Specification<Question> equalCategory(Integer cid) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("category"), cid);
     }
 
     //사용자 검색(member) - 조건에 매칭되는 모든 사용자(ex.이름 2글자만 겹치는 경우)
