@@ -13,6 +13,7 @@ import org.springframework.context.annotation.PropertySources;
         @PropertySource(value = "classpath:config/jasypt.yml", factory = YamlLoadFactory.class),
         @PropertySource(value = "classpath:config/jwt.yml", factory = YamlLoadFactory.class),
         @PropertySource(value = "classpath:config/mail.yml", factory = YamlLoadFactory.class),
+        @PropertySource(value = "classpath:config/aws.yml", factory = YamlLoadFactory.class),
 })
 public class DSquareUserBackendApplication {
 

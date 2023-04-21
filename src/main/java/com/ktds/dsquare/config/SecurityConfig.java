@@ -91,6 +91,7 @@ public class SecurityConfig {
         http.authorizeRequests()
                 .antMatchers("/account/signup", "/account/find-pw").permitAll()
                 .antMatchers("/auth/refresh").permitAll()
+                .antMatchers("/file/upload").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated();
     }

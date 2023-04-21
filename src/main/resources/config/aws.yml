@@ -1,0 +1,6 @@
+aws:
+  key:
+    access: ENC(NaolY5Ib7WELm2owEkkiTzuYxdCP8Yba7LuJ+0wLfLg=)
+    secret: ENC(sHfiZ1t/r3tLZiaqZR33VfYevjQYtDZaKpQCRu0t6kNPd7j5QuXGlaZtkCVUbiYkKNovoET9tRY=)
+  s3:
+    bucket-name: dsquare
