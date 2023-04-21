@@ -11,11 +11,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CardRequest {
 
-    private Long cardId;
     private Long cardWriterId;
     private Long projTeamId;
     private String title;
     private String content;
+    private Integer teammateCnt;
     private String teammate;
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;

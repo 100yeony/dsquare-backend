@@ -10,14 +10,14 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter @Setter
+@Getter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 @Table(name = "COMM_CARD")
 public class Card {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long cardId;
+    private Long id;
 
     @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,6 +34,8 @@ public class Card {
 
     @Column(nullable = false)
     private String content;
+
+    private Integer teammateCnt;
 
     private String teammate;
 
@@ -64,6 +66,7 @@ public class Card {
                 .projTeam(projTeam)
                 .title(dto.getTitle())
                 .content(dto.getContent())
+                .teammateCnt(dto.getTeammateCnt())
                 .teammate(dto.getTeammate())
                 .createDate(now)
                 .viewCnt(0L)
@@ -77,12 +80,12 @@ public class Card {
         this.selectedDate = selectedDate;
     }
 
-    public void updateCard(Team projTeam, String title, String content,
-                           String teammate, LocalDateTime lastUpdateDate){
+    public void updateCard(Team projTeam, CardRequest dto, LocalDateTime lastUpdateDate){
         this.projTeam = projTeam;
-        this.title = title;
-        this.content = content;
-        this.teammate = teammate;
+        this.title = dto.getTitle();
+        this.content = dto.getContent();
+        this.teammateCnt = dto.getTeammateCnt();
+        this.teammate = dto.getTeammate();
         this.lastUpdateDate = lastUpdateDate;
     }
 

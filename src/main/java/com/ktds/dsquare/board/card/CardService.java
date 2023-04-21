@@ -30,6 +30,7 @@ public class CardService {
     //create - 카드주세요 글 작성
     @Transactional
     public void createCard(CardRequest dto) {
+        System.out.println("====>"+dto);
 
         Member cardWriter = memberRepository.findById(dto.getCardWriterId())
                 .orElseThrow(() -> new EntityNotFoundException("cardWriter is not found"));
@@ -65,7 +66,7 @@ public class CardService {
 
     //read - 카드주세요 글 상세 조회
     public CardResponse getCardDetail(Long cardId) {
-        Card card = cardRepository.findByDeleteYnAndCardId(false, cardId);
+        Card card = cardRepository.findByDeleteYnAndId(false, cardId);
         card.increaseViewCnt();
         cardRepository.save(card);
         return CardResponse.toDto(card, card.getCardWriter(), card.getProjTeam(), card.getCardOwner());
@@ -93,7 +94,7 @@ public class CardService {
                 .orElseThrow(() -> new EntityNotFoundException("team is not found"));
 
         LocalDateTime now = LocalDateTime.now();
-        card.updateCard(projTeam, request.getTitle(), request.getContent(), request.getTeammate(), now);
+        card.updateCard(projTeam, request, now);
     }
 
     //delete - 카드주세요 글 삭제
