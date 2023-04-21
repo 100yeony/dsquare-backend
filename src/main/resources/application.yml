@@ -35,6 +35,11 @@ logging:
   ### Level ###
   level:
     root: info
+    org.hibernate:
+      type:
+        descriptor:
+          sql: trace
+
     com.ktds.dsquare:
       auth: debug
       auth.jwt: debug
