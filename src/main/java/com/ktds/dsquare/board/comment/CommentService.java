@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.comment;
 
+import com.ktds.dsquare.board.card.CardRepository;
 import com.ktds.dsquare.board.comment.dto.CommentRequest;
 import com.ktds.dsquare.board.comment.dto.CommentResponse;
 import com.ktds.dsquare.board.enums.BoardType;
@@ -22,6 +23,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
+    private final CardRepository cardRepository;
 
     // 댓글 작성
     @Transactional
@@ -63,8 +65,8 @@ public class CommentService {
                 return questionRepository.findByDeleteYnAndQid(false, postId) != null; // 찾는 post 있으면 true
             case 1:
                 return answerRepository.findByDeleteYnAndId(false, postId) != null;
-//            case 2:
-//                return cardRepository.findByDeleteYnAndId(false, postId) != null;
+            case 2:
+                return cardRepository.findByDeleteYnAndId(false, postId) != null;
 //            case 3:
 //                return talkRepository.findByDeleteYnAndId(false, postId) != null;
 //            case 4:

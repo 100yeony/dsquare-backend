@@ -5,10 +5,12 @@ import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
