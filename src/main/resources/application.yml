@@ -7,12 +7,11 @@ spring:
   ### Datasource ###
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/dsquare
-    username: postgres
-    password: 1234
+    url: ENC(aH/kWzNb9qofLgeddkEHYE27ABguUk7tLVOd7U5NX0nVE+kxPJTK73T6db/gH61X66mGL/sbUmw=)
+    username: ENC(XpiFHrrQ4fw+MX/+gK3q8P89zB4j94b9)
+    password: ENC(OwLkYz9XbIHE4XKXoDJCAQ==)
 
   ### Spring Data JPA ###
-  ### update || create ###
   jpa:
     hibernate:
       ddl-auto: update
@@ -22,6 +21,7 @@ spring:
         format_sql: true
     show-sql: true
 
+  ### Spring MVC ###
   mvc:
     # Config for Swagger
     pathmatch:
@@ -41,6 +41,5 @@ logging:
           sql: trace
 
     com.ktds.dsquare:
-      auth: debug
       auth.jwt: debug
 

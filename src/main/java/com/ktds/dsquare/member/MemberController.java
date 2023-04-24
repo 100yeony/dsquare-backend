@@ -1,5 +1,6 @@
 package com.ktds.dsquare.member;
 
+import com.ktds.dsquare.common.mailing.MailService;
 import com.ktds.dsquare.member.dto.request.MemberUpdateRequest;
 import com.ktds.dsquare.member.dto.request.SignupRequest;
 import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
@@ -19,6 +20,7 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MailService mailService;
 
 
     /**
@@ -51,6 +53,15 @@ public class MemberController {
     @PatchMapping("/member/members/{id}")
     public ResponseEntity<?> updateMember(@PathVariable Long id, @RequestBody MemberUpdateRequest request) {
         return new ResponseEntity<>(memberService.updateMember(id, request), HttpStatus.OK);
+    }
+
+    /**
+     * 비밀번호 찾기
+     */
+    @PostMapping("/account/find-pw")
+    public ResponseEntity<Void> findPassword(@RequestBody String to) {
+        mailService.findPassword(to);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

@@ -103,13 +103,13 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new AuthenticationEntryPoint() {
                     @Override
                     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-                        log.error("-- Exception while authentication -- :: {}", String.valueOf(authException));
+                        log.error(String.valueOf(authException));
                     }
                 })
                 .accessDeniedHandler(new AccessDeniedHandler() {
                     @Override
                     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-                        log.error("-- Access denied -- :: {}", String.valueOf(accessDeniedException));
+                        log.error(String.valueOf(accessDeniedException));
                     }
                 });
     }

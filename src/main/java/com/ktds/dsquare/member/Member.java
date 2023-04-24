@@ -84,6 +84,10 @@ public class Member {
             this.contact = request.getContact();
     }
 
+    public void changePassword(String newPassword) {
+        this.pw = newPassword;
+    }
+
     public static Member toEntity(SignupRequest dto) {
         return Member.builder()
                 .email(dto.getEmail())
