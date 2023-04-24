@@ -12,6 +12,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -21,6 +24,7 @@ import java.util.List;
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 @Getter
+@Slf4j
 public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -79,13 +83,24 @@ public class Member {
         this.team = team;
     }
 
+    public boolean login(String password, PasswordEncoder passwordEncoder) {
+//        if (!StringUtils.hasText(password)) // TODO changePassword() 빈 문자열 문제와 함께 해결 필요
+//            return false;
+        return passwordEncoder.matches(password, this.pw);
+    }
+
     public void update(MemberUpdateRequest request) {
         if (request.getContact() != null)
             this.contact = request.getContact();
     }
 
     public void changePassword(String newPassword) {
+        if (!StringUtils.hasText(newPassword)) { // TODO 빈 문자열 걸러지지 않음
+            throw new IllegalArgumentException("New password must exist.");
+        }
+
         this.pw = newPassword;
+        this.lastPwChangeDate = LocalDateTime.now();
     }
 
     public static Member toEntity(SignupRequest dto) {
