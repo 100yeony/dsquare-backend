@@ -10,14 +10,14 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter @Setter
+@Getter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 @Table(name = "COMM_CARD")
 public class Card {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long cardId;
+    private Long id;
 
     @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,6 +34,8 @@ public class Card {
 
     @Column(nullable = false)
     private String content;
+
+    private Integer teammateCnt;
 
     private String teammate;
 
@@ -58,32 +60,37 @@ public class Card {
     private Boolean deleteYn;
 
     public static Card toEntity(CardRequest dto, Member writer, Team projTeam){
+        String teammate = dto.getTeammate().toString();
         LocalDateTime now = LocalDateTime.now();
         return Card.builder()
                 .cardWriter(writer)
                 .projTeam(projTeam)
                 .title(dto.getTitle())
                 .content(dto.getContent())
-                .teammate(dto.getTeammate())
+                .teammateCnt(dto.getTeammateCnt())
+                .teammate(teammate)
                 .createDate(now)
                 .viewCnt(0L)
                 .deleteYn(false)
                 .build();
     }
 
-    public void selectCard(Member cardOwner, Boolean selectionYn, LocalDateTime selectedDate){
+    public void selectCard(Member cardOwner, Boolean selectionYn){
+        LocalDateTime now = LocalDateTime.now();
         this.cardOwner = cardOwner;
         this.selectionYn = selectionYn;
-        this.selectedDate = selectedDate;
+        this.selectedDate = now;
     }
 
-    public void updateCard(Team projTeam, String title, String content,
-                           String teammate, LocalDateTime lastUpdateDate){
+    public void updateCard(Team projTeam, CardRequest dto){
+        String teammate = dto.getTeammate().toString();
+        LocalDateTime now = LocalDateTime.now();
         this.projTeam = projTeam;
-        this.title = title;
-        this.content = content;
+        this.title = dto.getTitle();
+        this.content = dto.getContent();
+        this.teammateCnt = dto.getTeammateCnt();
         this.teammate = teammate;
-        this.lastUpdateDate = lastUpdateDate;
+        this.lastUpdateDate = now;
     }
 
     public void deleteCard(){

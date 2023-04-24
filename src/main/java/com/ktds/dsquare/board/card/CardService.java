@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +29,6 @@ public class CardService {
     //create - 카드주세요 글 작성
     @Transactional
     public void createCard(CardRequest dto) {
-
         Member cardWriter = memberRepository.findById(dto.getCardWriterId())
                 .orElseThrow(() -> new EntityNotFoundException("cardWriter is not found"));
 
@@ -65,7 +63,7 @@ public class CardService {
 
     //read - 카드주세요 글 상세 조회
     public CardResponse getCardDetail(Long cardId) {
-        Card card = cardRepository.findByDeleteYnAndCardId(false, cardId);
+        Card card = cardRepository.findByDeleteYnAndId(false, cardId);
         card.increaseViewCnt();
         cardRepository.save(card);
         return CardResponse.toDto(card, card.getCardWriter(), card.getProjTeam(), card.getCardOwner());
@@ -79,8 +77,7 @@ public class CardService {
         Member owner = memberRepository.findById(cardOwnerId)
                 .orElseThrow(() -> new EntityNotFoundException("member is not found"));
 
-        LocalDateTime now = LocalDateTime.now();
-        card.selectCard(owner, true, now);
+        card.selectCard(owner, true);
     }
 
     //update - 카드주세요 글 수정
@@ -92,8 +89,7 @@ public class CardService {
         Team projTeam = teamRepository.findById(request.getProjTeamId())
                 .orElseThrow(() -> new EntityNotFoundException("team is not found"));
 
-        LocalDateTime now = LocalDateTime.now();
-        card.updateCard(projTeam, request.getTitle(), request.getContent(), request.getTeammate(), now);
+        card.updateCard(projTeam, request);
     }
 
     //delete - 카드주세요 글 삭제

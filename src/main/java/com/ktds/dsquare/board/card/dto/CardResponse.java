@@ -23,6 +23,7 @@ public class CardResponse {
     private TeamInfo projTeamInfo;
     private String title;
     private String content;
+    private Integer teammateCnt;
     private String teammate;
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
@@ -40,11 +41,12 @@ public class CardResponse {
         }
 
         return CardResponse.builder()
-                .cardId(entity.getCardId())
+                .cardId(entity.getId())
                 .writerInfo(writerInfo)
                 .projTeamInfo(teamInfo)
                 .title(entity.getTitle())
                 .content(entity.getContent())
+                .teammateCnt(entity.getTeammateCnt())
                 .teammate(entity.getTeammate())
                 .createDate(entity.getCreateDate())
                 .lastUpdateDate(entity.getLastUpdateDate())
