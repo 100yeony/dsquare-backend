@@ -2,6 +2,7 @@ package com.ktds.dsquare.member;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ktds.dsquare.board.card.Card;
+import com.ktds.dsquare.board.comment.Comment;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
@@ -70,6 +71,14 @@ public class Member {
     @JsonManagedReference //직렬화
     @OneToMany(mappedBy = "cardOwner")
     private List<Card> ownCard;
+
+    @JsonManagedReference //직렬화
+    @OneToMany(mappedBy = "writer")
+    private List<Comment> commentList;
+
+    @JsonManagedReference //직렬화
+    @OneToMany(mappedBy = "originWriter")
+    private List<Comment> originCommentList;
 
     public List<String> getRole() {
         return List.of(role);
