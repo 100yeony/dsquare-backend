@@ -4,6 +4,8 @@ import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.dto.QuestionRequest;
 import com.ktds.dsquare.board.qna.dto.QuestionResponse;
 import com.ktds.dsquare.board.qna.service.QuestionService;
+import com.ktds.dsquare.common.annotatin.AuthUser;
+import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,14 +28,14 @@ public class QuestionController {
 
     //read - 질문글 전체 목록 조회
     @GetMapping("/board/questions")
-    public ResponseEntity<List<BriefQuestionResponse>> getAllQuestions(@RequestParam Boolean workYn){
-        return new ResponseEntity<>(questionService.getAllQuestions(workYn), HttpStatus.OK);
+    public ResponseEntity<List<BriefQuestionResponse>> getAllQuestions(@RequestParam Boolean workYn, @AuthUser Member user){
+        return new ResponseEntity<>(questionService.getAllQuestions(workYn, user), HttpStatus.OK);
     }
 
     //read - 질문글 상세 조회
     @GetMapping("/board/questions/{qid}")
-    public ResponseEntity<QuestionResponse> getQnADetail(@PathVariable("qid") Long qid) {
-        return ResponseEntity.ok(questionService.getQuestionDetail(qid));
+    public ResponseEntity<QuestionResponse> getQnADetail(@AuthUser Member user, @PathVariable("qid") Long qid) {
+        return ResponseEntity.ok(questionService.getQuestionDetail(user, qid));
     }
 
 

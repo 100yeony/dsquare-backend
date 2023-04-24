@@ -22,8 +22,10 @@ public class AnswerResponse {
     private String content;
     private Long atcId;
     private Long qid;
+    private Integer likeCnt;
+    private Boolean likeYn;
 
-    public static AnswerResponse toDto(Answer answer, MemberInfo writerInfo){
+    public static AnswerResponse toDto(Answer answer, MemberInfo writerInfo, Integer likeCnt, Boolean likeYn){
         Question q = answer.getQuestion();
         Long qid = q.getQid();
         return AnswerResponse.builder()
@@ -33,6 +35,8 @@ public class AnswerResponse {
                 .createDate(LocalDateTime.now())
                 .atcId(answer.getAtcId())
                 .qid(qid)
+                .likeCnt(likeCnt)
+                .likeYn(likeYn)
                 .build();
     }
 

@@ -2,6 +2,8 @@
 
 package com.ktds.dsquare.board.qna.service;
 
+import com.ktds.dsquare.board.enums.BoardType;
+import com.ktds.dsquare.board.like.LikeService;
 import com.ktds.dsquare.board.qna.domain.*;
 import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.dto.CategoryResponse;
@@ -33,6 +35,7 @@ public class QuestionService {
     private final MemberRepository memberRepository;
     private final TagRepository tagRepository;
     private final QuestionTagRepository questionTagRepository;
+    private final LikeService likeService;
 
     //create - 질문글 작성
     @Transactional
@@ -46,7 +49,7 @@ public class QuestionService {
     }
 
     //read - 질문글 전체 조회
-    public List<BriefQuestionResponse> getAllQuestions(Boolean workYn) {
+    public List<BriefQuestionResponse> getAllQuestions(Boolean workYn, Member user) {
         // deleteYn = false만 필터링 한 후 qid 기준으로 정렬
         Category notWorkCategory = categoryRepository.findByCid(2)
                 .orElseThrow(() -> new EntityNotFoundException("Category not found"));
@@ -67,13 +70,17 @@ public class QuestionService {
                     break;
                 }
             }
-            briefQuestions.add(BriefQuestionResponse.toDto(Q, MemberInfo.toDto(member), CategoryResponse.toDto(category), (long)answers.size(), managerAnswerYn));
+
+            Integer likeCnt = likeService.findLikeCnt(BoardType.QUESTION, Q.getQid());
+            Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, Q.getQid(), user);
+            briefQuestions.add(BriefQuestionResponse.toDto(Q, MemberInfo.toDto(member),
+                                CategoryResponse.toDto(category), (long)answers.size(), managerAnswerYn, likeCnt, likeYn));
         }
         return briefQuestions;
     }
 
     //read - 질문글 상세 조회
-    public QuestionResponse getQuestionDetail(Long qid) {
+    public QuestionResponse getQuestionDetail(Member user, Long qid) {
         Question question = questionRepository.findByDeleteYnAndQid(false, qid);
         question.increaseViewCnt();
         questionRepository.save(question);
@@ -81,7 +88,10 @@ public class QuestionService {
         Member member = question.getWriter();
         MemberInfo writer = MemberInfo.toDto(member);
         CategoryResponse categoryRes = CategoryResponse.toDto(question.getCategory());
-        return QuestionResponse.toDto(question, writer, categoryRes);
+
+        Integer likeCnt = likeService.findLikeCnt(BoardType.QUESTION, qid);
+        Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, qid, user);
+        return QuestionResponse.toDto(question, writer, categoryRes, likeCnt, likeYn);
     }
 
     // 질문글 수정
@@ -191,7 +201,10 @@ public class QuestionService {
                     break;
                 }
             }
-            searchResults.add(BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn));
+
+            Integer likeCnt = likeService.findLikeCnt(BoardType.QUESTION, q.getQid());
+            Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, q.getQid(), q.getWriter());
+            searchResults.add(BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, likeCnt, likeYn));
         }
 
         return searchResults;

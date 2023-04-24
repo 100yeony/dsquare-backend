@@ -29,8 +29,13 @@ public class BriefQuestionResponse {
     private Boolean managerAnswerYn;
     private Boolean atcYn;
     private List<String> tags;
+    private Integer likeCnt;
+    private Boolean likeYn;
 
-    public static BriefQuestionResponse toDto(Question question, MemberInfo writerInfo, CategoryResponse category, Long answerCnt, Boolean managerAnswerYn){
+    public static BriefQuestionResponse toDto(Question question, MemberInfo writerInfo,
+                                              CategoryResponse category, Long answerCnt,
+                                              Boolean managerAnswerYn, Integer likeCnt,
+                                              Boolean likeYn){
         List<QuestionTag> questionTags = question.getQuestionTags();
         List<String> tags = new ArrayList<>();
         for(QuestionTag questionTag : questionTags)
@@ -48,6 +53,8 @@ public class BriefQuestionResponse {
                 .answerCnt(answerCnt)
                 .managerAnswerYn(managerAnswerYn)
                 .tags(tags)
+                .likeCnt(likeCnt)
+                .likeYn(likeYn)
                 .build();
     }
 }
