@@ -60,6 +60,7 @@ public class Card {
     private Boolean deleteYn;
 
     public static Card toEntity(CardRequest dto, Member writer, Team projTeam){
+        String teammate = dto.getTeammate().toString();
         LocalDateTime now = LocalDateTime.now();
         return Card.builder()
                 .cardWriter(writer)
@@ -67,26 +68,29 @@ public class Card {
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .teammateCnt(dto.getTeammateCnt())
-                .teammate(dto.getTeammate())
+                .teammate(teammate)
                 .createDate(now)
                 .viewCnt(0L)
                 .deleteYn(false)
                 .build();
     }
 
-    public void selectCard(Member cardOwner, Boolean selectionYn, LocalDateTime selectedDate){
+    public void selectCard(Member cardOwner, Boolean selectionYn){
+        LocalDateTime now = LocalDateTime.now();
         this.cardOwner = cardOwner;
         this.selectionYn = selectionYn;
-        this.selectedDate = selectedDate;
+        this.selectedDate = now;
     }
 
-    public void updateCard(Team projTeam, CardRequest dto, LocalDateTime lastUpdateDate){
+    public void updateCard(Team projTeam, CardRequest dto){
+        String teammate = dto.getTeammate().toString();
+        LocalDateTime now = LocalDateTime.now();
         this.projTeam = projTeam;
         this.title = dto.getTitle();
         this.content = dto.getContent();
         this.teammateCnt = dto.getTeammateCnt();
-        this.teammate = dto.getTeammate();
-        this.lastUpdateDate = lastUpdateDate;
+        this.teammate = teammate;
+        this.lastUpdateDate = now;
     }
 
     public void deleteCard(){
