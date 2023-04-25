@@ -4,10 +4,13 @@ import com.ktds.dsquare.auth.dto.request.LoginRequest;
 import com.ktds.dsquare.auth.dto.response.LoginResponse;
 import com.ktds.dsquare.auth.jwt.JwtProperties;
 import com.ktds.dsquare.auth.jwt.JwtService;
+import com.ktds.dsquare.common.enums.ResponseType;
 import com.ktds.dsquare.util.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -52,7 +55,6 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         log.info("Succeeded authentication");
-//        super.successfulAuthentication(request, response, chain, authResult);
         Map<String, String> authTokens = generateAuthToken((UserDetails)authResult.getPrincipal());
 
         response.setHeader(JwtProperties.HEADER(), JwtProperties.PREFIX() + authTokens.get(JwtProperties.ACCESS_KEY()));
@@ -66,8 +68,22 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws ServletException, IOException {
-        log.info("Authentication Failed ({})", failed.getMessage());
-        super.unsuccessfulAuthentication(request, response, failed); // 이를 수행하면 이후 trace에서 상태 코드가 403으로 바뀌어버림
+        log.info("Authentication Failed ({}) | {}", failed.getClass().getSimpleName(), failed.getMessage());
+        if (!handleAuthenticationException(failed, response)) {
+            super.unsuccessfulAuthentication(request, response, failed); // 이를 수행하면 이후 trace에서 상태 코드가 403으로 바뀌어버림 --> StandardHostValue의 custom()에서 error page(/error)로 forward를 하며 403으로 변경됨
+        }
+    }
+    private boolean handleAuthenticationException(AuthenticationException failed, HttpServletResponse response) throws IOException {
+        boolean handled = false;
+        if (failed instanceof CredentialsExpiredException) {
+            ResponseUtil.respond(response, ResponseType._401_EXPIRED_CREDENTIALS);
+            handled = true;
+        }
+        else if (failed instanceof BadCredentialsException) {
+            ResponseUtil.respond(response, ResponseType._401_FAILED_LOGIN);
+            handled = true;
+        }
+        return handled;
     }
 
 }

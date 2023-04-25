@@ -1,6 +1,7 @@
 package com.ktds.dsquare.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ktds.dsquare.common.enums.ResponseType;
 import org.springframework.http.MediaType;
 
 import javax.servlet.http.HttpServletResponse;
@@ -14,11 +15,20 @@ public class ResponseUtil {
         if (response.isCommitted())
             return;
 
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        makeJsonResponse(response);
 
         PrintWriter writer = response.getWriter();
         writer.write(new ObjectMapper().writeValueAsString(value));
+    }
+
+    public static void respond(HttpServletResponse response, ResponseType responseType) throws IOException {
+        writeJsonValue(response, responseType);
+        response.setStatus(responseType.status.value());
+    }
+
+    private static void makeJsonResponse(HttpServletResponse response) {
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
     }
 
 }

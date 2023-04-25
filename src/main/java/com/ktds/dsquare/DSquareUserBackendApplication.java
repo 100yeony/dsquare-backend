@@ -7,7 +7,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 
 
-
 @SpringBootApplication
 @PropertySources({
         @PropertySource(value = "classpath:config/jasypt.yml", factory = YamlLoadFactory.class),

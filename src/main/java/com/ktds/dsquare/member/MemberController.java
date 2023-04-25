@@ -1,7 +1,9 @@
 package com.ktds.dsquare.member;
 
+import com.ktds.dsquare.common.exception.MemberException;
 import com.ktds.dsquare.common.mailing.MailService;
 import com.ktds.dsquare.member.dto.request.MemberUpdateRequest;
+import com.ktds.dsquare.member.dto.request.PasswordChangeRequest;
 import com.ktds.dsquare.member.dto.request.SignupRequest;
 import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
@@ -61,6 +63,15 @@ public class MemberController {
     @PostMapping("/account/find-pw")
     public ResponseEntity<Void> findPassword(@RequestBody String to) {
         mailService.findPassword(to);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * 비밀번호 변경
+     */
+    @PatchMapping({"/account/change-pw", "/account/reset-pw"})
+    public ResponseEntity<Void> changePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) throws MemberException, IllegalArgumentException {
+        memberService.changePassword(passwordChangeRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -92,13 +92,13 @@ public class AuthenticationAuthorizationFilter extends BasicAuthenticationFilter
     private void handleTokenVerificationException(HttpServletResponse response, Exception e) throws IOException {
         log.error("Token verification error - {}", e.getMessage());
         response.setStatus(HttpStatus.BAD_REQUEST.value());
-//        ResponseUtil.writeJsonValue(
-//                response,
-//                ErrorResponse.builder()
-//                        .code("400001")
-//                        .message(e.getMessage())
-//                        .build()
-//        );
+        ResponseUtil.writeJsonValue(
+                response,
+                ErrorResponse.builder()
+                        .code("400001")
+                        .message(e.getMessage())
+                        .build()
+        );
     }
 
 }

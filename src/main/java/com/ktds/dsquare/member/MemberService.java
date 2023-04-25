@@ -1,6 +1,10 @@
 package com.ktds.dsquare.member;
 
+import com.ktds.dsquare.common.exception.BadLoginException;
+import com.ktds.dsquare.common.exception.MemberException;
+import com.ktds.dsquare.common.exception.MemberNotFoundException;
 import com.ktds.dsquare.member.dto.request.MemberUpdateRequest;
+import com.ktds.dsquare.member.dto.request.PasswordChangeRequest;
 import com.ktds.dsquare.member.dto.request.SignupRequest;
 import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
@@ -33,7 +37,7 @@ public class MemberService {
 
     @Transactional
     public BriefMemberInfo insertMember(SignupRequest signupRequest) throws RuntimeException {
-        signupRequest.setPw(passwordEncoder.encode(signupRequest.getPw()));
+        signupRequest.encodePassword(passwordEncoder);
 
         Member member = Member.toEntity(signupRequest);
         Team team = teamRepository.findById(signupRequest.getTid())
@@ -68,6 +72,8 @@ public class MemberService {
         return MemberInfo.toDto(member);
     }
 
+    // TODO add missing annotations
+    // TODO consider another fit exception
     public MemberInfo updateMember(Long id, MemberUpdateRequest request) {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("No such member with ID " + id));
@@ -91,6 +97,19 @@ public class MemberService {
             log.warn("Error while finding password.");
             throw e;
         }
+    }
+
+    @Transactional
+    public void changePassword(PasswordChangeRequest passwordChangeRequest) throws MemberException, IllegalArgumentException {
+        Member member = memberRepository.findByEmail(passwordChangeRequest.getEmail())
+                .orElseThrow(() -> new MemberNotFoundException(passwordChangeRequest.getEmail()));
+
+        passwordChangeRequest.encodePassword(passwordEncoder);
+
+        if (!member.login(passwordChangeRequest.getOriginalPassword(), passwordEncoder))
+            throw new BadLoginException();
+
+        member.changePassword(passwordChangeRequest.getChangedPassword());
     }
 
 }
