@@ -28,7 +28,7 @@ public class Comment {
     @Column(nullable = false, length = 500)
     private String content;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private BoardType boardType;
 
     @Column(nullable = false)

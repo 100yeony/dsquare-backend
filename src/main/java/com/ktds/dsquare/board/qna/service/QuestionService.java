@@ -69,7 +69,8 @@ public class QuestionService {
                     break;
                 }
             }
-            Long commentCnt = (long) commentService.getAllComments(0L, Q.getQid()).size();
+            Long commentCnt = (long) commentService.getAllComments("question", Q.getQid()).size();
+//            Long commentCnt = 0L;
             briefQuestions.add(BriefQuestionResponse.toDto(Q, MemberInfo.toDto(member), CategoryResponse.toDto(category), (long)answers.size(), managerAnswerYn, commentCnt));
         }
         return briefQuestions;
@@ -84,7 +85,7 @@ public class QuestionService {
         Member member = question.getWriter();
         MemberInfo writer = MemberInfo.toDto(member);
         CategoryResponse categoryRes = CategoryResponse.toDto(question.getCategory());
-        Long commentCnt = (long) commentService.getAllComments(0L, qid).size();
+        Long commentCnt = (long) commentService.getAllComments("question", qid).size();
         return QuestionResponse.toDto(question, writer, categoryRes, commentCnt);
     }
 
@@ -195,7 +196,7 @@ public class QuestionService {
                     break;
                 }
             }
-            Long commentCnt = (long) commentService.getAllComments(0L, q.getQid()).size();
+            Long commentCnt = (long) commentService.getAllComments("question", q.getQid()).size();
             searchResults.add(BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, commentCnt));
         }
 

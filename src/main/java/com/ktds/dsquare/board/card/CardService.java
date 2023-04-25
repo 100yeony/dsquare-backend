@@ -58,7 +58,7 @@ public class CardService {
             }else{
                 selectionInfo = null;
             }
-            Long commentCnt = (long) commentService.getAllComments(2L, C.getId()).size();
+            Long commentCnt = (long) commentService.getAllComments("card", C.getId()).size();
             briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, commentCnt));
         }
         return briefCards;
@@ -69,7 +69,7 @@ public class CardService {
         Card card = cardRepository.findByDeleteYnAndId(false, cardId);
         card.increaseViewCnt();
         cardRepository.save(card);
-        Long commentCnt = (long) commentService.getAllComments(2L, cardId).size();
+        Long commentCnt = (long) commentService.getAllComments("card", cardId).size();
         return CardResponse.toDto(card, card.getCardWriter(), card.getProjTeam(), card.getCardOwner(), commentCnt);
     }
 
@@ -122,7 +122,7 @@ public class CardService {
             }else{
                 selectionInfo = null;
             }
-            Long commentCnt = (long) commentService.getAllComments(2L, C.getId()).size();
+            Long commentCnt = (long) commentService.getAllComments("card", C.getId()).size();
             briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, commentCnt));
         }
         return briefCards;

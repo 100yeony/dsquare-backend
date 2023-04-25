@@ -16,23 +16,23 @@ public class CommentController {
     private final CommentService commentService;
 
     // 댓글 작성
-    @PostMapping("/board/{boardTypeId}/{postId}/comments")
-    public ResponseEntity<Void> createComment(@PathVariable Long boardTypeId, @PathVariable Long postId, @RequestBody CommentRegisterDto request){
-        commentService.createComment(boardTypeId, postId, request);
+    @PostMapping("/board/{boardTypeName}/{postId}/comments")
+    public ResponseEntity<Void> createComment(@PathVariable String boardTypeName, @PathVariable Long postId, @RequestBody CommentRegisterDto request){
+        commentService.createComment(boardTypeName, postId, request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     // 대댓글 작성
-    @PostMapping("/board/{boardTypeId}/{postId}/comments/{nestedCommentId}")
-    public ResponseEntity<Void> createNestedComment(@PathVariable Long boardTypeId, @PathVariable Long postId, @RequestBody NestedCommentRegisterDto request){
-        commentService.createNestedComment(boardTypeId, postId, request);
+    @PostMapping("/board/{boardTypeName}/{postId}/comments/{nestedCommentId}")
+    public ResponseEntity<Void> createNestedComment(@PathVariable String boardTypeName, @PathVariable Long postId, @RequestBody NestedCommentRegisterDto request){
+        commentService.createNestedComment(boardTypeName, postId, request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     // 댓글 조회(글에 달린 댓글 전체 조회)
-    @GetMapping("/board/{boardTypeId}/{postId}/comments")
-    public ResponseEntity<List<Object>> getAllComments(@PathVariable Long boardTypeId, @PathVariable Long postId){
-        return new ResponseEntity<>(commentService.getAllComments(boardTypeId, postId), HttpStatus.OK);
+    @GetMapping("/board/{boardTypeName}/{postId}/comments")
+    public ResponseEntity<List<Object>> getAllComments(@PathVariable String boardTypeName, @PathVariable Long postId){
+        return new ResponseEntity<>(commentService.getAllComments(boardTypeName, postId), HttpStatus.OK);
     }
 
     // 댓글 삭제

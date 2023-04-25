@@ -41,7 +41,7 @@ public class AnswerService {
         List<AnswerResponse> answerResponses = new ArrayList<>();
         List<Answer> answers = answerRepository.findByQuestionAndDeleteYnOrderByCreateDateAsc(qid, false);
         for(Answer answer:answers){
-            Long commentCnt = (long) commentService.getAllComments(1L, qid.getQid()).size();
+            Long commentCnt = (long) commentService.getAllComments("answer", qid.getQid()).size();
             answerResponses.add(AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), commentCnt));
         }
         return answerResponses;
