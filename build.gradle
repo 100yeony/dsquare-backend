@@ -30,6 +30,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 
+    // ## To fix warnings 'unknown enum constant When.MAYBE' ##
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+
     // ## Configuration Annotation Processor ##
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
@@ -58,4 +61,8 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+test {
+    systemProperty "jasypt.encryptor.password", findProperty("jasypt.password")
 }
