@@ -63,10 +63,8 @@ public class CardService {
 
             Integer likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
             Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), user);
-            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, likeCnt, likeYn));
-
             Long commentCnt = (long) commentService.getAllComments("card", C.getId()).size();
-            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, commentCnt));
+            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, likeCnt, likeYn, commentCnt));
         }
         return briefCards;
     }
@@ -79,10 +77,8 @@ public class CardService {
 
         Integer likeCnt = likeService.findLikeCnt(BoardType.CARD, card.getId());
         Boolean likeYn = likeService.findLikeYn(BoardType.CARD, card.getId(), user);
-        return CardResponse.toDto(card, card.getCardWriter(), card.getProjTeam(), card.getCardOwner(), likeCnt, likeYn);
-
         Long commentCnt = (long) commentService.getAllComments("card", cardId).size();
-        return CardResponse.toDto(card, card.getCardWriter(), card.getProjTeam(), card.getCardOwner(), commentCnt);
+        return CardResponse.toDto(card, card.getCardWriter(), card.getProjTeam(), card.getCardOwner(), likeCnt, likeYn, commentCnt);
     }
 
     //update - 카드주세요 선정
@@ -137,10 +133,8 @@ public class CardService {
 
             Integer likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
             Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), C.getCardWriter());
-            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, likeCnt, likeYn));
-
             Long commentCnt = (long) commentService.getAllComments("card", C.getId()).size();
-            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, commentCnt));
+            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, likeCnt, likeYn, commentCnt));
         }
         return briefCards;
     }
