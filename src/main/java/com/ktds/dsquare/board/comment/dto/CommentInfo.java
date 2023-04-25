@@ -1,7 +1,6 @@
 package com.ktds.dsquare.board.comment.dto;
 
 import com.ktds.dsquare.board.comment.Comment;
-import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,28 +13,19 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentResponse {
+public class CommentInfo {
 
     private Long commentId;
     private MemberInfo writerInfo;
     private String content;
-    private BoardType boardType;
-    private Long postId;
     private LocalDateTime createDate;
-    private MemberInfo originWriter;
 
-    public static CommentResponse toDto(Comment comment) {
-        MemberInfo originWriterInfo =
-                comment.getOriginWriter() != null ?
-                MemberInfo.toDto(comment.getOriginWriter()) : null;
-        return CommentResponse.builder()
+    public static CommentInfo toDto(Comment comment) {
+        return CommentInfo.builder()
                 .commentId(comment.getId())
                 .writerInfo(MemberInfo.toDto(comment.getWriter()))
                 .content(comment.getContent())
-                .boardType(comment.getBoardType())
-                .postId(comment.getPostId())
                 .createDate(comment.getCreateDate())
-                .originWriter(originWriterInfo)
                 .build();
     }
 }

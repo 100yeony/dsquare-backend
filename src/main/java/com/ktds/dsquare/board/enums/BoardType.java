@@ -7,17 +7,17 @@ public enum BoardType {
     TALK,
     CARROT;
 
-    public static BoardType findBoardType(Long boardTypeId) {
-        switch(boardTypeId.intValue()) {
-            case 0:
+    public static BoardType findBoardType(String boardTypeName) {
+        switch(boardTypeName) {
+            case "question":
                 return BoardType.QUESTION;
-            case 1:
+            case "answer":
                 return BoardType.ANSWER;
-            case 2:
+            case "card":
                 return BoardType.CARD;
-            case 3:
+            case "talk":
                 return BoardType.TALK;
-            case 4:
+            case "carrot":
                 return BoardType.CARROT;
             default:
                 throw new RuntimeException("BoardType Not Found");

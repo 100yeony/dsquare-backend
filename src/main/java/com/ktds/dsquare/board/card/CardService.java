@@ -6,6 +6,7 @@ import com.ktds.dsquare.board.card.dto.CardResponse;
 import com.ktds.dsquare.board.card.dto.CardSelectionInfo;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
+import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
@@ -14,7 +15,6 @@ import com.ktds.dsquare.member.team.Team;
 import com.ktds.dsquare.member.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -28,6 +28,7 @@ public class CardService {
     private final CardRepository cardRepository;
     private final TeamRepository teamRepository;
     private final LikeService likeService;
+    private final CommentService commentService;
 
     //create - 카드주세요 글 작성
     @Transactional
@@ -59,9 +60,13 @@ public class CardService {
             }else{
                 selectionInfo = null;
             }
+
             Integer likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
             Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), user);
             briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, likeCnt, likeYn));
+
+            Long commentCnt = (long) commentService.getAllComments("card", C.getId()).size();
+            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, commentCnt));
         }
         return briefCards;
     }
@@ -71,9 +76,13 @@ public class CardService {
         Card card = cardRepository.findByDeleteYnAndId(false, cardId);
         card.increaseViewCnt();
         cardRepository.save(card);
+
         Integer likeCnt = likeService.findLikeCnt(BoardType.CARD, card.getId());
         Boolean likeYn = likeService.findLikeYn(BoardType.CARD, card.getId(), user);
         return CardResponse.toDto(card, card.getCardWriter(), card.getProjTeam(), card.getCardOwner(), likeCnt, likeYn);
+
+        Long commentCnt = (long) commentService.getAllComments("card", cardId).size();
+        return CardResponse.toDto(card, card.getCardWriter(), card.getProjTeam(), card.getCardOwner(), commentCnt);
     }
 
     //update - 카드주세요 선정
@@ -125,9 +134,13 @@ public class CardService {
             }else{
                 selectionInfo = null;
             }
+
             Integer likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
             Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), C.getCardWriter());
             briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, likeCnt, likeYn));
+
+            Long commentCnt = (long) commentService.getAllComments("card", C.getId()).size();
+            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, commentCnt));
         }
         return briefCards;
     }

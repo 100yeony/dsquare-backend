@@ -27,8 +27,9 @@ public class BriefCardResponse {
     private Integer likeCnt;
     private Boolean likeYn;
     private CardSelectionInfo selectionInfo;
+    private Long commentCnt;
 
-    public static BriefCardResponse toDto(Card entity, MemberInfo writerInfo, TeamInfo teamInfo, CardSelectionInfo selectionInfo, Integer likeCnt, Boolean likeYn) {
+    public static BriefCardResponse toDto(Card entity, MemberInfo writerInfo, TeamInfo teamInfo, CardSelectionInfo selectionInfo, Integer likeCnt, Boolean likeYn, Long commentCnt) {
         return BriefCardResponse.builder()
                 .cardId(entity.getId())
                 .writerInfo(writerInfo)
@@ -42,6 +43,7 @@ public class BriefCardResponse {
                 .likeCnt(likeCnt)
                 .likeYn(likeYn)
                 .selectionInfo(selectionInfo)
+                .commentCnt(commentCnt)
                 .build();
     }
 }

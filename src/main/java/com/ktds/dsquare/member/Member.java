@@ -1,6 +1,5 @@
 package com.ktds.dsquare.member;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ktds.dsquare.board.card.Card;
 import com.ktds.dsquare.board.like.Like;
 import com.ktds.dsquare.board.comment.Comment;
@@ -14,6 +13,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -23,6 +25,7 @@ import java.util.List;
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 @Getter
+@Slf4j
 public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,38 +54,31 @@ public class Member {
 
     private String role;
 
-    @JsonManagedReference //직렬화
     @OneToMany(mappedBy = "manager")
     private List<Category> cid;
 
-    @JsonManagedReference //직렬화
     @OneToMany(mappedBy = "qid")
     private List<Question> questionsList;
-
-    @JsonManagedReference //직렬화
+    
     @OneToMany(mappedBy = "writer")
     private List<Answer> answerList;
 
     //카드 글 작성자
-    @JsonManagedReference //직렬화
     @OneToMany(mappedBy = "cardWriter")
     private List<Card> cardList;
 
     //카드 주인
-    @JsonManagedReference //직렬화
     @OneToMany(mappedBy = "cardOwner")
     private List<Card> ownCard;
 
     //좋아요
-    @JsonManagedReference //직렬화
+//    @JsonManagedReference //직렬화
     @OneToMany(mappedBy = "member")
     private List<Like> likePosts;
 
-    @JsonManagedReference //직렬화
     @OneToMany(mappedBy = "writer")
     private List<Comment> commentList;
 
-    @JsonManagedReference //직렬화
     @OneToMany(mappedBy = "originWriter")
     private List<Comment> originCommentList;
 
@@ -95,13 +91,24 @@ public class Member {
         this.team = team;
     }
 
+    public boolean login(String password, PasswordEncoder passwordEncoder) {
+//        if (!StringUtils.hasText(password)) // TODO changePassword() 빈 문자열 문제와 함께 해결 필요
+//            return false;
+        return passwordEncoder.matches(password, this.pw);
+    }
+
     public void update(MemberUpdateRequest request) {
         if (request.getContact() != null)
             this.contact = request.getContact();
     }
 
     public void changePassword(String newPassword) {
+        if (!StringUtils.hasText(newPassword)) { // TODO 빈 문자열 걸러지지 않음
+            throw new IllegalArgumentException("New password must exist.");
+        }
+
         this.pw = newPassword;
+        this.lastPwChangeDate = LocalDateTime.now();
     }
 
     public static Member toEntity(SignupRequest dto) {

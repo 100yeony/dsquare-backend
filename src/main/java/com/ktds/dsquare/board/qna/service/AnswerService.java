@@ -2,6 +2,7 @@ package com.ktds.dsquare.board.qna.service;
 
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
+import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.AnswerRequest;
@@ -27,6 +28,7 @@ public class AnswerService {
     private final QuestionRepository questionRepository;
     private final MemberRepository memberRepository;
     private final LikeService likeService;
+    private final CommentService commentService;
 
     // 답변글 작성
     @Transactional
@@ -44,7 +46,8 @@ public class AnswerService {
         for(Answer answer:answers){
             Integer likeCnt = likeService.findLikeCnt(BoardType.ANSWER, answer.getId());
             Boolean likeYn = likeService.findLikeYn(BoardType.ANSWER, answer.getId(), user);
-            answerResponses.add(AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), likeCnt, likeYn));
+            Long commentCnt = (long) commentService.getAllComments("answer", qid.getQid()).size();
+            answerResponses.add(AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), likeCnt, likeYn, commentCnt));
         }
         return answerResponses;
     }

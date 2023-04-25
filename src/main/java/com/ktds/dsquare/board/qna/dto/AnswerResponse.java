@@ -24,8 +24,9 @@ public class AnswerResponse {
     private Long qid;
     private Integer likeCnt;
     private Boolean likeYn;
+    private Long commentCnt;
 
-    public static AnswerResponse toDto(Answer answer, MemberInfo writerInfo, Integer likeCnt, Boolean likeYn){
+    public static AnswerResponse toDto(Answer answer, MemberInfo writerInfo, Integer likeCnt, Boolean likeYn, Long commentCnt){
         Question q = answer.getQuestion();
         Long qid = q.getQid();
         return AnswerResponse.builder()
@@ -37,6 +38,7 @@ public class AnswerResponse {
                 .qid(qid)
                 .likeCnt(likeCnt)
                 .likeYn(likeYn)
+                .commentCnt(commentCnt)
                 .build();
     }
 

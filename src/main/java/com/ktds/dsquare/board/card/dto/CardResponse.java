@@ -31,8 +31,9 @@ public class CardResponse {
     private Integer likeCnt;
     private Boolean likeYn;
     private CardSelectionInfo selectionInfo;
+    private Long commentCnt;
 
-    public static CardResponse toDto(Card entity, Member writer, Team team, Member cardOwner, Integer likeCnt, Boolean likeYn) {
+    public static CardResponse toDto(Card entity, Member writer, Team team, Member cardOwner, Integer likeCnt, Boolean likeYn, Long commentCnt) {
         MemberInfo writerInfo = MemberInfo.toDto(writer);
         TeamInfo teamInfo = TeamInfo.toDto(team);
         CardSelectionInfo selectionInfo;
@@ -56,6 +57,7 @@ public class CardResponse {
                 .likeCnt(likeCnt)
                 .likeYn(likeYn)
                 .selectionInfo(selectionInfo)
+                .commentCnt(commentCnt)
                 .build();
     }
 

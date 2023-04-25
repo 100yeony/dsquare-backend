@@ -1,8 +1,10 @@
 package com.ktds.dsquare.board.comment;
 
 import com.ktds.dsquare.board.card.CardRepository;
-import com.ktds.dsquare.board.comment.dto.CommentRequest;
-import com.ktds.dsquare.board.comment.dto.CommentResponse;
+import com.ktds.dsquare.board.comment.dto.CommentInfo;
+import com.ktds.dsquare.board.comment.dto.CommentRegisterDto;
+import com.ktds.dsquare.board.comment.dto.NestedCommentInfo;
+import com.ktds.dsquare.board.comment.dto.NestedCommentRegisterDto;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
@@ -10,6 +12,7 @@ import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -27,27 +30,39 @@ public class CommentService {
 
     // 댓글 작성
     @Transactional
-    public void createComment(Long boardTypeId, Long postId, CommentRequest request) {
-        if(!checkAvailability(boardTypeId, postId))
+    public void createComment(String boardTypeName, Long postId, CommentRegisterDto request) {
+        if(!checkAvailability(boardTypeName, postId))
             throw new RuntimeException("Post Not Found");
         Member writer = memberRepository.findById(request.getWriterId()).orElseThrow(() -> new RuntimeException("Writer Not Found"));
-        Member originWriter = null;
-        if (request.getOriginWriterId() != null)
-            originWriter = memberRepository.findById(request.getOriginWriterId()).orElseThrow(() -> new RuntimeException("Origin Writer Not Found"));
-        BoardType boardType = BoardType.findBoardType(boardTypeId);
-        Comment comment = Comment.toEntity(request, writer, boardType, postId, originWriter);
+        BoardType boardType = BoardType.findBoardType(boardTypeName);
+        Comment comment = Comment.toEntity(request, writer, boardType, postId);
+        commentRepository.save(comment);
+    }
+
+    // 대댓글 작성
+    @Transactional
+    public void createNestedComment(String boardTypeName, Long postId, NestedCommentRegisterDto request) {
+        if(!checkAvailability(boardTypeName, postId))
+            throw new RuntimeException("Post Not Found");
+        Member writer = memberRepository.findById(request.getWriterId()).orElseThrow(() -> new RuntimeException("Writer Not Found"));
+        Member originWriter = memberRepository.findById(request.getOriginWriterId()).orElseThrow(() -> new RuntimeException("Origin Writer Not Found"));
+        BoardType boardType = BoardType.findBoardType(boardTypeName);
+        Comment comment = Comment.toNestedEntity(request, writer, boardType, postId, originWriter);
         commentRepository.save(comment);
     }
 
     // 댓글 조회(글에 달린 댓글 전체 조회)
-    public List<CommentResponse> getAllComments(Long boardTypeId, Long postId) {
-        if(!checkAvailability(boardTypeId, postId))
+    public List<Object> getAllComments(String boardTypeName, Long postId) {
+        if(!checkAvailability(boardTypeName, postId))
             throw new RuntimeException("Post Not Found");
-        BoardType boardType = BoardType.findBoardType(boardTypeId);
+        BoardType boardType = BoardType.findBoardType(boardTypeName);
         List<Comment> comments = commentRepository.findByBoardTypeAndPostId(boardType, postId);
-        List<CommentResponse> commentDto = new ArrayList<>();
+        List<Object> commentDto = new ArrayList<>();
         for(Comment comment : comments)
-            commentDto.add(CommentResponse.toDto(comment));
+            if(ObjectUtils.isEmpty(comment.getOriginWriter()))
+                commentDto.add(CommentInfo.toDto(comment));
+            else
+                commentDto.add(NestedCommentInfo.toDto(comment));
         return commentDto;
     }
 
@@ -59,20 +74,36 @@ public class CommentService {
     }
 
     // boardTypeId, postId로 해당 글이 존재하는지 확인(true: 글 있음, false: 없음)
-    public boolean checkAvailability(Long boardTypeId, Long postId) {
-        switch(boardTypeId.intValue()) {
-            case 0:
+    public boolean checkAvailability(String boardTypeName, Long postId) {
+        switch(boardTypeName) {
+            case "question":
                 return questionRepository.findByDeleteYnAndQid(false, postId) != null; // 찾는 post 있으면 true
-            case 1:
+            case "answer":
                 return answerRepository.findByDeleteYnAndId(false, postId) != null;
-            case 2:
+            case "card":
                 return cardRepository.findByDeleteYnAndId(false, postId) != null;
-//            case 3:
+//            case "talk":
 //                return talkRepository.findByDeleteYnAndId(false, postId) != null;
-//            case 4:
+//            case "carrot":
 //                return carrotRepository.findByDeleteYnAndId(false, postId) != null;
             default:
-                throw new RuntimeException("BoardTypeId Not Found");
+                throw new RuntimeException("BoardTypeName Not Found");
         }
     }
+//    public boolean checkAvailability(BoardType BoardType, Long postId) {
+//        switch(BoardType) {
+//            case BoardType.QUESTION:
+//                return questionRepository.findByDeleteYnAndQid(false, postId) != null; // 찾는 post 있으면 true
+//            case BoardType.ANSWER:
+//                return answerRepository.findByDeleteYnAndId(false, postId) != null;
+//            case BoardType.CARD:
+//                return cardRepository.findByDeleteYnAndId(false, postId) != null;
+////            case BoardType.TALK:
+////                return talkRepository.findByDeleteYnAndId(false, postId) != null;
+////            case BoardType.CARROT:
+////                return carrotRepository.findByDeleteYnAndId(false, postId) != null;
+//            default:
+//                throw new RuntimeException("BoardTypeName Not Found");
+//        }
+//    }
 }

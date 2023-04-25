@@ -4,6 +4,7 @@ package com.ktds.dsquare.board.qna.service;
 
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
+import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.qna.domain.*;
 import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.dto.CategoryResponse;
@@ -36,6 +37,7 @@ public class QuestionService {
     private final TagRepository tagRepository;
     private final QuestionTagRepository questionTagRepository;
     private final LikeService likeService;
+    private final CommentService commentService;
 
     //create - 질문글 작성
     @Transactional
@@ -73,8 +75,10 @@ public class QuestionService {
 
             Integer likeCnt = likeService.findLikeCnt(BoardType.QUESTION, Q.getQid());
             Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, Q.getQid(), user);
+            Long commentCnt = (long) commentService.getAllComments("question", Q.getQid()).size();
+
             briefQuestions.add(BriefQuestionResponse.toDto(Q, MemberInfo.toDto(member),
-                                CategoryResponse.toDto(category), (long)answers.size(), managerAnswerYn, likeCnt, likeYn));
+                                CategoryResponse.toDto(category), (long)answers.size(), managerAnswerYn, likeCnt, likeYn, commentCnt));
         }
         return briefQuestions;
     }
@@ -91,7 +95,8 @@ public class QuestionService {
 
         Integer likeCnt = likeService.findLikeCnt(BoardType.QUESTION, qid);
         Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, qid, user);
-        return QuestionResponse.toDto(question, writer, categoryRes, likeCnt, likeYn);
+        Long commentCnt = (long) commentService.getAllComments("question", qid).size();
+        return QuestionResponse.toDto(question, writer, categoryRes, likeCnt, likeYn, commentCnt);
     }
 
     // 질문글 수정
@@ -204,7 +209,8 @@ public class QuestionService {
 
             Integer likeCnt = likeService.findLikeCnt(BoardType.QUESTION, q.getQid());
             Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, q.getQid(), q.getWriter());
-            searchResults.add(BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, likeCnt, likeYn));
+            Long commentCnt = (long) commentService.getAllComments("question", q.getQid()).size();
+            searchResults.add(BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, likeCnt, likeYn, commentCnt));
         }
 
         return searchResults;
