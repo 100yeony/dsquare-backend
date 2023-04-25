@@ -4,9 +4,9 @@ import com.ktds.dsquare.board.card.dto.BriefCardResponse;
 import com.ktds.dsquare.board.card.dto.CardRequest;
 import com.ktds.dsquare.board.card.dto.CardResponse;
 import com.ktds.dsquare.board.card.dto.CardSelectionInfo;
+import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
-import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
@@ -15,13 +15,17 @@ import com.ktds.dsquare.member.team.Team;
 import com.ktds.dsquare.member.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@PersistenceContext
 public class CardService {
 
     private final MemberRepository memberRepository;
@@ -29,6 +33,7 @@ public class CardService {
     private final TeamRepository teamRepository;
     private final LikeService likeService;
     private final CommentService commentService;
+    private final EntityManager em;
 
     //create - 카드주세요 글 작성
     @Transactional
@@ -135,6 +140,31 @@ public class CardService {
             Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), C.getCardWriter());
             Long commentCnt = (long) commentService.getAllComments("card", C.getId()).size();
             briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, likeCnt, likeYn, commentCnt));
+        }
+        return briefCards;
+    }
+
+    //read - 이달의 카드 전체 조회
+    public List<BriefCardResponse> selectedCardList(){
+
+        List<Card> cards = cardRepository.findSelectedCard();
+        List<BriefCardResponse> briefCards = new ArrayList<>();
+
+        for(Card C : cards){
+            Member member = C.getCardWriter();
+            Member owner = C.getCardOwner();
+            CardSelectionInfo selectionInfo;
+
+            if(owner != null){
+                MemberInfo cardOwner = MemberInfo.toDto(owner);
+                selectionInfo = CardSelectionInfo.toDto(C, cardOwner);
+            }else{
+                selectionInfo = null;
+            }
+            Integer likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
+            Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), C.getCardWriter());
+            Long commentCnt = (long) commentService.getAllComments("card", C.getId()).size();
+            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(C.getProjTeam()), selectionInfo, likeCnt, likeYn, commentCnt));
         }
         return briefCards;
     }

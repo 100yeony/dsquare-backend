@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 @RestController
@@ -60,7 +61,13 @@ public class CardController {
 
     //search - 카드주세요 검색
     @GetMapping("board/cards/search")
-    public ResponseEntity<List<BriefCardResponse>> searchCard(@RequestParam("projTeamId") Long projTeamId){
+    public ResponseEntity<List<BriefCardResponse>> searchCards(@RequestParam("projTeamId") Long projTeamId){
         return new ResponseEntity<>(cardService.searchCard(projTeamId), HttpStatus.OK);
+    }
+
+    //read - 이달의 카드 조회
+    @GetMapping("board/cards/selectedList")
+    public ResponseEntity<List<BriefCardResponse>> selectedCardList(){
+        return new ResponseEntity<>(cardService.selectedCardList(), HttpStatus.OK);
     }
 }
