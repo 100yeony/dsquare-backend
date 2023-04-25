@@ -5,12 +5,20 @@ package com.ktds.dsquare.board.qna.service;
 import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
-import com.ktds.dsquare.board.qna.domain.*;
+import com.ktds.dsquare.board.qna.domain.Answer;
+import com.ktds.dsquare.board.qna.domain.Category;
+import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.dto.CategoryResponse;
 import com.ktds.dsquare.board.qna.dto.QuestionRequest;
 import com.ktds.dsquare.board.qna.dto.QuestionResponse;
-import com.ktds.dsquare.board.qna.repository.*;
+import com.ktds.dsquare.board.qna.repository.AnswerRepository;
+import com.ktds.dsquare.board.qna.repository.CategoryRepository;
+import com.ktds.dsquare.board.qna.repository.QuestionRepository;
+import com.ktds.dsquare.board.tag.QuestionTag;
+import com.ktds.dsquare.board.tag.Tag;
+import com.ktds.dsquare.board.tag.repository.QuestionTagRepository;
+import com.ktds.dsquare.board.tag.repository.TagRepository;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
@@ -137,6 +145,12 @@ public class QuestionService {
 
         // 답변글이 이미 존재할 때 => HTTP Status로 처리해줘야 함(추후 수정 필요)
         if(!answerList.isEmpty()) throw new EntityNotFoundException("Delete Question Fail - Reply exists");
+
+        //연관관계 삭제
+        for(QuestionTag QT : question.getQuestionTags()) {
+            deleteQuestionTagRelation(question, QT.getTag());
+        }
+
         question.deleteQuestion();
     }
 
