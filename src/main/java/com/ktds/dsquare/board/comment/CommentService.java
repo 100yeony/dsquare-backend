@@ -8,6 +8,7 @@ import com.ktds.dsquare.board.comment.dto.NestedCommentRegisterDto;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
+import com.ktds.dsquare.board.talk.TalkRepository;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class CommentService {
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final CardRepository cardRepository;
+    private final TalkRepository talkRepository;
 
     // 댓글 작성
     @Transactional
@@ -82,8 +84,8 @@ public class CommentService {
                 return answerRepository.findByDeleteYnAndId(false, postId) != null;
             case "card":
                 return cardRepository.findByDeleteYnAndId(false, postId) != null;
-//            case "talk":
-//                return talkRepository.findByDeleteYnAndId(false, postId) != null;
+            case "talk":
+                return talkRepository.findByDeleteYnAndId(false, postId) != null;
 //            case "carrot":
 //                return carrotRepository.findByDeleteYnAndId(false, postId) != null;
             default:

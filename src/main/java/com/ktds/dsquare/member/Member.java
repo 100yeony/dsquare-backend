@@ -6,6 +6,7 @@ import com.ktds.dsquare.board.comment.Comment;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.board.talk.Talk;
 import com.ktds.dsquare.member.dto.request.MemberUpdateRequest;
 import com.ktds.dsquare.member.dto.request.SignupRequest;
 import com.ktds.dsquare.member.team.Team;
@@ -82,6 +83,8 @@ public class Member {
     @OneToMany(mappedBy = "originWriter")
     private List<Comment> originCommentList;
 
+    @OneToMany(mappedBy = "writer")
+    private List<Talk> TalkList;
 
     public List<String> getRole() {
         return List.of(role);
