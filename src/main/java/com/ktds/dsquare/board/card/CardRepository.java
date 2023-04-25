@@ -14,7 +14,7 @@ public interface CardRepository extends JpaRepository<Card,Long>, JpaSpecificati
     List<Card>  findByDeleteYnOrderByCreateDateDesc(Boolean deleteYn);
 
     //상세 조회 관련
-    Card findByDeleteYnAndCardId(Boolean deleteYn, Long cardId);
+    Card findByDeleteYnAndId(Boolean deleteYn, Long cardId);
 
     //검색 관련
     List<Card> findByDeleteYnAndProjTeamOrderByCreateDateDesc(Boolean deleteYn, Team projTeamId);

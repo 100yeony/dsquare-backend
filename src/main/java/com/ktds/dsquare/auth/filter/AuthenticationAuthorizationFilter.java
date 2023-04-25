@@ -46,6 +46,7 @@ public class AuthenticationAuthorizationFilter extends BasicAuthenticationFilter
         try {
             UserDetails principal = authenticate(request);
             authorize(principal);
+            log.info("Authorized : {}", principal.getUsername());
         } catch (TokenExpiredException e) {
             handleTokenExpiration(response);
         } catch (UsernameNotFoundException e) {

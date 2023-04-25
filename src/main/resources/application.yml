@@ -21,6 +21,11 @@ spring:
         format_sql: true
     show-sql: true
 
+  ### Servlet ###
+  servlet:
+    multipart:
+      max-file-size: 10MB
+
   ### Spring MVC ###
   mvc:
     # Config for Swagger
@@ -42,4 +47,4 @@ logging:
 
     com.ktds.dsquare:
       auth.jwt: debug
-
+      common.file: debug

@@ -3,20 +3,21 @@ package com.ktds.dsquare.board.card.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CardRequest {
 
-    private Long cardId;
     private Long cardWriterId;
     private Long projTeamId;
     private String title;
     private String content;
-    private String teammate;
+    private Integer teammateCnt;
+    private List<String> teammate;
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
     private Long viewCnt;

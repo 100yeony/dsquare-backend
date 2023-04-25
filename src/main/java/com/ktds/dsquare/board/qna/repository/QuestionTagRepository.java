@@ -9,6 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface QuestionTagRepository extends JpaRepository<QuestionTag,Long> {
     void deleteByQuestionAndTag(Question question, Tag tag);
-    QuestionTag findByQuestionAndTag(Question question, Tag tag);
-    QuestionTag findByTag(Tag tag);
+
 }

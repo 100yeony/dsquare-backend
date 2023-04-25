@@ -16,7 +16,7 @@ public class CategoryController {
 
     // 카테고리 목록 조회
     @GetMapping("/board/categories")
-    public List<BriefCategoryResponse> getAllQuestions(){
+    public List<BriefCategoryResponse> getAllCategories(){
         return categoryService.getAllCategories();
     }
 
