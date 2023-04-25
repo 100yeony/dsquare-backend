@@ -51,6 +51,9 @@ public class TalkController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    // 소통해요 검색
-
+    // 소통해요 검색(제목+내용, 사용자(이름))
+    @GetMapping("/board/talk/search")
+    public ResponseEntity<List<BriefTalkResponse>> searchTalk(@AuthUser Member user, @RequestParam(required = false) String key, @RequestParam(required = false) String value) {
+        return new ResponseEntity<>(talkService.searchTalk(user, key, value), HttpStatus.OK);
+    }
 }
