@@ -22,8 +22,9 @@ public class AnswerResponse {
     private String content;
     private Long atcId;
     private Long qid;
+    private Long commentCnt;
 
-    public static AnswerResponse toDto(Answer answer, MemberInfo writerInfo){
+    public static AnswerResponse toDto(Answer answer, MemberInfo writerInfo, Long commentCnt){
         Question q = answer.getQuestion();
         Long qid = q.getQid();
         return AnswerResponse.builder()
@@ -33,6 +34,7 @@ public class AnswerResponse {
                 .createDate(LocalDateTime.now())
                 .atcId(answer.getAtcId())
                 .qid(qid)
+                .commentCnt(commentCnt)
                 .build();
     }
 

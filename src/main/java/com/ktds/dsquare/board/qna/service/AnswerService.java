@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.qna.service;
 
+import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.AnswerRequest;
@@ -24,6 +25,7 @@ public class AnswerService {
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
     private final MemberRepository memberRepository;
+    private final CommentService commentService;
 
     // 답변글 작성
     @Transactional
@@ -39,7 +41,8 @@ public class AnswerService {
         List<AnswerResponse> answerResponses = new ArrayList<>();
         List<Answer> answers = answerRepository.findByQuestionAndDeleteYnOrderByCreateDateAsc(qid, false);
         for(Answer answer:answers){
-            answerResponses.add(AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter())));
+            Long commentCnt = (long) commentService.getAllComments(1L, qid.getQid()).size();
+            answerResponses.add(AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), commentCnt));
         }
         return answerResponses;
     }

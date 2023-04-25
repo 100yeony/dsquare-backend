@@ -28,9 +28,10 @@ public class CardResponse {
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
     private Long viewCnt;
+    private Long commentCnt;
     private CardSelectionInfo selectionInfo;
 
-    public static CardResponse toDto(Card entity, Member writer, Team team, Member cardOwner) {
+    public static CardResponse toDto(Card entity, Member writer, Team team, Member cardOwner, Long commentCnt) {
         MemberInfo writerInfo = MemberInfo.toDto(writer);
         TeamInfo teamInfo = TeamInfo.toDto(team);
         CardSelectionInfo selectionInfo;
@@ -52,6 +53,7 @@ public class CardResponse {
                 .lastUpdateDate(entity.getLastUpdateDate())
                 .viewCnt(entity.getViewCnt())
                 .selectionInfo(selectionInfo)
+                .commentCnt(commentCnt)
                 .build();
     }
 

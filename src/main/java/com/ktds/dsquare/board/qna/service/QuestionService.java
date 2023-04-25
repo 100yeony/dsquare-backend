@@ -2,6 +2,7 @@
 
 package com.ktds.dsquare.board.qna.service;
 
+import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.qna.domain.*;
 import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.dto.CategoryResponse;
@@ -33,6 +34,7 @@ public class QuestionService {
     private final MemberRepository memberRepository;
     private final TagRepository tagRepository;
     private final QuestionTagRepository questionTagRepository;
+    private final CommentService commentService;
 
     //create - 질문글 작성
     @Transactional
@@ -67,7 +69,8 @@ public class QuestionService {
                     break;
                 }
             }
-            briefQuestions.add(BriefQuestionResponse.toDto(Q, MemberInfo.toDto(member), CategoryResponse.toDto(category), (long)answers.size(), managerAnswerYn));
+            Long commentCnt = (long) commentService.getAllComments(0L, Q.getQid()).size();
+            briefQuestions.add(BriefQuestionResponse.toDto(Q, MemberInfo.toDto(member), CategoryResponse.toDto(category), (long)answers.size(), managerAnswerYn, commentCnt));
         }
         return briefQuestions;
     }
@@ -81,7 +84,8 @@ public class QuestionService {
         Member member = question.getWriter();
         MemberInfo writer = MemberInfo.toDto(member);
         CategoryResponse categoryRes = CategoryResponse.toDto(question.getCategory());
-        return QuestionResponse.toDto(question, writer, categoryRes);
+        Long commentCnt = (long) commentService.getAllComments(0L, qid).size();
+        return QuestionResponse.toDto(question, writer, categoryRes, commentCnt);
     }
 
     // 질문글 수정
@@ -191,7 +195,8 @@ public class QuestionService {
                     break;
                 }
             }
-            searchResults.add(BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn));
+            Long commentCnt = (long) commentService.getAllComments(0L, q.getQid()).size();
+            searchResults.add(BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, commentCnt));
         }
 
         return searchResults;

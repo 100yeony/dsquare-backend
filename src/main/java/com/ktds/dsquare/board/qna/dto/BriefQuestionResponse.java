@@ -26,11 +26,12 @@ public class BriefQuestionResponse {
     private LocalDateTime createDate; //정렬 기준
     private Long viewCnt;
     private Long answerCnt;
+    private Long commentCnt;
     private Boolean managerAnswerYn;
     private Boolean atcYn;
     private List<String> tags;
 
-    public static BriefQuestionResponse toDto(Question question, MemberInfo writerInfo, CategoryResponse category, Long answerCnt, Boolean managerAnswerYn){
+    public static BriefQuestionResponse toDto(Question question, MemberInfo writerInfo, CategoryResponse category, Long answerCnt, Boolean managerAnswerYn, Long commentCnt){
         List<QuestionTag> questionTags = question.getQuestionTags();
         List<String> tags = new ArrayList<>();
         for(QuestionTag questionTag : questionTags)
@@ -44,6 +45,7 @@ public class BriefQuestionResponse {
                 .content(question.getContent())
                 .createDate(LocalDateTime.now())
                 .viewCnt(question.getViewCnt())
+                .commentCnt(commentCnt)
                 .atcYn(question.getAtcId()!=null)
                 .answerCnt(answerCnt)
                 .managerAnswerYn(managerAnswerYn)

@@ -4,6 +4,7 @@ import com.ktds.dsquare.board.card.dto.BriefCardResponse;
 import com.ktds.dsquare.board.card.dto.CardRequest;
 import com.ktds.dsquare.board.card.dto.CardResponse;
 import com.ktds.dsquare.board.card.dto.CardSelectionInfo;
+import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
@@ -25,6 +26,7 @@ public class CardService {
     private final MemberRepository memberRepository;
     private final CardRepository cardRepository;
     private final TeamRepository teamRepository;
+    private final CommentService commentService;
 
     //create - 카드주세요 글 작성
     @Transactional
@@ -56,7 +58,8 @@ public class CardService {
             }else{
                 selectionInfo = null;
             }
-            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo));
+            Long commentCnt = (long) commentService.getAllComments(2L, C.getId()).size();
+            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, commentCnt));
         }
         return briefCards;
     }
@@ -66,7 +69,8 @@ public class CardService {
         Card card = cardRepository.findByDeleteYnAndId(false, cardId);
         card.increaseViewCnt();
         cardRepository.save(card);
-        return CardResponse.toDto(card, card.getCardWriter(), card.getProjTeam(), card.getCardOwner());
+        Long commentCnt = (long) commentService.getAllComments(2L, cardId).size();
+        return CardResponse.toDto(card, card.getCardWriter(), card.getProjTeam(), card.getCardOwner(), commentCnt);
     }
 
     //update - 카드주세요 선정
@@ -118,7 +122,8 @@ public class CardService {
             }else{
                 selectionInfo = null;
             }
-            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo));
+            Long commentCnt = (long) commentService.getAllComments(2L, C.getId()).size();
+            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, commentCnt));
         }
         return briefCards;
     }
