@@ -24,9 +24,10 @@ public class BriefCardResponse {
     private String teammate;
     private LocalDateTime createDate;
     private Long viewCnt;
+    private Long commentCnt;
     private CardSelectionInfo selectionInfo;
 
-    public static BriefCardResponse toDto(Card entity, MemberInfo writerInfo, TeamInfo teamInfo, CardSelectionInfo selectionInfo) {
+    public static BriefCardResponse toDto(Card entity, MemberInfo writerInfo, TeamInfo teamInfo, CardSelectionInfo selectionInfo, Long commentCnt) {
         return BriefCardResponse.builder()
                 .cardId(entity.getId())
                 .writerInfo(writerInfo)
@@ -38,6 +39,7 @@ public class BriefCardResponse {
                 .createDate(entity.getCreateDate())
                 .viewCnt(entity.getViewCnt())
                 .selectionInfo(selectionInfo)
+                .commentCnt(commentCnt)
                 .build();
     }
 }

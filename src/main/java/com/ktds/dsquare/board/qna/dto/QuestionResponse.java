@@ -26,11 +26,12 @@ public class QuestionResponse {
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
     private Long viewCnt;
+    private Long commentCnt;
     private Long atcId;
     private List<String> tags;
 
 
-    public static QuestionResponse toDto(Question question, MemberInfo writerInfo, CategoryResponse category){
+    public static QuestionResponse toDto(Question question, MemberInfo writerInfo, CategoryResponse category, Long commentCnt){
         List<QuestionTag> questionTags = question.getQuestionTags();
         List<String> tags = new ArrayList<>();
         for(QuestionTag questionTag : questionTags)
@@ -47,6 +48,7 @@ public class QuestionResponse {
                 .viewCnt(question.getViewCnt())
                 .atcId(question.getAtcId())
                 .tags(tags)
+                .commentCnt(commentCnt)
                 .build();
     }
 
