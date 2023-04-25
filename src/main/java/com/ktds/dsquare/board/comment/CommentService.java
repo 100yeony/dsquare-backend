@@ -90,20 +90,4 @@ public class CommentService {
                 throw new RuntimeException("BoardTypeName Not Found");
         }
     }
-//    public boolean checkAvailability(BoardType BoardType, Long postId) {
-//        switch(BoardType) {
-//            case BoardType.QUESTION:
-//                return questionRepository.findByDeleteYnAndQid(false, postId) != null; // 찾는 post 있으면 true
-//            case BoardType.ANSWER:
-//                return answerRepository.findByDeleteYnAndId(false, postId) != null;
-//            case BoardType.CARD:
-//                return cardRepository.findByDeleteYnAndId(false, postId) != null;
-////            case BoardType.TALK:
-////                return talkRepository.findByDeleteYnAndId(false, postId) != null;
-////            case BoardType.CARROT:
-////                return carrotRepository.findByDeleteYnAndId(false, postId) != null;
-//            default:
-//                throw new RuntimeException("BoardTypeName Not Found");
-//        }
-//    }
 }
