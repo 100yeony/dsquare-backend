@@ -1,5 +1,7 @@
 package com.ktds.dsquare.board.qna.service;
 
+import com.ktds.dsquare.board.enums.BoardType;
+import com.ktds.dsquare.board.like.LikeService;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
@@ -25,6 +27,7 @@ public class AnswerService {
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
     private final MemberRepository memberRepository;
+    private final LikeService likeService;
     private final CommentService commentService;
 
     // 답변글 작성
@@ -37,12 +40,14 @@ public class AnswerService {
     }
 
     // 답변글 조회
-    public List<AnswerResponse> getAnswersByQuestion(Question qid) {
+    public List<AnswerResponse> getAnswersByQuestion(Question qid, Member user) {
         List<AnswerResponse> answerResponses = new ArrayList<>();
         List<Answer> answers = answerRepository.findByQuestionAndDeleteYnOrderByCreateDateAsc(qid, false);
         for(Answer answer:answers){
+            Integer likeCnt = likeService.findLikeCnt(BoardType.ANSWER, answer.getId());
+            Boolean likeYn = likeService.findLikeYn(BoardType.ANSWER, answer.getId(), user);
             Long commentCnt = (long) commentService.getAllComments("answer", qid.getQid()).size();
-            answerResponses.add(AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), commentCnt));
+            answerResponses.add(AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), likeCnt, likeYn, commentCnt));
         }
         return answerResponses;
     }

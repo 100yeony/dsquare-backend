@@ -1,6 +1,7 @@
 package com.ktds.dsquare.member;
 
 import com.ktds.dsquare.board.card.Card;
+import com.ktds.dsquare.board.like.Like;
 import com.ktds.dsquare.board.comment.Comment;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
@@ -70,11 +71,17 @@ public class Member {
     @OneToMany(mappedBy = "cardOwner")
     private List<Card> ownCard;
 
+    //좋아요
+//    @JsonManagedReference //직렬화
+    @OneToMany(mappedBy = "member")
+    private List<Like> likePosts;
+
     @OneToMany(mappedBy = "writer")
     private List<Comment> commentList;
 
     @OneToMany(mappedBy = "originWriter")
     private List<Comment> originCommentList;
+
 
     public List<String> getRole() {
         return List.of(role);

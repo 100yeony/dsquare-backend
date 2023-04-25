@@ -5,6 +5,8 @@ import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.AnswerRequest;
 import com.ktds.dsquare.board.qna.dto.AnswerResponse;
 import com.ktds.dsquare.board.qna.service.AnswerService;
+import com.ktds.dsquare.common.annotatin.AuthUser;
+import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,9 +29,8 @@ public class AnswerController {
 
     //qid와 연결된 답변 모두 조회
     @GetMapping("/board/questions/{qid}/answers")
-    public List<AnswerResponse> getAnswersByQid(@PathVariable Question qid) {
-        return answerService.getAnswersByQuestion(qid);
-
+    public List<AnswerResponse> getAnswersByQid(@PathVariable Question qid, @AuthUser Member user) {
+        return answerService.getAnswersByQuestion(qid, user);
     }
 
     // 답변글 수정

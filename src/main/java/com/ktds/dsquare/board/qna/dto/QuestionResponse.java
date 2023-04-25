@@ -29,9 +29,11 @@ public class QuestionResponse {
     private Long commentCnt;
     private Long atcId;
     private List<String> tags;
+    private Integer likeCnt;
+    private Boolean likeYn;
 
-
-    public static QuestionResponse toDto(Question question, MemberInfo writerInfo, CategoryResponse category, Long commentCnt){
+    public static QuestionResponse toDto(Question question, MemberInfo writerInfo,
+                                         CategoryResponse category, Integer likeCnt, Boolean likeYn, Long commentCnt){
         List<QuestionTag> questionTags = question.getQuestionTags();
         List<String> tags = new ArrayList<>();
         for(QuestionTag questionTag : questionTags)
@@ -48,6 +50,8 @@ public class QuestionResponse {
                 .viewCnt(question.getViewCnt())
                 .atcId(question.getAtcId())
                 .tags(tags)
+                .likeCnt(likeCnt)
+                .likeYn(likeYn)
                 .commentCnt(commentCnt)
                 .build();
     }
