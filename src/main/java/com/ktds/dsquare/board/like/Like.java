@@ -23,7 +23,7 @@ public class Like {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(value = EnumType.ORDINAL)
+    @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     private BoardType boardType;
 

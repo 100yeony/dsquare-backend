@@ -16,11 +16,12 @@ public class LikeService {
 
     //create - 좋아요 등록(Question, Ansewr, Card) + Talk, Carrot(예정)
     public void like(LikeRequest dto, Member user){
-        Like likeCheck = likeRepository.findByBoardTypeAndPostIdAndMember(dto.getBoardType(), dto.getPostId(), user);
+        BoardType boardType = BoardType.findBoardType(dto.getBoardType());
+        Like likeCheck = likeRepository.findByBoardTypeAndPostIdAndMember(boardType, dto.getPostId(), user);
         if(likeCheck != null){
             throw new RuntimeException("like already exist");
         }else{
-            Like like = Like.toEntity(dto, dto.getBoardType(), user);
+            Like like = Like.toEntity(dto, boardType, user);
             likeRepository.save(like);
         }
     }
@@ -35,17 +36,14 @@ public class LikeService {
     //로그인한 사용자 입장에서 해당 게시글에 좋아요 여부
     public Boolean findLikeYn(BoardType boardType, Long postId, Member user){
         Like like = likeRepository.findByBoardTypeAndPostIdAndMember(boardType, postId, user);
-        if(like != null){
-            return true;
-        }else{
-            return false;
-        }
+        Boolean likeYn = like != null;
+        return likeYn;
     }
 
-
     //delete - 좋아요 취소
-    public void dislike(LikeRequest dto, Member user){
-        Like like = likeRepository.findByBoardTypeAndPostIdAndMember(dto.getBoardType(), dto.getPostId(), user);
+    public void cancelLike(LikeRequest dto, Member user){
+        BoardType boardType = BoardType.findBoardType(dto.getBoardType());
+        Like like = likeRepository.findByBoardTypeAndPostIdAndMember(boardType, dto.getPostId(), user);
         likeRepository.delete(like);
     }
 

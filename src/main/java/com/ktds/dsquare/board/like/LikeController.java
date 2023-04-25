@@ -24,7 +24,7 @@ public class LikeController {
     //좋아요 취소
     @DeleteMapping("/board/like")
     public ResponseEntity<Void> cancelLike(@RequestBody LikeRequest request, @AuthUser Member user){
-        likeService.dislike(request, user);
+        likeService.cancelLike(request, user);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
