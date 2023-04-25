@@ -1,7 +1,7 @@
 package com.ktds.dsquare.board.comment;
 
-import com.ktds.dsquare.board.comment.dto.CommentRequest;
-import com.ktds.dsquare.board.comment.dto.CommentResponse;
+import com.ktds.dsquare.board.comment.dto.CommentRegisterDto;
+import com.ktds.dsquare.board.comment.dto.NestedCommentRegisterDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +17,21 @@ public class CommentController {
 
     // 댓글 작성
     @PostMapping("/board/{boardTypeId}/{postId}/comments")
-    public ResponseEntity<Void> createComment(@PathVariable Long boardTypeId, @PathVariable Long postId, @RequestBody CommentRequest request){
+    public ResponseEntity<Void> createComment(@PathVariable Long boardTypeId, @PathVariable Long postId, @RequestBody CommentRegisterDto request){
         commentService.createComment(boardTypeId, postId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    // 대댓글 작성
+    @PostMapping("/board/{boardTypeId}/{postId}/comments/{nestedCommentId}")
+    public ResponseEntity<Void> createNestedComment(@PathVariable Long boardTypeId, @PathVariable Long postId, @RequestBody NestedCommentRegisterDto request){
+        commentService.createNestedComment(boardTypeId, postId, request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     // 댓글 조회(글에 달린 댓글 전체 조회)
     @GetMapping("/board/{boardTypeId}/{postId}/comments")
-    public ResponseEntity<List<CommentResponse>> getAllComments(@PathVariable Long boardTypeId, @PathVariable Long postId){
+    public ResponseEntity<List<Object>> getAllComments(@PathVariable Long boardTypeId, @PathVariable Long postId){
         return new ResponseEntity<>(commentService.getAllComments(boardTypeId, postId), HttpStatus.OK);
     }
 
