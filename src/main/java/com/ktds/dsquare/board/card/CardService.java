@@ -44,17 +44,33 @@ public class CardService {
         cardRepository.save(card);
     }
 
-    //read - 카드주세요 글 전체 조회
-    public List<BriefCardResponse> getAllCards(Member user){
-        List<Card> cards = cardRepository.findByDeleteYnOrderByCreateDateDesc(false);
+    //read - 카드주세요 글 전체 조회 & 검색
+    public List<BriefCardResponse> getCards(Long projTeamId, Member user){
         List<BriefCardResponse> briefCards = new ArrayList<>();
+        List<Card> cards;
+        Team team;
+
+        if(projTeamId != null){
+            //검색
+            team = teamRepository.findById(projTeamId)
+                    .orElseThrow(()-> new EntityNotFoundException("team not found"));
+            cards = cardRepository.findByDeleteYnAndProjTeamOrderByCreateDateDesc(false, team);
+        }else{
+            //전체조회
+            cards = cardRepository.findByDeleteYnOrderByCreateDateDesc(false);
+        }
 
         for(Card C : cards){
             Member member = C.getCardWriter();
-            Team team = C.getProjTeam();
-
             Member owner = C.getCardOwner();
             CardSelectionInfo selectionInfo;
+            if(projTeamId == null){
+                //전체조회
+                team = C.getProjTeam();
+            }else{
+                team = teamRepository.findById(projTeamId)
+                        .orElseThrow(()-> new EntityNotFoundException("team not found"));
+            }
             if(owner != null){
                 MemberInfo cardOwner = MemberInfo.toDto(owner);
                 selectionInfo = CardSelectionInfo.toDto(C, cardOwner);
@@ -67,6 +83,7 @@ public class CardService {
             Long commentCnt = (long) commentService.getAllComments("card", C.getId()).size();
             briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, likeCnt, likeYn, commentCnt));
         }
+
         return briefCards;
     }
 
@@ -110,32 +127,6 @@ public class CardService {
         card.deleteCard();
     }
 
-    //search - 카드주세요 검색
-    public List<BriefCardResponse> searchCard(Long projTeamId){
-        Team team = teamRepository.findById(projTeamId)
-                .orElseThrow(()-> new EntityNotFoundException("team not found"));
-
-        List<Card> cards = cardRepository.findByDeleteYnAndProjTeamOrderByCreateDateDesc(false, team);
-        List<BriefCardResponse> briefCards = new ArrayList<>();
-
-        for(Card C : cards){
-            Member member = C.getCardWriter();
-            Member owner = C.getCardOwner();
-            CardSelectionInfo selectionInfo;
-            if(owner != null){
-                MemberInfo cardOwner = MemberInfo.toDto(owner);
-                selectionInfo = CardSelectionInfo.toDto(C, cardOwner);
-            }else{
-                selectionInfo = null;
-            }
-
-            Long likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
-            Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), C.getCardWriter());
-            Long commentCnt = (long) commentService.getAllComments("card", C.getId()).size();
-            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, likeCnt, likeYn, commentCnt));
-        }
-        return briefCards;
-    }
 
     //read - 이달의 카드 전체 조회
     public List<BriefCardResponse> selectedCardList(){
