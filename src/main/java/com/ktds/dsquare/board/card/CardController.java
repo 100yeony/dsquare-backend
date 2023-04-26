@@ -20,8 +20,8 @@ public class CardController {
 
     //create - 카드주세요 글 작성
     @PostMapping("/board/cards")
-    public ResponseEntity<Void> createCard(@RequestBody CardRequest request){
-        cardService.createCard(request);
+    public ResponseEntity<Void> createCard(@RequestBody CardRequest request, @AuthUser Member user){
+        cardService.createCard(request, user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

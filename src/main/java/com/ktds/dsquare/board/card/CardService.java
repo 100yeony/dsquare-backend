@@ -8,7 +8,6 @@ import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
 import com.ktds.dsquare.member.Member;
-import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import com.ktds.dsquare.member.dto.response.TeamInfo;
 import com.ktds.dsquare.member.team.Team;
@@ -25,7 +24,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CardService {
 
-    private final MemberRepository memberRepository;
     private final CardRepository cardRepository;
     private final TeamRepository teamRepository;
     private final LikeService likeService;
@@ -33,14 +31,11 @@ public class CardService {
 
     //create - 카드주세요 글 작성
     @Transactional
-    public void createCard(CardRequest dto) {
-        Member cardWriter = memberRepository.findById(dto.getCardWriterId())
-                .orElseThrow(() -> new EntityNotFoundException("cardWriter is not found"));
-
+    public void createCard(CardRequest dto, Member user) {
         Team projTeam = teamRepository.findById(dto.getProjTeamId())
                 .orElseThrow(() -> new EntityNotFoundException("team is not found"));
 
-        Card card = Card.toEntity(dto, cardWriter, projTeam);
+        Card card = Card.toEntity(dto, user, projTeam);
         cardRepository.save(card);
     }
 
@@ -130,7 +125,6 @@ public class CardService {
 
     //read - 이달의 카드 전체 조회
     public List<BriefCardResponse> selectedCardList(){
-
         List<Card> cards = cardRepository.findSelectedCard();
         List<BriefCardResponse> briefCards = new ArrayList<>();
 

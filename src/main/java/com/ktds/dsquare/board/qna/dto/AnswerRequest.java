@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 public class AnswerRequest {
 
     private Long id;
-    private Long writerId;
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
     private String content;

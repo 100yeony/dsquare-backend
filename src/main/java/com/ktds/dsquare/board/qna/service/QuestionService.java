@@ -41,10 +41,9 @@ public class QuestionService {
 
     //create - 질문글 작성
     @Transactional
-    public void createQuestion(QuestionRequest dto) {
-        Member writer = memberRepository.findById(dto.getWriterId()).orElseThrow(() -> new EntityNotFoundException("Writer does not exist"));
+    public void createQuestion(QuestionRequest dto, Member user) {
         Category category = categoryRepository.findById(dto.getCid()).orElseThrow(() -> new EntityNotFoundException("Category does not exist"));
-        Question question = Question.toEntity(dto, writer, category);
+        Question question = Question.toEntity(dto, user, category);
 
         questionRepository.save(question);
         insertNewTags(dto.getTags(), question);

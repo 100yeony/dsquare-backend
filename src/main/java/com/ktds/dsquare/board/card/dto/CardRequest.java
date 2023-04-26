@@ -12,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 public class CardRequest {
 
-    private Long cardWriterId;
     private Long projTeamId;
     private String title;
     private String content;
