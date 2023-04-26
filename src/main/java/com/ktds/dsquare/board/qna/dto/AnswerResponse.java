@@ -22,11 +22,11 @@ public class AnswerResponse {
     private String content;
     private Long atcId;
     private Long qid;
-    private Integer likeCnt;
+    private Long likeCnt;
     private Boolean likeYn;
     private Long commentCnt;
 
-    public static AnswerResponse toDto(Answer answer, MemberInfo writerInfo, Integer likeCnt, Boolean likeYn, Long commentCnt){
+    public static AnswerResponse toDto(Answer answer, MemberInfo writerInfo, Long likeCnt, Boolean likeYn, Long commentCnt){
         Question q = answer.getQuestion();
         Long qid = q.getQid();
         return AnswerResponse.builder()

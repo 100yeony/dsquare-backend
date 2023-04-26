@@ -1,6 +1,5 @@
 package com.ktds.dsquare.board.like;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.dto.LikeRequest;
 import com.ktds.dsquare.member.Member;
@@ -30,7 +29,6 @@ public class Like {
     @Column(nullable = false)
     private Long postId;
 
-    @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member")
     private Member member;

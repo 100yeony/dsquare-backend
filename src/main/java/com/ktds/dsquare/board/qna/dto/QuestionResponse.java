@@ -29,11 +29,11 @@ public class QuestionResponse {
     private Long commentCnt;
     private Long atcId;
     private List<String> tags;
-    private Integer likeCnt;
+    private Long likeCnt;
     private Boolean likeYn;
 
     public static QuestionResponse toDto(Question question, MemberInfo writerInfo,
-                                         CategoryResponse category, Integer likeCnt, Boolean likeYn, Long commentCnt){
+                                         CategoryResponse category, Long likeCnt, Boolean likeYn, Long commentCnt){
         List<QuestionTag> questionTags = question.getQuestionTags();
         List<String> tags = new ArrayList<>();
         for(QuestionTag questionTag : questionTags)

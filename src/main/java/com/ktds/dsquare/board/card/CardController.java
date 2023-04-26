@@ -38,9 +38,9 @@ public class CardController {
     }
 
     //update - 카드주세요 선정
-    @PostMapping("board/cards/{cardId}/cardOwner/{cardOwnerId}")
-    public ResponseEntity<Void> giveCard(@PathVariable("cardId") Long cardId, @PathVariable("cardOwnerId") Long cardOwnerId){
-        cardService.giveCard(cardId, cardOwnerId);
+    @PatchMapping("board/cards/{cardId}")
+    public ResponseEntity<Void> giveCard(@PathVariable("cardId") Long cardId, @AuthUser Member user){
+        cardService.giveCard(cardId, user);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -60,7 +60,13 @@ public class CardController {
 
     //search - 카드주세요 검색
     @GetMapping("board/cards/search")
-    public ResponseEntity<List<BriefCardResponse>> searchCard(@RequestParam("projTeamId") Long projTeamId){
+    public ResponseEntity<List<BriefCardResponse>> searchCards(@RequestParam("projTeamId") Long projTeamId){
         return new ResponseEntity<>(cardService.searchCard(projTeamId), HttpStatus.OK);
+    }
+
+    //read - 이달의 카드 조회
+    @GetMapping("board/cards/card-of-the-month")
+    public ResponseEntity<List<BriefCardResponse>> selectedCardList(){
+        return new ResponseEntity<>(cardService.selectedCardList(), HttpStatus.OK);
     }
 }
