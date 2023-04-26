@@ -3,11 +3,6 @@ package com.ktds.dsquare.board.talk;
 import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
-import com.ktds.dsquare.board.qna.domain.Answer;
-import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
-import com.ktds.dsquare.board.qna.dto.CategoryResponse;
-import com.ktds.dsquare.board.qna.service.QuestionSpecification;
 import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.board.tag.TalkTag;
 import com.ktds.dsquare.board.tag.repository.TagRepository;
@@ -17,7 +12,6 @@ import com.ktds.dsquare.board.talk.dto.TalkRequest;
 import com.ktds.dsquare.board.talk.dto.TalkResponse;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
-import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -49,18 +43,48 @@ public class TalkService {
         insertNewTalkTags(request.getTags(), talk);
     }
 
-    // 소통해요 전체조회
-    public List<BriefTalkResponse> getAllTalks(Member user) {
-        List<Talk> talks = talkRepository.findByDeleteYnOrderByCreateDateDesc(false);
-        List<BriefTalkResponse> briefTalks = new ArrayList<>();
-        for(Talk t : talks) {
+    // 소통해요 전체조회 + 검색
+    public List<BriefTalkResponse> getTalks(Member user, String key, String value){
+        //deleteYn = false인 것만 조회
+        Specification<Talk> filter = Specification.where(TalkSpecification.equalNotDeleted(false));
+
+        //사용자 이름 검색(2글자로도 포함된 사람 검색 & 다른 조건과 모두 AND)
+        if (key != null && key.equals("member") && value != null) {
+            List<Member> members = memberRepository.findByNameContaining(value);
+            try {
+                if (members.size() > 0) {
+                    List<Member> writerIds = new ArrayList<>();
+                    for (Member M : members) {
+                        Member m = memberRepository.findById(M.getId())
+                                .orElseThrow(() -> new EntityNotFoundException("Member Not Found"));
+                        writerIds.add(m);
+                    }
+                    filter = filter.and(TalkSpecification.inWriter(writerIds));
+                } else {
+                    // 매칭되는 멤버가 없으면 빈 리스트 반환
+                    return Collections.emptyList();
+                }
+            } catch (RuntimeException ex) {
+                // Exception이 발생한 경우 빈 리스트 반환
+                return Collections.emptyList();
+            }
+        }
+        //제목+내용 검색
+        if(key!=null && key.equals("titleAndContent") && value != null){
+            filter = filter.and(TalkSpecification.equalTitleAndContentContaining(value));
+        }
+
+        List<Talk> talkList = talkRepository.findAll(filter, Sort.by(Sort.Direction.DESC, "createDate"));
+        List<BriefTalkResponse> searchResults = new ArrayList<>();
+
+        for(Talk t : talkList){
             Integer likeCnt = likeService.findLikeCnt(BoardType.TALK, t.getId());
             Boolean likeYn = likeService.findLikeYn(BoardType.TALK, t.getId(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.TALK, t.getId());
-
-            briefTalks.add(BriefTalkResponse.toDto(t, commentCnt, likeCnt, likeYn));
+            searchResults.add(BriefTalkResponse.toDto(t, commentCnt, likeCnt, likeYn));
         }
-        return briefTalks;
+
+        return searchResults;
     }
 
     // 소통해요 상세조회
@@ -132,47 +156,4 @@ public class TalkService {
         talkTagRepository.deleteByTalkAndTag(talk, tag);
     }
 
-    // search? 있움?
-    public List<BriefTalkResponse> searchTalk(Member user, String key, String value){
-        //deleteYn = false인 것만 조회
-        Specification<Talk> filter = Specification.where(TalkSpecification.equalNotDeleted(false));
-
-        //사용자 이름 검색(2글자로도 포함된 사람 검색 & 다른 조건과 모두 AND)
-        if (key != null && key.equals("member") && value != null) {
-            List<Member> members = memberRepository.findByNameContaining(value);
-            try {
-                if (members.size() > 0) {
-                    List<Member> writerIds = new ArrayList<>();
-                    for (Member M : members) {
-                        Member m = memberRepository.findById(M.getId())
-                                .orElseThrow(() -> new EntityNotFoundException("Member Not Found"));
-                        writerIds.add(m);
-                    }
-                    filter = filter.and(TalkSpecification.inWriter(writerIds));
-                } else {
-                    // 매칭되는 멤버가 없으면 빈 리스트 반환
-                    return Collections.emptyList();
-                }
-            } catch (RuntimeException ex) {
-                // Exception이 발생한 경우 빈 리스트 반환
-                return Collections.emptyList();
-            }
-        }
-        //제목+내용 검색
-        if(key!=null && key.equals("titleAndContent") && value != null){
-            filter = filter.and(TalkSpecification.equalTitleAndContentContaining(value));
-        }
-
-        List<Talk> talkList = talkRepository.findAll(filter, Sort.by(Sort.Direction.DESC, "createDate"));
-        List<BriefTalkResponse> searchResults = new ArrayList<>();
-
-        for(Talk t : talkList){
-            Integer likeCnt = likeService.findLikeCnt(BoardType.TALK, t.getId());
-            Boolean likeYn = likeService.findLikeYn(BoardType.TALK, t.getId(), user);
-            Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.TALK, t.getId());
-            searchResults.add(BriefTalkResponse.toDto(t, commentCnt, likeCnt, likeYn));
-        }
-
-        return searchResults;
-    }
 }

@@ -25,10 +25,10 @@ public class TalkController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    // 소통해요 전체조회(정렬포함)
+    // 소통해요 전체조회(정렬포함) + 검색 한번에
     @GetMapping("/board/talk")
-    public ResponseEntity<List<BriefTalkResponse>> getAllTalks(@AuthUser Member user){
-        return new ResponseEntity<>(talkService.getAllTalks(user), HttpStatus.OK);
+    public ResponseEntity<List<BriefTalkResponse>> getAllTalks(@AuthUser Member user, @RequestParam(required = false) String key, @RequestParam(required = false) String value){
+        return new ResponseEntity<>(talkService.getTalks(user, key, value), HttpStatus.OK);
     }
 
     // 소통해요 상세조회
@@ -49,11 +49,5 @@ public class TalkController {
     public ResponseEntity<Void> deleteTalk(@PathVariable Long talkId) {
         talkService.deleteTalk(talkId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    // 소통해요 검색(제목+내용, 사용자(이름))
-    @GetMapping("/board/talk/search")
-    public ResponseEntity<List<BriefTalkResponse>> searchTalk(@AuthUser Member user, @RequestParam(required = false) String key, @RequestParam(required = false) String value) {
-        return new ResponseEntity<>(talkService.searchTalk(user, key, value), HttpStatus.OK);
     }
 }
