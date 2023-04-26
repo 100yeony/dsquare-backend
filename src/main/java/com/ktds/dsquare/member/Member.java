@@ -72,8 +72,6 @@ public class Member {
     @OneToMany(mappedBy = "cardOwner")
     private List<Card> ownCard;
 
-    //좋아요
-//    @JsonManagedReference //직렬화
     @OneToMany(mappedBy = "member")
     private List<Like> likePosts;
 

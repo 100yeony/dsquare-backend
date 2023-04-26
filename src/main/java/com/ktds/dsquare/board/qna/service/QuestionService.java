@@ -81,7 +81,7 @@ public class QuestionService {
                 }
             }
 
-            Integer likeCnt = likeService.findLikeCnt(BoardType.QUESTION, Q.getQid());
+            Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, Q.getQid());
             Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, Q.getQid(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, Q.getQid());
 
@@ -101,7 +101,7 @@ public class QuestionService {
         MemberInfo writer = MemberInfo.toDto(member);
         CategoryResponse categoryRes = CategoryResponse.toDto(question.getCategory());
 
-        Integer likeCnt = likeService.findLikeCnt(BoardType.QUESTION, qid);
+        Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, qid);
         Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, qid, user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, qid);
         return QuestionResponse.toDto(question, writer, categoryRes, likeCnt, likeYn, commentCnt);
@@ -221,7 +221,7 @@ public class QuestionService {
                 }
             }
 
-            Integer likeCnt = likeService.findLikeCnt(BoardType.QUESTION, q.getQid());
+            Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, q.getQid());
             Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, q.getQid(), q.getWriter());
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, q.getQid());
             searchResults.add(BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, likeCnt, likeYn, commentCnt));

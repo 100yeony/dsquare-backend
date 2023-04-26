@@ -44,7 +44,7 @@ public class AnswerService {
         List<AnswerResponse> answerResponses = new ArrayList<>();
         List<Answer> answers = answerRepository.findByQuestionAndDeleteYnOrderByCreateDateAsc(qid, false);
         for(Answer answer:answers){
-            Integer likeCnt = likeService.findLikeCnt(BoardType.ANSWER, answer.getId());
+            Long likeCnt = likeService.findLikeCnt(BoardType.ANSWER, answer.getId());
             Boolean likeYn = likeService.findLikeYn(BoardType.ANSWER, answer.getId(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.ANSWER, qid.getQid());
             answerResponses.add(AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), likeCnt, likeYn, commentCnt));
