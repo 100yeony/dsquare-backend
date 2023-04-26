@@ -6,8 +6,6 @@ import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class LikeService {
@@ -28,15 +26,13 @@ public class LikeService {
 
     //read - 전체조회(Question 전체조회, Question 상세조회, Answer 조회, Card 전체조회, Card 상세조회)
     //게시글 입장에서 총 좋아요 수
-    public Integer findLikeCnt(BoardType boardType, Long postId){
-        Integer likeCnt = likeRepository.countByBoardTypeAndPostId(boardType, postId);
-        return likeCnt;
+    public Long findLikeCnt(BoardType boardType, Long postId){
+        return likeRepository.countByBoardTypeAndPostId(boardType, postId);
     }
 
     //로그인한 사용자 입장에서 해당 게시글에 좋아요 여부
     public Boolean findLikeYn(BoardType boardType, Long postId, Member user){
-        Boolean like = likeRepository.existsByBoardTypeAndPostIdAndMember(boardType, postId, user);
-        return like;
+        return likeRepository.existsByBoardTypeAndPostIdAndMember(boardType, postId, user);
     }
 
     //delete - 좋아요 취소

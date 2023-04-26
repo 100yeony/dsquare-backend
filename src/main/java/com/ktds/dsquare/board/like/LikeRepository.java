@@ -12,7 +12,7 @@ public interface LikeRepository extends JpaRepository<Like,Long> {
     Boolean existsByBoardTypeAndPostIdAndMember(BoardType boardType, Long postId, Member member);
 
     //게시글 입장에서 총 좋아요 수
-    Integer countByBoardTypeAndPostId(BoardType boardType, Long postId);
+    Long countByBoardTypeAndPostId(BoardType boardType, Long postId);
 
     //좋아요 삭제
     Like findByBoardTypeAndPostIdAndMember(BoardType boardType, Long postId, Member member);

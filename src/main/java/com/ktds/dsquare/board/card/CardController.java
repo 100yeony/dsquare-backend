@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 
 @RestController
@@ -39,9 +38,9 @@ public class CardController {
     }
 
     //update - 카드주세요 선정
-    @PostMapping("board/cards/{cardId}/cardOwner/{cardOwnerId}")
-    public ResponseEntity<Void> giveCard(@PathVariable("cardId") Long cardId, @PathVariable("cardOwnerId") Long cardOwnerId){
-        cardService.giveCard(cardId, cardOwnerId);
+    @PatchMapping("board/cards/{cardId}")
+    public ResponseEntity<Void> giveCard(@PathVariable("cardId") Long cardId, @AuthUser Member user){
+        cardService.giveCard(cardId, user);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -66,7 +65,7 @@ public class CardController {
     }
 
     //read - 이달의 카드 조회
-    @GetMapping("board/cards/selectedList")
+    @GetMapping("board/cards/card-of-the-month")
     public ResponseEntity<List<BriefCardResponse>> selectedCardList(){
         return new ResponseEntity<>(cardService.selectedCardList(), HttpStatus.OK);
     }

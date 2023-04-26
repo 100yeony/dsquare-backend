@@ -16,16 +16,13 @@ import com.ktds.dsquare.member.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@PersistenceContext
 public class CardService {
 
     private final MemberRepository memberRepository;
@@ -33,7 +30,6 @@ public class CardService {
     private final TeamRepository teamRepository;
     private final LikeService likeService;
     private final CommentService commentService;
-    private final EntityManager em;
 
     //create - 카드주세요 글 작성
     @Transactional
@@ -66,7 +62,7 @@ public class CardService {
                 selectionInfo = null;
             }
 
-            Integer likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
+            Long likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
             Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), user);
             Long commentCnt = (long) commentService.getAllComments("card", C.getId()).size();
             briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, likeCnt, likeYn, commentCnt));
@@ -80,7 +76,7 @@ public class CardService {
         card.increaseViewCnt();
         cardRepository.save(card);
 
-        Integer likeCnt = likeService.findLikeCnt(BoardType.CARD, card.getId());
+        Long likeCnt = likeService.findLikeCnt(BoardType.CARD, card.getId());
         Boolean likeYn = likeService.findLikeYn(BoardType.CARD, card.getId(), user);
         Long commentCnt = (long) commentService.getAllComments("card", cardId).size();
         return CardResponse.toDto(card, card.getCardWriter(), card.getProjTeam(), card.getCardOwner(), likeCnt, likeYn, commentCnt);
@@ -88,13 +84,10 @@ public class CardService {
 
     //update - 카드주세요 선정
     @Transactional
-    public void giveCard(Long cardId, Long cardOwnerId){
+    public void giveCard(Long cardId, Member user){
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(()-> new EntityNotFoundException("card is not found"));
-        Member owner = memberRepository.findById(cardOwnerId)
-                .orElseThrow(() -> new EntityNotFoundException("member is not found"));
-
-        card.selectCard(owner, true);
+        card.selectCard(user, true);
     }
 
     //update - 카드주세요 글 수정
@@ -136,7 +129,7 @@ public class CardService {
                 selectionInfo = null;
             }
 
-            Integer likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
+            Long likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
             Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), C.getCardWriter());
             Long commentCnt = (long) commentService.getAllComments("card", C.getId()).size();
             briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, likeCnt, likeYn, commentCnt));
@@ -161,7 +154,7 @@ public class CardService {
             }else{
                 selectionInfo = null;
             }
-            Integer likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
+            Long likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
             Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), C.getCardWriter());
             Long commentCnt = (long) commentService.getAllComments("card", C.getId()).size();
             briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(C.getProjTeam()), selectionInfo, likeCnt, likeYn, commentCnt));
