@@ -97,17 +97,14 @@ public class CardService {
     //update - 카드주세요 선정
     @Transactional
     public void giveCard(Long cardId, Member user){
-        Card card = cardRepository.findById(cardId)
-                .orElseThrow(()-> new EntityNotFoundException("card is not found"));
+        Card card = cardRepository.findByDeleteYnAndId(false, cardId);
         card.selectCard(user, true);
     }
 
     //update - 카드주세요 글 수정
     @Transactional
     public void updateCard(Long cardId, CardRequest request){
-        Card card = cardRepository.findById(cardId)
-                .orElseThrow(()-> new EntityNotFoundException("card is not found"));
-
+        Card card = cardRepository.findByDeleteYnAndId(false, cardId);
         Team projTeam = teamRepository.findById(request.getProjTeamId())
                 .orElseThrow(() -> new EntityNotFoundException("team is not found"));
 
