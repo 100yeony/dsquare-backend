@@ -25,10 +25,10 @@ public class CardController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    //read - 카드주세요 글 전체 목록 조회
+    //read - 카드주세요 글 전체 목록 조회 & 검색
     @GetMapping("board/cards")
-    public ResponseEntity<List<BriefCardResponse>> getAllCards(@AuthUser Member user){
-        return new ResponseEntity<>(cardService.getAllCards(user), HttpStatus.OK);
+    public ResponseEntity<List<BriefCardResponse>> getCards(@RequestParam(required = false) Long projTeamId, @AuthUser Member user){
+        return new ResponseEntity<>(cardService.getCards(projTeamId, user), HttpStatus.OK);
     }
 
     //read - 카드주세요 글 상세 조회
@@ -56,12 +56,6 @@ public class CardController {
     public ResponseEntity<Void> deleteCard(@PathVariable("cardId") Long cardId){
         cardService.deleteCard(cardId);
         return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    //search - 카드주세요 검색
-    @GetMapping("board/cards/search")
-    public ResponseEntity<List<BriefCardResponse>> searchCards(@RequestParam("projTeamId") Long projTeamId){
-        return new ResponseEntity<>(cardService.searchCard(projTeamId), HttpStatus.OK);
     }
 
     //read - 이달의 카드 조회
