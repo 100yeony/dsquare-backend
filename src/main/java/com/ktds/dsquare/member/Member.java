@@ -1,6 +1,7 @@
 package com.ktds.dsquare.member;
 
 import com.ktds.dsquare.board.card.Card;
+import com.ktds.dsquare.board.carrot.Carrot;
 import com.ktds.dsquare.board.like.Like;
 import com.ktds.dsquare.board.comment.Comment;
 import com.ktds.dsquare.board.qna.domain.Answer;
@@ -79,6 +80,9 @@ public class Member {
 
     @OneToMany(mappedBy = "originWriter")
     private List<Comment> originCommentList;
+
+    @OneToMany(mappedBy = "carrotWriter")
+    private List<Carrot> carrotList;
 
 
     public List<String> getRole() {
