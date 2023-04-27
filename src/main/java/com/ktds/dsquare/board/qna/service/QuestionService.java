@@ -1,5 +1,3 @@
-
-
 package com.ktds.dsquare.board.qna.service;
 
 import com.ktds.dsquare.board.comment.CommentRepository;
@@ -141,7 +139,8 @@ public class QuestionService {
         question.increaseViewCnt();
         questionRepository.save(question);
 
-        MemberInfo writer = MemberInfo.toDto(user);
+        Member member = question.getWriter();
+        MemberInfo writer = MemberInfo.toDto(member);
         CategoryResponse categoryRes = CategoryResponse.toDto(question.getCategory());
 
         Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, qid);

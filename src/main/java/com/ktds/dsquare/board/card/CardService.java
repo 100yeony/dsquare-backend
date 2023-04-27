@@ -128,7 +128,6 @@ public class CardService {
 
     //read - 이달의 카드 전체 조회
     public List<BriefCardResponse> selectedCardList(){
-
         List<Card> cards = cardRepository.findSelectedCard();
         List<BriefCardResponse> briefCards = new ArrayList<>();
 
