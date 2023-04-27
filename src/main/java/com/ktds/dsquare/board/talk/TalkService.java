@@ -36,8 +36,7 @@ public class TalkService {
 
     // 소통해요 작성
     @Transactional
-    public void createTalk(TalkRequest request) {
-        Member writer = memberRepository.findById(request.getWriterId()).orElseThrow(() -> new RuntimeException("Writer Not Found"));
+    public void createTalk(TalkRequest request, Member writer) {
         Talk talk = Talk.toEntity(request, writer);
         talkRepository.save(talk);
         insertNewTalkTags(request.getTags(), talk);
@@ -78,7 +77,7 @@ public class TalkService {
         List<BriefTalkResponse> searchResults = new ArrayList<>();
 
         for(Talk t : talkList){
-            Integer likeCnt = likeService.findLikeCnt(BoardType.TALK, t.getId());
+            Long likeCnt = likeService.findLikeCnt(BoardType.TALK, t.getId());
             Boolean likeYn = likeService.findLikeYn(BoardType.TALK, t.getId(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.TALK, t.getId());
             searchResults.add(BriefTalkResponse.toDto(t, commentCnt, likeCnt, likeYn));
@@ -89,11 +88,12 @@ public class TalkService {
 
     // 소통해요 상세조회
     public TalkResponse getTalkDetail(Long talkId, Member user) {
-        Talk talk = talkRepository.findById(talkId).orElseThrow(()->new RuntimeException("Talk Not Found"));
+        Talk talk = talkRepository.findByDeleteYnAndId(false, talkId);
+        if(talk == null) throw new EntityNotFoundException("Talk Not Found. Talk ID :"+talkId);
         talk.increaseViewCnt();
         talkRepository.save(talk);
 
-        Integer likeCnt = likeService.findLikeCnt(BoardType.TALK, talkId);
+        Long likeCnt = likeService.findLikeCnt(BoardType.TALK, talkId);
         Boolean likeYn = likeService.findLikeYn(BoardType.TALK, talkId, user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.TALK, talkId);
 

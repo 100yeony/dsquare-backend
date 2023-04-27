@@ -18,6 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "comm_talk")
 public class Talk {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
