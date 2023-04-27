@@ -46,7 +46,7 @@ public class BriefQuestionResponse {
                 .title(question.getTitle())
                 .category(category)
                 .content(question.getContent())
-                .createDate(LocalDateTime.now())
+                .createDate(question.getCreateDate())
                 .viewCnt(question.getViewCnt())
                 .commentCnt(commentCnt)
                 .atcYn(question.getAtcId()!=null)

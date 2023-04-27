@@ -43,7 +43,7 @@ public class AnswerService {
         for(Answer answer:answers){
             Long likeCnt = likeService.findLikeCnt(BoardType.ANSWER, answer.getId());
             Boolean likeYn = likeService.findLikeYn(BoardType.ANSWER, answer.getId(), user);
-            Long commentCnt = (long) commentService.getAllComments("answer", qid.getQid()).size();
+            Long commentCnt = (long) commentService.getAllComments("answer", answer.getId()).size();
             answerResponses.add(AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), likeCnt, likeYn, commentCnt));
         }
         return answerResponses;

@@ -19,6 +19,7 @@ public class AnswerResponse {
     private Long aid;
     private MemberInfo writerInfo;
     private LocalDateTime createDate;
+    private LocalDateTime lastUpdateDate;
     private String content;
     private Long atcId;
     private Long qid;
@@ -33,7 +34,8 @@ public class AnswerResponse {
                 .aid(answer.getId())
                 .writerInfo(writerInfo)
                 .content(answer.getContent())
-                .createDate(LocalDateTime.now())
+                .createDate(answer.getCreateDate())
+                .lastUpdateDate(answer.getLastUpdateDate())
                 .atcId(answer.getAtcId())
                 .qid(qid)
                 .likeCnt(likeCnt)
