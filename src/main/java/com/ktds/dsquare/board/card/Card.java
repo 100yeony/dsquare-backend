@@ -26,7 +26,7 @@ public class Card {
 
     @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "projTeam")
+    @JoinColumn(name = "proj_team")
     private Team projTeam;
 
     @Column(nullable = false)
@@ -51,7 +51,7 @@ public class Card {
 
     @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cardOwner")
+    @JoinColumn(name = "card_owner")
     private Member cardOwner;
 
     private LocalDateTime selectedDate;
