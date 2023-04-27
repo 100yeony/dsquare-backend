@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -46,7 +45,7 @@ public class Carrot {
     private Boolean deleteYn;
 
     @OneToMany(mappedBy = "carrot")
-    private List<CarrotTag> carrotTags = new ArrayList<>();
+    private List<CarrotTag> carrotTags;
 
 
     public static Carrot toEntity(CarrotRegisterRequest dto, Member writer){

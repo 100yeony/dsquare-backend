@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -43,7 +42,7 @@ public class Talk {
     private Boolean deleteYn;       // 기본값 false
 
     @OneToMany(mappedBy = "talk")
-    private List<TalkTag> TalkTags = new ArrayList<>();
+    private List<TalkTag> TalkTags;
 
     public static Talk toEntity(TalkRegisterRequest request, Member writer) {
         return Talk.builder()
