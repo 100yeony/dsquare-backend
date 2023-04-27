@@ -26,10 +26,11 @@ public class QuestionController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    //read - 질문글 전체 목록 조회
+    //read - 질문글 전체 목록 조회 & 검색
     @GetMapping("/board/questions")
-    public ResponseEntity<List<BriefQuestionResponse>> getAllQuestions(@RequestParam Boolean workYn, @AuthUser Member user){
-        return new ResponseEntity<>(questionService.getAllQuestions(workYn, user), HttpStatus.OK);
+    public List<BriefQuestionResponse> getQuestions(@RequestParam Boolean workYn, @AuthUser Member user, @RequestParam(required = false) Integer cid,
+                                                 @RequestParam(required = false) String key, @RequestParam(required = false) String value) {
+        return questionService.getQuestions(workYn, cid, key, value);
     }
 
     //read - 질문글 상세 조회
@@ -51,13 +52,6 @@ public class QuestionController {
     public ResponseEntity<Void> deleteQuestion(@PathVariable("qid") Long qid){
         questionService.deleteQuestion(qid);
         return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    //search - Q&A 검색(업무구분, 카테고리, 제목+내용, 사용자(이름))
-    @GetMapping("/board/questions/search")
-    public List<BriefQuestionResponse> searchQnA(@RequestParam Boolean workYn, @RequestParam(required = false) Integer cid,
-                                          @RequestParam(required = false) String key, @RequestParam(required = false) String value) {
-        return questionService.searchQnA(workYn, cid, key, value);
     }
 
 }

@@ -58,110 +58,14 @@ public class QuestionService {
         insertNewTags(dto.getTags(), question);
     }
 
-    //read - 질문글 전체 조회
-    public List<BriefQuestionResponse> getAllQuestions(Boolean workYn, Member user) {
-        // deleteYn = false만 필터링 한 후 qid 기준으로 정렬
-        Category notWorkCategory = categoryRepository.findByCid(2)
-                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
-
-        List<Question> questions;
-        List<BriefQuestionResponse> briefQuestions = new ArrayList<>();
-        if(workYn) questions = questionRepository.findByDeleteYnAndCategoryNotOrderByCreateDateDesc(false, notWorkCategory);
-        else questions = questionRepository.findByDeleteYnAndCategoryOrderByCreateDateDesc(false, notWorkCategory);
-
-        for (Question Q : questions) {
-            Category category = Q.getCategory();
-            Member member = Q.getWriter();
-            List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(Q, false);
-            boolean managerAnswerYn = false;
-            for (Answer A : answers) {
-                if (category.getManager()==A.getWriter()) {
-                    managerAnswerYn = true;
-                    break;
-                }
-            }
-
-            Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, Q.getQid());
-            Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, Q.getQid(), user);
-            Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, Q.getQid());
-
-            briefQuestions.add(BriefQuestionResponse.toDto(Q, MemberInfo.toDto(member),
-                                CategoryResponse.toDto(category), (long)answers.size(), managerAnswerYn, likeCnt, likeYn, commentCnt));
-        }
-        return briefQuestions;
-    }
-
-    //read - 질문글 상세 조회
-    public QuestionResponse getQuestionDetail(Member user, Long qid) {
-        Question question = questionRepository.findByDeleteYnAndQid(false, qid);
-        question.increaseViewCnt();
-        questionRepository.save(question);
-
-        Member member = question.getWriter();
-        MemberInfo writer = MemberInfo.toDto(member);
-        CategoryResponse categoryRes = CategoryResponse.toDto(question.getCategory());
-
-        Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, qid);
-        Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, qid, user);
-        Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, qid);
-        return QuestionResponse.toDto(question, writer, categoryRes, likeCnt, likeYn, commentCnt);
-    }
-
-    // 질문글 수정
-    @Transactional
-    public void updateQuestion(Long qid, QuestionRequest request) {
-        Question question = questionRepository.findByDeleteYnAndQid(false, qid);
-        if(question==null){
-            throw new EntityNotFoundException("Question not found. qid is " + qid);
-        }
-        Category category = categoryRepository.findById(request.getCid())
-                .orElseThrow(()-> new EntityNotFoundException("category not found. category is " + request.getCid()));
-        question.updateQuestion(request.getTitle(), request.getContent(), category, request.getAtcId());
-
-        // 태그 수정
-        List<QuestionTag> oldQTs = question.getQuestionTags();
-        List<Tag> oldTags = new ArrayList<>();
-        for(QuestionTag oldQT : oldQTs) {
-            oldTags.add(oldQT.getTag());
-        }
-        List<String> newTags = request.getTags();
-
-        for(Tag oldTag : oldTags) {
-            String oldTagName = oldTag.getName();
-            if(newTags.contains(oldTagName))
-                newTags.remove(oldTagName);
-            else
-                deleteQuestionTagRelation(question, oldTag);
-        }
-        insertNewTags(newTags, question);
-    }
-
-    // 질문글 삭제
-    @Transactional
-    public void deleteQuestion(Long qid) {
-        Question question = questionRepository.findById(qid)
-                .orElseThrow(() -> new EntityNotFoundException("Delete Question Fail"));
-        List<Answer> answerList = answerRepository.findByQuestionAndDeleteYn(question, false);
-
-        // 답변글이 이미 존재할 때 => HTTP Status로 처리해줘야 함(추후 수정 필요)
-        if(!answerList.isEmpty()) throw new EntityNotFoundException("Delete Question Fail - Reply exists");
-
-        //연관관계 삭제
-        for(QuestionTag QT : question.getQuestionTags()) {
-            deleteQuestionTagRelation(question, QT.getTag());
-        }
-
-        question.deleteQuestion();
-    }
-
-
-    /* search - Q&A 검색(카테고리, 사용자, 제목+내용)
-     * 전제조건 : workYn은 필수, deleteYn=false
+    //read - 질문글 전체 조회 & 검색
+    /* Q&A 검색(카테고리, 사용자, 제목+내용)
+     * 전제조건 : workYn은 필수 & deleteYn=false
      * 1. category만 검색하는 경우 -> key,value x
      * 2. category없이 제목+내용 or 작성자로 검색하는 경우 -> cid X
      * 3. 둘 다 검색하는 경우 -> cid, key, value
      * */
-    public List<BriefQuestionResponse> searchQnA(Boolean workYn, Integer cid, String key, String value){
+    public List<BriefQuestionResponse> getQuestions(Boolean workYn, Integer cid, String key, String value){
         //deleteYn = false인 것만 조회
         Specification<Question> filter = Specification.where(QuestionSpecification.equalNotDeleted(false));
         //업무 구분
@@ -228,6 +132,63 @@ public class QuestionService {
         }
 
         return searchResults;
+    }
+
+
+    //read - 질문글 상세 조회
+    public QuestionResponse getQuestionDetail(Member user, Long qid) {
+        Question question = questionRepository.findByDeleteYnAndQid(false, qid);
+        question.increaseViewCnt();
+        questionRepository.save(question);
+
+        MemberInfo writer = MemberInfo.toDto(user);
+        CategoryResponse categoryRes = CategoryResponse.toDto(question.getCategory());
+
+        Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, qid);
+        Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, qid, user);
+        Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, qid);
+        return QuestionResponse.toDto(question, writer, categoryRes, likeCnt, likeYn, commentCnt);
+    }
+
+    // 질문글 수정
+    @Transactional
+    public void updateQuestion(Long qid, QuestionRequest request) {
+        Question question = questionRepository.findByDeleteYnAndQid(false, qid);
+        if(question==null){
+            throw new EntityNotFoundException("Question not found. qid is " + qid);
+        }
+        Category category = categoryRepository.findById(request.getCid())
+                .orElseThrow(()-> new EntityNotFoundException("category not found. category is " + request.getCid()));
+        question.updateQuestion(request.getTitle(), request.getContent(), category, request.getAtcId());
+
+        // 태그 수정
+        List<QuestionTag> oldQTs = question.getQuestionTags();
+        List<Tag> oldTags = new ArrayList<>();
+        for(QuestionTag oldQT : oldQTs) {
+            oldTags.add(oldQT.getTag());
+        }
+        List<String> newTags = request.getTags();
+
+        for(Tag oldTag : oldTags) {
+            String oldTagName = oldTag.getName();
+            if(newTags.contains(oldTagName))
+                newTags.remove(oldTagName);
+            else
+                deleteQuestionTagRelation(question, oldTag);
+        }
+        insertNewTags(newTags, question);
+    }
+
+    // 질문글 삭제
+    @Transactional
+    public void deleteQuestion(Long qid) {
+        Question question = questionRepository.findById(qid)
+                .orElseThrow(() -> new EntityNotFoundException("Delete Question Fail"));
+        List<Answer> answerList = answerRepository.findByQuestionAndDeleteYn(question, false);
+
+        // 답변글이 이미 존재할 때 => HTTP Status로 처리해줘야 함(추후 수정 필요)
+        if(!answerList.isEmpty()) throw new EntityNotFoundException("Delete Question Fail - Reply exists");
+        question.deleteQuestion();
     }
 
 
