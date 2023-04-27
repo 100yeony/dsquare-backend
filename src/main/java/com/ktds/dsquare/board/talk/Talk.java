@@ -1,7 +1,7 @@
 package com.ktds.dsquare.board.talk;
 
 import com.ktds.dsquare.board.tag.TalkTag;
-import com.ktds.dsquare.board.talk.dto.TalkRequest;
+import com.ktds.dsquare.board.talk.dto.TalkRegisterRequest;
 import com.ktds.dsquare.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,7 +45,7 @@ public class Talk {
     @OneToMany(mappedBy = "talk")
     private List<TalkTag> TalkTags = new ArrayList<>();
 
-    public static Talk toEntity(TalkRequest request, Member writer) {
+    public static Talk toEntity(TalkRegisterRequest request, Member writer) {
         return Talk.builder()
                 .writer(writer)
                 .title(request.getTitle())

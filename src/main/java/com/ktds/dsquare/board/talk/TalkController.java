@@ -1,7 +1,7 @@
 package com.ktds.dsquare.board.talk;
 
 import com.ktds.dsquare.board.talk.dto.BriefTalkResponse;
-import com.ktds.dsquare.board.talk.dto.TalkRequest;
+import com.ktds.dsquare.board.talk.dto.TalkRegisterRequest;
 import com.ktds.dsquare.board.talk.dto.TalkResponse;
 import com.ktds.dsquare.common.annotatin.AuthUser;
 import com.ktds.dsquare.member.Member;
@@ -23,7 +23,7 @@ public class TalkController {
     // 소통해요 작성
     @ApiOperation(value="소통해요 작성", notes="소통해요 작성")
     @PostMapping("/board/talks")
-    public ResponseEntity<Void> createTalk(@RequestBody TalkRequest request, @AuthUser Member user){
+    public ResponseEntity<Void> createTalk(@RequestBody TalkRegisterRequest request, @AuthUser Member user){
         talkService.createTalk(request, user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -50,7 +50,7 @@ public class TalkController {
     @PostMapping("/board/talks/{talkId}")
     public ResponseEntity<Void> updateTalk(
             @ApiParam(name="talkId", value="Talk Id", example = "1") @PathVariable Long talkId,
-            @RequestBody TalkRequest request){
+            @RequestBody TalkRegisterRequest request){
         talkService.updateTalk(talkId, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

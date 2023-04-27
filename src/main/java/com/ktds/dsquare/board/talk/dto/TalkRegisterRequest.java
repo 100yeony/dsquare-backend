@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TalkRequest {
+public class TalkRegisterRequest {
     @ApiParam(value = "Talk title", required = true, example = "소통해요 제목입니다.")
     private String title;
     @ApiParam(value = "Talk content", required = true, example = "소통해요 내용입니다.")

@@ -8,7 +8,7 @@ import com.ktds.dsquare.board.tag.TalkTag;
 import com.ktds.dsquare.board.tag.repository.TagRepository;
 import com.ktds.dsquare.board.tag.repository.TalkTagRepository;
 import com.ktds.dsquare.board.talk.dto.BriefTalkResponse;
-import com.ktds.dsquare.board.talk.dto.TalkRequest;
+import com.ktds.dsquare.board.talk.dto.TalkRegisterRequest;
 import com.ktds.dsquare.board.talk.dto.TalkResponse;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
@@ -36,7 +36,7 @@ public class TalkService {
 
     // 소통해요 작성
     @Transactional
-    public void createTalk(TalkRequest request, Member writer) {
+    public void createTalk(TalkRegisterRequest request, Member writer) {
         Talk talk = Talk.toEntity(request, writer);
         talkRepository.save(talk);
         insertNewTalkTags(request.getTags(), talk);
@@ -102,7 +102,7 @@ public class TalkService {
 
     // 소통해요 수정
     @Transactional
-    public void updateTalk(Long talkId, TalkRequest request) {
+    public void updateTalk(Long talkId, TalkRegisterRequest request) {
         Talk talk = talkRepository.findByDeleteYnAndId(false, talkId);
         if(talk == null) throw new EntityNotFoundException("Talk Not Found. Talk ID :"+talkId);
         talk.updateTalk(request.getTitle(), request.getContent());
