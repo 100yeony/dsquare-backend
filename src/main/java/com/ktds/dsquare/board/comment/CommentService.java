@@ -1,6 +1,7 @@
 package com.ktds.dsquare.board.comment;
 
 import com.ktds.dsquare.board.card.CardRepository;
+import com.ktds.dsquare.board.carrot.CarrotRepository;
 import com.ktds.dsquare.board.comment.dto.CommentInfo;
 import com.ktds.dsquare.board.comment.dto.CommentRegisterDto;
 import com.ktds.dsquare.board.comment.dto.NestedCommentInfo;
@@ -29,6 +30,7 @@ public class CommentService {
     private final AnswerRepository answerRepository;
     private final CardRepository cardRepository;
     private final TalkRepository talkRepository;
+    private final CarrotRepository carrotRepository;
 
     // 댓글 작성
     @Transactional
@@ -86,8 +88,8 @@ public class CommentService {
                 return cardRepository.findByDeleteYnAndId(false, postId) != null;
             case "talk":
                 return talkRepository.findByDeleteYnAndId(false, postId) != null;
-//            case "carrot":
-//                return carrotRepository.findByDeleteYnAndId(false, postId) != null;
+            case "carrot":
+                return carrotRepository.findByDeleteYnAndId(false, postId) != null;
             default:
                 throw new RuntimeException("BoardTypeName Not Found");
         }

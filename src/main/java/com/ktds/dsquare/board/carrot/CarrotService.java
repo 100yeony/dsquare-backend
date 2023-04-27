@@ -6,6 +6,7 @@ import com.ktds.dsquare.board.carrot.dto.CarrotResponse;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
+import com.ktds.dsquare.board.qna.repository.TagRepository;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
@@ -28,6 +29,7 @@ public class CarrotService {
     private final LikeService likeService;
     private final CommentService commentService;
     private final MemberRepository memberRepository;
+    private final TagRepository tagRepository;
 
     //create - 당근해요 글 작성
     @Transactional
@@ -75,9 +77,9 @@ public class CarrotService {
         //BriefCarrotResponse 객체로 만들어줌
         for(Carrot C: carrotList){
             Long likeCnt = likeService.findLikeCnt(BoardType.CARROT, C.getId());
-            Boolean likeYn = likeService.findLikeYn(BoardType.CARROT, C.getId(), C.getCarrotWriter());
-//            Long commentCnt = (long) commentService.getAllComments("carrot", C.getId()).size();
-            searchResults.add(BriefCarrotResponse.toDto(C, MemberInfo.toDto(C.getCarrotWriter()), likeCnt, likeYn, null));
+            Boolean likeYn = likeService.findLikeYn(BoardType.CARROT, C.getId(), C.getWriter());
+            Long commentCnt = (long) commentService.getAllComments("carrot", C.getId()).size();
+            searchResults.add(BriefCarrotResponse.toDto(C, MemberInfo.toDto(C.getWriter()), likeCnt, likeYn, commentCnt));
         }
 
         return searchResults;
@@ -92,7 +94,7 @@ public class CarrotService {
         Long likeCnt = likeService.findLikeCnt(BoardType.CARD, carrot.getId());
         Boolean likeYn = likeService.findLikeYn(BoardType.CARD, carrot.getId(), user);
         Long commentCnt = (long) commentService.getAllComments("card", carrotId).size();
-        return CarrotResponse.toDto(carrot, carrot.getCarrotWriter(), likeCnt, likeYn, commentCnt);
+        return CarrotResponse.toDto(carrot, carrot.getWriter(), likeCnt, likeYn, commentCnt);
     }
 
     //update - 당근해요 글 수정
@@ -109,5 +111,26 @@ public class CarrotService {
                 .orElseThrow(()-> new EntityNotFoundException("carrot is not found"));
         carrot.deleteCarrot();
     }
+
+
+//    // 새 태그(키워드) 등록
+//    @Transactional
+//    public void insertNewTags(List<String> newTags, Question question) {
+//        for (String name : newTags) {
+//            Tag tag = tagRepository.findByName(name);
+//            if(tag == null) {
+//                tag = Tag.toEntity(name);
+//                tagRepository.save(tag);
+//            }
+//            QuestionTag qt = QuestionTag.toEntity(question, tag);
+//            questionTagRepository.save(qt);
+//        }
+//    }
+//
+//    // 태그-질문 간 연관관계 삭제
+//    @Transactional
+//    public void deleteQuestionTagRelation(Question question, Tag tag) {
+//        questionTagRepository.deleteByQuestionAndTag(question, tag);
+//    }
 
 }

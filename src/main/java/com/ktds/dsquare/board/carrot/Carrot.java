@@ -22,8 +22,8 @@ public class Carrot {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "carrotWriter")
-    private Member carrotWriter;
+    @JoinColumn(name = "writer")
+    private Member writer;
 
     @Column(nullable = false)
     private String title;
@@ -42,11 +42,14 @@ public class Carrot {
     @Column(nullable = false)
     private Boolean deleteYn;
 
+//    @OneToMany(mappedBy = "carrot")
+//    private List<CarrotTag> carrotTags = new ArrayList<>();
+
 
     public static Carrot toEntity(CarrotRequest dto,Member writer){
         LocalDateTime now = LocalDateTime.now();
         return Carrot.builder()
-                .carrotWriter(writer)
+                .writer(writer)
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .createDate(now)

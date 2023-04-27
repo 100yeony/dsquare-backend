@@ -82,7 +82,7 @@ public class Member {
     @OneToMany(mappedBy = "originWriter")
     private List<Comment> originCommentList;
 
-    @OneToMany(mappedBy = "carrotWriter")
+    @OneToMany(mappedBy = "writer")
     private List<Carrot> carrotList;
 
     @OneToMany(mappedBy = "writer")

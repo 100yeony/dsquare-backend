@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -17,5 +18,6 @@ public class CarrotRequest {
     private LocalDateTime lastUpdateDate;
     private Long viewCnt;
     private Boolean deleteYn;
+    private List<String> tags;
 
 }
