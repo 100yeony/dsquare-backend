@@ -66,7 +66,7 @@ public class Member {
     private List<Answer> answerList;
 
     //카드 글 작성자
-    @OneToMany(mappedBy = "cardWriter")
+    @OneToMany(mappedBy = "writer")
     private List<Card> cardList;
 
     //카드 주인

@@ -21,8 +21,8 @@ public class Card {
 
     @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cardWriter")
-    private Member cardWriter;
+    @JoinColumn(name = "writer")
+    private Member writer;
 
     @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)
@@ -63,7 +63,7 @@ public class Card {
         String teammate = dto.getTeammate().toString();
         LocalDateTime now = LocalDateTime.now();
         return Card.builder()
-                .cardWriter(writer)
+                .writer(writer)
                 .projTeam(projTeam)
                 .title(dto.getTitle())
                 .content(dto.getContent())

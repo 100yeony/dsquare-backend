@@ -56,7 +56,7 @@ public class CardService {
         }
 
         for(Card C : cards){
-            Member member = C.getCardWriter();
+            Member member = C.getWriter();
             Member owner = C.getCardOwner();
             CardSelectionInfo selectionInfo;
             if(projTeamId == null){
@@ -90,7 +90,7 @@ public class CardService {
         Long likeCnt = likeService.findLikeCnt(BoardType.CARD, card.getId());
         Boolean likeYn = likeService.findLikeYn(BoardType.CARD, card.getId(), user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARD, cardId);
-        return CardResponse.toDto(card, card.getCardWriter(), card.getProjTeam(), card.getCardOwner(), likeCnt, likeYn, commentCnt);
+        return CardResponse.toDto(card, card.getWriter(), card.getProjTeam(), card.getCardOwner(), likeCnt, likeYn, commentCnt);
     }
 
     //update - 카드주세요 선정
@@ -124,7 +124,7 @@ public class CardService {
         List<BriefCardResponse> briefCards = new ArrayList<>();
 
         for(Card C : cards){
-            Member member = C.getCardWriter();
+            Member member = C.getWriter();
             Member owner = C.getCardOwner();
             CardSelectionInfo selectionInfo;
 
@@ -135,7 +135,7 @@ public class CardService {
                 selectionInfo = null;
             }
             Long likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
-            Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), C.getCardWriter());
+            Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), C.getWriter());
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARD, C.getId());
             briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(C.getProjTeam()), selectionInfo, likeCnt, likeYn, commentCnt));
         }
