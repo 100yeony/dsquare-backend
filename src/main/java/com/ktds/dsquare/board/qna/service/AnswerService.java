@@ -1,8 +1,8 @@
 package com.ktds.dsquare.board.qna.service;
 
+import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
-import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.AnswerRequest;
@@ -10,7 +10,6 @@ import com.ktds.dsquare.board.qna.dto.AnswerResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.member.Member;
-import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,16 +25,14 @@ public class AnswerService {
 
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
-    private final MemberRepository memberRepository;
     private final LikeService likeService;
-    private final CommentService commentService;
+    private final CommentRepository commentRepository;
 
     // 답변글 작성
     @Transactional
-    public void createAnswer(Long qid, AnswerRequest dto) {
+    public void createAnswer(Long qid, AnswerRequest dto, Member user) {
         Question question = questionRepository.findById(qid).orElseThrow(() -> new EntityNotFoundException("Question not found"));
-        Member writer = memberRepository.findById(dto.getWriterId()).orElseThrow(() -> new EntityNotFoundException("Question not found"));
-        Answer answer = Answer.toEntity(dto, writer, question);
+        Answer answer = Answer.toEntity(dto, user, question);
         answerRepository.save(answer);
     }
 
@@ -46,7 +43,7 @@ public class AnswerService {
         for(Answer answer:answers){
             Long likeCnt = likeService.findLikeCnt(BoardType.ANSWER, answer.getId());
             Boolean likeYn = likeService.findLikeYn(BoardType.ANSWER, answer.getId(), user);
-            Long commentCnt = (long) commentService.getAllComments("answer", qid.getQid()).size();
+            Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.ANSWER, qid.getQid());
             answerResponses.add(AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), likeCnt, likeYn, commentCnt));
         }
         return answerResponses;

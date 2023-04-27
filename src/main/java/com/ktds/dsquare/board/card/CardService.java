@@ -1,14 +1,13 @@
 package com.ktds.dsquare.board.card;
 
 import com.ktds.dsquare.board.card.dto.BriefCardResponse;
-import com.ktds.dsquare.board.card.dto.CardRequest;
+import com.ktds.dsquare.board.card.dto.CardRegisterRequest;
 import com.ktds.dsquare.board.card.dto.CardResponse;
 import com.ktds.dsquare.board.card.dto.CardSelectionInfo;
-import com.ktds.dsquare.board.comment.CommentService;
+import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
 import com.ktds.dsquare.member.Member;
-import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import com.ktds.dsquare.member.dto.response.TeamInfo;
 import com.ktds.dsquare.member.team.Team;
@@ -25,22 +24,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CardService {
 
-    private final MemberRepository memberRepository;
     private final CardRepository cardRepository;
     private final TeamRepository teamRepository;
     private final LikeService likeService;
-    private final CommentService commentService;
+    private final CommentRepository commentRepository;
 
     //create - 카드주세요 글 작성
     @Transactional
-    public void createCard(CardRequest dto) {
-        Member cardWriter = memberRepository.findById(dto.getCardWriterId())
-                .orElseThrow(() -> new EntityNotFoundException("cardWriter is not found"));
-
+    public void createCard(CardRegisterRequest dto, Member user) {
         Team projTeam = teamRepository.findById(dto.getProjTeamId())
                 .orElseThrow(() -> new EntityNotFoundException("team is not found"));
 
-        Card card = Card.toEntity(dto, cardWriter, projTeam);
+        Card card = Card.toEntity(dto, user, projTeam);
         cardRepository.save(card);
     }
 
@@ -61,7 +56,7 @@ public class CardService {
         }
 
         for(Card C : cards){
-            Member member = C.getCardWriter();
+            Member member = C.getWriter();
             Member owner = C.getCardOwner();
             CardSelectionInfo selectionInfo;
             if(projTeamId == null){
@@ -80,8 +75,7 @@ public class CardService {
 
             Long likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
             Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), user);
-            Long commentCnt = (long) commentService.getAllComments("card", C.getId()).size();
-            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, likeCnt, likeYn, commentCnt));
+            Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARD, C.getId());            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, likeCnt, likeYn, commentCnt));
         }
 
         return briefCards;
@@ -95,24 +89,21 @@ public class CardService {
 
         Long likeCnt = likeService.findLikeCnt(BoardType.CARD, card.getId());
         Boolean likeYn = likeService.findLikeYn(BoardType.CARD, card.getId(), user);
-        Long commentCnt = (long) commentService.getAllComments("card", cardId).size();
-        return CardResponse.toDto(card, card.getCardWriter(), card.getProjTeam(), card.getCardOwner(), likeCnt, likeYn, commentCnt);
+        Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARD, cardId);
+        return CardResponse.toDto(card, card.getWriter(), card.getProjTeam(), card.getCardOwner(), likeCnt, likeYn, commentCnt);
     }
 
     //update - 카드주세요 선정
     @Transactional
     public void giveCard(Long cardId, Member user){
-        Card card = cardRepository.findById(cardId)
-                .orElseThrow(()-> new EntityNotFoundException("card is not found"));
+        Card card = cardRepository.findByDeleteYnAndId(false, cardId);
         card.selectCard(user, true);
     }
 
     //update - 카드주세요 글 수정
     @Transactional
-    public void updateCard(Long cardId, CardRequest request){
-        Card card = cardRepository.findById(cardId)
-                .orElseThrow(()-> new EntityNotFoundException("card is not found"));
-
+    public void updateCard(Long cardId, CardRegisterRequest request){
+        Card card = cardRepository.findByDeleteYnAndId(false, cardId);
         Team projTeam = teamRepository.findById(request.getProjTeamId())
                 .orElseThrow(() -> new EntityNotFoundException("team is not found"));
 
@@ -127,15 +118,13 @@ public class CardService {
         card.deleteCard();
     }
 
-
     //read - 이달의 카드 전체 조회
     public List<BriefCardResponse> selectedCardList(){
-
         List<Card> cards = cardRepository.findSelectedCard();
         List<BriefCardResponse> briefCards = new ArrayList<>();
 
         for(Card C : cards){
-            Member member = C.getCardWriter();
+            Member member = C.getWriter();
             Member owner = C.getCardOwner();
             CardSelectionInfo selectionInfo;
 
@@ -146,8 +135,8 @@ public class CardService {
                 selectionInfo = null;
             }
             Long likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
-            Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), C.getCardWriter());
-            Long commentCnt = (long) commentService.getAllComments("card", C.getId()).size();
+            Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), C.getWriter());
+            Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARD, C.getId());
             briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(C.getProjTeam()), selectionInfo, likeCnt, likeYn, commentCnt));
         }
         return briefCards;

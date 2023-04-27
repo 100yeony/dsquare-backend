@@ -1,16 +1,22 @@
-
-
 package com.ktds.dsquare.board.qna.service;
 
-import com.ktds.dsquare.board.comment.CommentService;
+import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
-import com.ktds.dsquare.board.qna.domain.*;
+import com.ktds.dsquare.board.qna.domain.Answer;
+import com.ktds.dsquare.board.qna.domain.Category;
+import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.dto.CategoryResponse;
 import com.ktds.dsquare.board.qna.dto.QuestionRequest;
 import com.ktds.dsquare.board.qna.dto.QuestionResponse;
-import com.ktds.dsquare.board.qna.repository.*;
+import com.ktds.dsquare.board.qna.repository.AnswerRepository;
+import com.ktds.dsquare.board.qna.repository.CategoryRepository;
+import com.ktds.dsquare.board.qna.repository.QuestionRepository;
+import com.ktds.dsquare.board.tag.QuestionTag;
+import com.ktds.dsquare.board.tag.Tag;
+import com.ktds.dsquare.board.tag.repository.QuestionTagRepository;
+import com.ktds.dsquare.board.tag.repository.TagRepository;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
@@ -37,14 +43,13 @@ public class QuestionService {
     private final TagRepository tagRepository;
     private final QuestionTagRepository questionTagRepository;
     private final LikeService likeService;
-    private final CommentService commentService;
+    private final CommentRepository commentRepository;
 
     //create - 질문글 작성
     @Transactional
-    public void createQuestion(QuestionRequest dto) {
-        Member writer = memberRepository.findById(dto.getWriterId()).orElseThrow(() -> new EntityNotFoundException("Writer does not exist"));
+    public void createQuestion(QuestionRequest dto, Member user) {
         Category category = categoryRepository.findById(dto.getCid()).orElseThrow(() -> new EntityNotFoundException("Category does not exist"));
-        Question question = Question.toEntity(dto, writer, category);
+        Question question = Question.toEntity(dto, user, category);
 
         questionRepository.save(question);
         insertNewTags(dto.getTags(), question);
@@ -119,7 +124,7 @@ public class QuestionService {
 
             Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, q.getQid());
             Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, q.getQid(), q.getWriter());
-            Long commentCnt = (long) commentService.getAllComments("question", q.getQid()).size();
+            Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, q.getQid());
             searchResults.add(BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, likeCnt, likeYn, commentCnt));
         }
 
@@ -139,7 +144,7 @@ public class QuestionService {
 
         Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, qid);
         Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, qid, user);
-        Long commentCnt = (long) commentService.getAllComments("question", qid).size();
+        Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, qid);
         return QuestionResponse.toDto(question, writer, categoryRes, likeCnt, likeYn, commentCnt);
     }
 

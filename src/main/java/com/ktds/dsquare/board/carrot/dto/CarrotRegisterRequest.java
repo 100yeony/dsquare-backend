@@ -1,4 +1,4 @@
-package com.ktds.dsquare.board.card.dto;
+package com.ktds.dsquare.board.carrot.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,17 +10,14 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CardRequest {
+public class CarrotRegisterRequest {
 
-    private Long cardWriterId;
-    private Long projTeamId;
     private String title;
     private String content;
-    private Integer teammateCnt;
-    private List<String> teammate;
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
     private Long viewCnt;
     private Boolean deleteYn;
+    private List<String> tags;
 
 }

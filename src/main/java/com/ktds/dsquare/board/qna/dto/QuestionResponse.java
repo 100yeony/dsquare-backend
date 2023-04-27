@@ -1,7 +1,7 @@
 package com.ktds.dsquare.board.qna.dto;
 
 import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.board.qna.domain.QuestionTag;
+import com.ktds.dsquare.board.tag.QuestionTag;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,8 +45,8 @@ public class QuestionResponse {
                 .category(category)
                 .title(question.getTitle())
                 .content(question.getContent())
-                .createDate(LocalDateTime.now())
-                .lastUpdateDate(LocalDateTime.now())
+                .createDate(question.getCreateDate())
+                .lastUpdateDate(question.getLastUpdateDate())
                 .viewCnt(question.getViewCnt())
                 .atcId(question.getAtcId())
                 .tags(tags)

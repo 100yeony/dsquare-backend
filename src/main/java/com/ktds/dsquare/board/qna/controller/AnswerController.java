@@ -22,8 +22,8 @@ public class AnswerController {
 
     //create - 답변글 작성
     @PostMapping("/board/questions/{qid}/answers")
-    public ResponseEntity<Void> createAnswer(@PathVariable("qid") Long qid, @RequestBody AnswerRequest request){
-        answerService.createAnswer(qid, request);
+    public ResponseEntity<Void> createAnswer(@PathVariable("qid") Long qid, @RequestBody AnswerRequest request, @AuthUser Member user){
+        answerService.createAnswer(qid, request, user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

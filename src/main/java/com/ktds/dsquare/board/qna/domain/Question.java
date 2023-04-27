@@ -2,6 +2,7 @@ package com.ktds.dsquare.board.qna.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ktds.dsquare.board.qna.dto.QuestionRequest;
+import com.ktds.dsquare.board.tag.QuestionTag;
 import com.ktds.dsquare.member.Member;
 import lombok.*;
 

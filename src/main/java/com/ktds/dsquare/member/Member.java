@@ -1,11 +1,13 @@
 package com.ktds.dsquare.member;
 
 import com.ktds.dsquare.board.card.Card;
+import com.ktds.dsquare.board.carrot.Carrot;
 import com.ktds.dsquare.board.like.Like;
 import com.ktds.dsquare.board.comment.Comment;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.board.talk.Talk;
 import com.ktds.dsquare.member.dto.request.MemberUpdateRequest;
 import com.ktds.dsquare.member.dto.request.SignupRequest;
 import com.ktds.dsquare.member.team.Team;
@@ -64,7 +66,7 @@ public class Member {
     private List<Answer> answerList;
 
     //카드 글 작성자
-    @OneToMany(mappedBy = "cardWriter")
+    @OneToMany(mappedBy = "writer")
     private List<Card> cardList;
 
     //카드 주인
@@ -80,7 +82,11 @@ public class Member {
     @OneToMany(mappedBy = "originWriter")
     private List<Comment> originCommentList;
 
+    @OneToMany(mappedBy = "writer")
+    private List<Carrot> carrotList;
 
+    @OneToMany(mappedBy = "writer")
+    private List<Talk> TalkList;
     public List<String> getRole() {
         return List.of(role);
     }

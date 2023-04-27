@@ -1,6 +1,10 @@
-package com.ktds.dsquare.board.qna.domain;
+package com.ktds.dsquare.board.tag;
 
-import lombok.*;
+import com.ktds.dsquare.board.qna.domain.Question;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 

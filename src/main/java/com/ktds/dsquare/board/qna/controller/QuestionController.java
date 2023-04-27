@@ -21,8 +21,8 @@ public class QuestionController {
 
     //create - 질문글 작성
     @PostMapping("/board/questions")
-    public ResponseEntity<Void> createQuestion(@RequestBody QuestionRequest request){
-        questionService.createQuestion(request);
+    public ResponseEntity<Void> createQuestion(@RequestBody QuestionRequest request, @AuthUser Member user){
+        questionService.createQuestion(request, user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
