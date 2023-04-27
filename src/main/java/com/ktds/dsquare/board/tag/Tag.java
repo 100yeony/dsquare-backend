@@ -25,10 +25,10 @@ public class Tag {
 //    private Long cnt;
 
     @OneToMany(mappedBy = "tag", orphanRemoval = true)
-    private List<QuestionTag> questionTags = new ArrayList<>();
+    private List<QuestionTag> questionTags;
 
     @OneToMany(mappedBy = "tag", orphanRemoval = true)
-    private List<CarrotTag> carrotTags = new ArrayList<>();
+    private List<CarrotTag> carrotTags;
 
     public static Tag toEntity(String name) {
         return Tag.builder()

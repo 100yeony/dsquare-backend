@@ -83,10 +83,10 @@ public class Member {
     private List<Comment> originCommentList;
 
     @OneToMany(mappedBy = "writer")
+    private List<Talk> talkList;
+    @OneToMany(mappedBy = "writer")
     private List<Carrot> carrotList;
 
-    @OneToMany(mappedBy = "writer")
-    private List<Talk> TalkList;
     public List<String> getRole() {
         return List.of(role);
     }

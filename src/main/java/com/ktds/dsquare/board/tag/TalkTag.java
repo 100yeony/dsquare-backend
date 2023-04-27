@@ -17,7 +17,6 @@ import javax.persistence.*;
 public class TalkTag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
     private Long id;
 
     @ManyToOne
