@@ -48,7 +48,9 @@ public class TalkController {
     // 소통해요 수정
     @ApiOperation(value="소통해요 수정", notes="소통해요 수정")
     @PostMapping("/board/talk/{talkId}")
-    public ResponseEntity<Void> updateTalk(@PathVariable Long talkId, @RequestBody TalkRequest request){
+    public ResponseEntity<Void> updateTalk(
+            @ApiParam(name="talkId", value="Talk Id", example = "1") @PathVariable Long talkId,
+            @RequestBody TalkRequest request){
         talkService.updateTalk(talkId, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -56,7 +58,7 @@ public class TalkController {
     // 소통해요 삭제
     @ApiOperation(value="소통해요 삭제", notes="소통해요 삭제")
     @DeleteMapping("/board/talk/{talkId}")
-    public ResponseEntity<Void> deleteTalk(@PathVariable Long talkId) {
+    public ResponseEntity<Void> deleteTalk(@ApiParam(name="talkId", value="Talk Id", example = "1") @PathVariable Long talkId) {
         talkService.deleteTalk(talkId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
