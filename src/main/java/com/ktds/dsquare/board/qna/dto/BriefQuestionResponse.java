@@ -1,7 +1,7 @@
 package com.ktds.dsquare.board.qna.dto;
 
 import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.board.qna.domain.QuestionTag;
+import com.ktds.dsquare.board.tag.QuestionTag;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

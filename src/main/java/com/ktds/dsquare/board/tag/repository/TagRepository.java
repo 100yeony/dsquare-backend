@@ -1,6 +1,6 @@
-package com.ktds.dsquare.board.qna.repository;
+package com.ktds.dsquare.board.tag.repository;
 
-import com.ktds.dsquare.board.qna.domain.Tag;
+import com.ktds.dsquare.board.tag.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

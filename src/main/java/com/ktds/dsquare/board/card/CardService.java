@@ -4,7 +4,7 @@ import com.ktds.dsquare.board.card.dto.BriefCardResponse;
 import com.ktds.dsquare.board.card.dto.CardRequest;
 import com.ktds.dsquare.board.card.dto.CardResponse;
 import com.ktds.dsquare.board.card.dto.CardSelectionInfo;
-import com.ktds.dsquare.board.comment.CommentService;
+import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
 import com.ktds.dsquare.member.Member;
@@ -27,7 +27,7 @@ public class CardService {
     private final CardRepository cardRepository;
     private final TeamRepository teamRepository;
     private final LikeService likeService;
-    private final CommentService commentService;
+    private final CommentRepository commentRepository;
 
     //create - 카드주세요 글 작성
     @Transactional
@@ -75,8 +75,7 @@ public class CardService {
 
             Long likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
             Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), user);
-            Long commentCnt = (long) commentService.getAllComments("card", C.getId()).size();
-            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, likeCnt, likeYn, commentCnt));
+            Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARD, C.getId());            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, likeCnt, likeYn, commentCnt));
         }
 
         return briefCards;
@@ -90,7 +89,7 @@ public class CardService {
 
         Long likeCnt = likeService.findLikeCnt(BoardType.CARD, card.getId());
         Boolean likeYn = likeService.findLikeYn(BoardType.CARD, card.getId(), user);
-        Long commentCnt = (long) commentService.getAllComments("card", cardId).size();
+        Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARD, cardId);
         return CardResponse.toDto(card, card.getCardWriter(), card.getProjTeam(), card.getCardOwner(), likeCnt, likeYn, commentCnt);
     }
 
@@ -119,7 +118,6 @@ public class CardService {
         card.deleteCard();
     }
 
-
     //read - 이달의 카드 전체 조회
     public List<BriefCardResponse> selectedCardList(){
         List<Card> cards = cardRepository.findSelectedCard();
@@ -138,7 +136,7 @@ public class CardService {
             }
             Long likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
             Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), C.getCardWriter());
-            Long commentCnt = (long) commentService.getAllComments("card", C.getId()).size();
+            Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARD, C.getId());
             briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(C.getProjTeam()), selectionInfo, likeCnt, likeYn, commentCnt));
         }
         return briefCards;

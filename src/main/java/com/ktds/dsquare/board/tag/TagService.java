@@ -1,4 +1,4 @@
-package com.ktds.dsquare.board.qna.service;
+package com.ktds.dsquare.board.tag;
 
 import org.springframework.stereotype.Service;
 
