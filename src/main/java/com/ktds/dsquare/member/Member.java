@@ -82,7 +82,7 @@ public class Member {
     private List<Comment> originCommentList;
 
     @OneToMany(mappedBy = "writer")
-    private List<Talk> TalkList;
+    private List<Talk> talkList;
 
     public List<String> getRole() {
         return List.of(role);
