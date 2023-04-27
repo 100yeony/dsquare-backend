@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LikeRequest {
+public class LikeRegisterRequest {
 
     private String boardType;
     private Long postId;

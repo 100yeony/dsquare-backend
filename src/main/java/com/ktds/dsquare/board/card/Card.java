@@ -1,7 +1,7 @@
 package com.ktds.dsquare.board.card;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.ktds.dsquare.board.card.dto.CardRequest;
+import com.ktds.dsquare.board.card.dto.CardRegisterRequest;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.team.Team;
 import lombok.*;
@@ -21,12 +21,12 @@ public class Card {
 
     @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cardWriter")
-    private Member cardWriter;
+    @JoinColumn(name = "writer")
+    private Member writer;
 
     @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "projTeam")
+    @JoinColumn(name = "proj_team")
     private Team projTeam;
 
     @Column(nullable = false)
@@ -51,7 +51,7 @@ public class Card {
 
     @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cardOwner")
+    @JoinColumn(name = "card_owner")
     private Member cardOwner;
 
     private LocalDateTime selectedDate;
@@ -59,11 +59,11 @@ public class Card {
     @Column(nullable = false)
     private Boolean deleteYn;
 
-    public static Card toEntity(CardRequest dto, Member writer, Team projTeam){
+    public static Card toEntity(CardRegisterRequest dto, Member writer, Team projTeam){
         String teammate = dto.getTeammate().toString();
         LocalDateTime now = LocalDateTime.now();
         return Card.builder()
-                .cardWriter(writer)
+                .writer(writer)
                 .projTeam(projTeam)
                 .title(dto.getTitle())
                 .content(dto.getContent())
@@ -82,7 +82,7 @@ public class Card {
         this.selectedDate = now;
     }
 
-    public void updateCard(Team projTeam, CardRequest dto){
+    public void updateCard(Team projTeam, CardRegisterRequest dto){
         String teammate = dto.getTeammate().toString();
         LocalDateTime now = LocalDateTime.now();
         this.projTeam = projTeam;

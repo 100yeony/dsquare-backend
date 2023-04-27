@@ -1,7 +1,7 @@
 package com.ktds.dsquare.board.like;
 
 import com.ktds.dsquare.board.enums.BoardType;
-import com.ktds.dsquare.board.like.dto.LikeRequest;
+import com.ktds.dsquare.board.like.dto.LikeRegisterRequest;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ public class LikeService {
     private final LikeRepository likeRepository;
 
     //create - 좋아요 등록(Question, Ansewr, Card) + Talk, Carrot(예정)
-    public void like(LikeRequest dto, Member user){
+    public void like(LikeRegisterRequest dto, Member user){
         BoardType boardType = BoardType.findBoardType(dto.getBoardType());
         Boolean likeCheck = likeRepository.existsByBoardTypeAndPostIdAndMember(boardType, dto.getPostId(), user);
         if(likeCheck){
@@ -36,7 +36,7 @@ public class LikeService {
     }
 
     //delete - 좋아요 취소
-    public void cancelLike(LikeRequest dto, Member user){
+    public void cancelLike(LikeRegisterRequest dto, Member user){
         BoardType boardType = BoardType.findBoardType(dto.getBoardType());
         Like like = likeRepository.findByBoardTypeAndPostIdAndMember(boardType, dto.getPostId(), user);
         likeRepository.delete(like);

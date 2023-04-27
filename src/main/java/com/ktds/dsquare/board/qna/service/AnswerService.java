@@ -10,7 +10,6 @@ import com.ktds.dsquare.board.qna.dto.AnswerResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.member.Member;
-import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,16 +25,14 @@ public class AnswerService {
 
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
-    private final MemberRepository memberRepository;
     private final LikeService likeService;
     private final CommentRepository commentRepository;
 
     // 답변글 작성
     @Transactional
-    public void createAnswer(Long qid, AnswerRequest dto) {
+    public void createAnswer(Long qid, AnswerRequest dto, Member user) {
         Question question = questionRepository.findById(qid).orElseThrow(() -> new EntityNotFoundException("Question not found"));
-        Member writer = memberRepository.findById(dto.getWriterId()).orElseThrow(() -> new EntityNotFoundException("Question not found"));
-        Answer answer = Answer.toEntity(dto, writer, question);
+        Answer answer = Answer.toEntity(dto, user, question);
         answerRepository.save(answer);
     }
 
