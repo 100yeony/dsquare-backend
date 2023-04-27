@@ -6,7 +6,10 @@ import com.ktds.dsquare.board.carrot.dto.CarrotResponse;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
-import com.ktds.dsquare.board.qna.repository.TagRepository;
+import com.ktds.dsquare.board.tag.CarrotTag;
+import com.ktds.dsquare.board.tag.Tag;
+import com.ktds.dsquare.board.tag.repository.CarrotTagRepository;
+import com.ktds.dsquare.board.tag.repository.TagRepository;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
@@ -30,12 +33,14 @@ public class CarrotService {
     private final CommentService commentService;
     private final MemberRepository memberRepository;
     private final TagRepository tagRepository;
+    private final CarrotTagRepository carrotTagRepository;
 
     //create - 당근해요 글 작성
     @Transactional
     public void createCarrot(CarrotRequest dto, Member user){
         Carrot carrot = Carrot.toEntity(dto, user);
         carrotRepository.save(carrot);
+        insertNewTags(dto.getTags(), carrot);
     }
 
     //read - 당근해요 글 전체 조회 & 검색
@@ -102,6 +107,24 @@ public class CarrotService {
     public void updateCarrot(Long carrotId, CarrotRequest request){
         Carrot carrot = carrotRepository.findByDeleteYnAndId(false, carrotId);
         carrot.updateCarrot(request);
+
+        // 태그 수정
+        List<CarrotTag> oldCTs = carrot.getCarrotTags();
+        List<Tag> oldTags = new ArrayList<>();
+        for(CarrotTag oldCT : oldCTs) {
+            oldTags.add(oldCT.getTag());
+        }
+        List<String> newTags = request.getTags();
+
+        for(Tag oldTag : oldTags) {
+            String oldTagName = oldTag.getName();
+            if(newTags.contains(oldTagName))
+                newTags.remove(oldTagName);
+            else
+                deleteCarrotTagRelation(carrot, oldTag);
+        }
+        insertNewTags(newTags, carrot);
+
     }
 
     //delete - 당근해요 글 삭제
@@ -113,24 +136,24 @@ public class CarrotService {
     }
 
 
-//    // 새 태그(키워드) 등록
-//    @Transactional
-//    public void insertNewTags(List<String> newTags, Question question) {
-//        for (String name : newTags) {
-//            Tag tag = tagRepository.findByName(name);
-//            if(tag == null) {
-//                tag = Tag.toEntity(name);
-//                tagRepository.save(tag);
-//            }
-//            QuestionTag qt = QuestionTag.toEntity(question, tag);
-//            questionTagRepository.save(qt);
-//        }
-//    }
-//
-//    // 태그-질문 간 연관관계 삭제
-//    @Transactional
-//    public void deleteQuestionTagRelation(Question question, Tag tag) {
-//        questionTagRepository.deleteByQuestionAndTag(question, tag);
-//    }
+    // 새 태그(키워드) 등록
+    @Transactional
+    public void insertNewTags(List<String> newTags, Carrot carrot) {
+        for (String name : newTags) {
+            Tag tag = tagRepository.findByName(name);
+            if(tag == null) {
+                tag = Tag.toEntity(name);
+                tagRepository.save(tag);
+            }
+            CarrotTag ct = CarrotTag.toEntity(carrot, tag);
+            carrotTagRepository.save(ct);
+        }
+    }
+
+    // 태그-질문 간 연관관계 삭제
+    @Transactional
+    public void deleteCarrotTagRelation(Carrot carrot, Tag tag) {
+        carrotTagRepository.deleteByCarrotAndTag(carrot, tag);
+    }
 
 }

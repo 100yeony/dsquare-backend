@@ -1,6 +1,7 @@
 package com.ktds.dsquare.board.carrot;
 
 import com.ktds.dsquare.board.carrot.dto.CarrotRequest;
+import com.ktds.dsquare.board.tag.CarrotTag;
 import com.ktds.dsquare.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +10,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -42,8 +45,8 @@ public class Carrot {
     @Column(nullable = false)
     private Boolean deleteYn;
 
-//    @OneToMany(mappedBy = "carrot")
-//    private List<CarrotTag> carrotTags = new ArrayList<>();
+    @OneToMany(mappedBy = "carrot")
+    private List<CarrotTag> carrotTags = new ArrayList<>();
 
 
     public static Carrot toEntity(CarrotRequest dto,Member writer){
