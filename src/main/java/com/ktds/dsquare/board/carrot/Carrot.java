@@ -1,6 +1,6 @@
 package com.ktds.dsquare.board.carrot;
 
-import com.ktds.dsquare.board.carrot.dto.CarrotRequest;
+import com.ktds.dsquare.board.carrot.dto.CarrotRegisterRequest;
 import com.ktds.dsquare.board.tag.CarrotTag;
 import com.ktds.dsquare.member.Member;
 import lombok.AllArgsConstructor;
@@ -49,7 +49,7 @@ public class Carrot {
     private List<CarrotTag> carrotTags = new ArrayList<>();
 
 
-    public static Carrot toEntity(CarrotRequest dto,Member writer){
+    public static Carrot toEntity(CarrotRegisterRequest dto, Member writer){
         LocalDateTime now = LocalDateTime.now();
         return Carrot.builder()
                 .writer(writer)
@@ -61,7 +61,7 @@ public class Carrot {
                 .build();
     }
 
-    public void updateCarrot(CarrotRequest dto){
+    public void updateCarrot(CarrotRegisterRequest dto){
         LocalDateTime now = LocalDateTime.now();
         this.title = dto.getTitle();
         this.content = dto.getContent();

@@ -1,7 +1,7 @@
 package com.ktds.dsquare.board.carrot;
 
 import com.ktds.dsquare.board.carrot.dto.BriefCarrotResponse;
-import com.ktds.dsquare.board.carrot.dto.CarrotRequest;
+import com.ktds.dsquare.board.carrot.dto.CarrotRegisterRequest;
 import com.ktds.dsquare.board.carrot.dto.CarrotResponse;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
@@ -37,7 +37,7 @@ public class CarrotService {
 
     //create - 당근해요 글 작성
     @Transactional
-    public void createCarrot(CarrotRequest dto, Member user){
+    public void createCarrot(CarrotRegisterRequest dto, Member user){
         Carrot carrot = Carrot.toEntity(dto, user);
         carrotRepository.save(carrot);
         insertNewTags(dto.getTags(), carrot);
@@ -82,7 +82,7 @@ public class CarrotService {
         //BriefCarrotResponse 객체로 만들어줌
         for(Carrot C: carrotList){
             Long likeCnt = likeService.findLikeCnt(BoardType.CARROT, C.getId());
-            Boolean likeYn = likeService.findLikeYn(BoardType.CARROT, C.getId(), C.getWriter());
+            Boolean likeYn = likeService.findLikeYn(BoardType.CARROT, C.getId(), user);
             Long commentCnt = (long) commentService.getAllComments("carrot", C.getId()).size();
             searchResults.add(BriefCarrotResponse.toDto(C, MemberInfo.toDto(C.getWriter()), likeCnt, likeYn, commentCnt));
         }
@@ -104,7 +104,7 @@ public class CarrotService {
 
     //update - 당근해요 글 수정
     @Transactional
-    public void updateCarrot(Long carrotId, CarrotRequest request){
+    public void updateCarrot(Long carrotId, CarrotRegisterRequest request){
         Carrot carrot = carrotRepository.findByDeleteYnAndId(false, carrotId);
         carrot.updateCarrot(request);
 

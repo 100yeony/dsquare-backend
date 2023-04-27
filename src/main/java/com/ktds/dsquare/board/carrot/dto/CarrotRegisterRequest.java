@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CarrotRequest {
+public class CarrotRegisterRequest {
 
     private String title;
     private String content;

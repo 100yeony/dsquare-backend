@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CardRequest {
+public class CardRegisterRequest {
 
     private Long projTeamId;
     private String title;

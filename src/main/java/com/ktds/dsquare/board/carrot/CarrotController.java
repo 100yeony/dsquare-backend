@@ -1,7 +1,7 @@
 package com.ktds.dsquare.board.carrot;
 
 import com.ktds.dsquare.board.carrot.dto.BriefCarrotResponse;
-import com.ktds.dsquare.board.carrot.dto.CarrotRequest;
+import com.ktds.dsquare.board.carrot.dto.CarrotRegisterRequest;
 import com.ktds.dsquare.board.carrot.dto.CarrotResponse;
 import com.ktds.dsquare.common.annotatin.AuthUser;
 import com.ktds.dsquare.member.Member;
@@ -20,7 +20,7 @@ public class CarrotController {
 
     //create - 당근해요 글 작성
     @PostMapping("/board/carrots")
-    public ResponseEntity<Void> createCarrot(@RequestBody CarrotRequest request, @AuthUser Member user){
+    public ResponseEntity<Void> createCarrot(@RequestBody CarrotRegisterRequest request, @AuthUser Member user){
         carrotService.createCarrot(request, user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -41,7 +41,7 @@ public class CarrotController {
 
     //update - 당근해요 글 수정
     @PostMapping("/board/carrots/{carrotId}")
-    public ResponseEntity<Void> updateCarrot(@PathVariable("carrotId") Long carrotId, @RequestBody CarrotRequest request){
+    public ResponseEntity<Void> updateCarrot(@PathVariable("carrotId") Long carrotId, @RequestBody CarrotRegisterRequest request){
         carrotService.updateCarrot(carrotId, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

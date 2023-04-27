@@ -1,7 +1,7 @@
 package com.ktds.dsquare.board.card;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.ktds.dsquare.board.card.dto.CardRequest;
+import com.ktds.dsquare.board.card.dto.CardRegisterRequest;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.team.Team;
 import lombok.*;
@@ -59,7 +59,7 @@ public class Card {
     @Column(nullable = false)
     private Boolean deleteYn;
 
-    public static Card toEntity(CardRequest dto, Member writer, Team projTeam){
+    public static Card toEntity(CardRegisterRequest dto, Member writer, Team projTeam){
         String teammate = dto.getTeammate().toString();
         LocalDateTime now = LocalDateTime.now();
         return Card.builder()
@@ -82,7 +82,7 @@ public class Card {
         this.selectedDate = now;
     }
 
-    public void updateCard(Team projTeam, CardRequest dto){
+    public void updateCard(Team projTeam, CardRegisterRequest dto){
         String teammate = dto.getTeammate().toString();
         LocalDateTime now = LocalDateTime.now();
         this.projTeam = projTeam;
