@@ -9,7 +9,7 @@ import com.ktds.dsquare.board.carrot.CarrotRepository;
 import com.ktds.dsquare.board.carrot.dto.BriefCarrotResponse;
 import com.ktds.dsquare.board.comment.Comment;
 import com.ktds.dsquare.board.comment.CommentRepository;
-import com.ktds.dsquare.board.comment.dto.CommentInfo;
+import com.ktds.dsquare.board.comment.dto.MyCommentInfo;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
 import com.ktds.dsquare.board.qna.domain.Answer;
@@ -138,14 +138,12 @@ public class MypageService {
     }
 
     //read - 나의 댓글 전체 조회
-    public List<CommentInfo> getAllMyComments(Member user){
+    public List<MyCommentInfo> getAllMyComments(Member user){
         List<Comment> commentList = commentRepository.findByWriter(user);
-        List<CommentInfo> searchResults = new ArrayList<>();
-
-        for(Comment C: commentList){
-            searchResults.add(CommentInfo.toDto(C));
-        }
-        return searchResults;
+        List<MyCommentInfo> commentDto = new ArrayList<>();
+        for(Comment comment : commentList)
+            commentDto.add(MyCommentInfo.toDto(comment));
+        return commentDto;
     }
 
 }
