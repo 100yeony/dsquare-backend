@@ -77,6 +77,14 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
+    //원글이 삭제되면 댓글도 함께 삭제
+    public void deleteCommentCascade(BoardType boardType, Long postId){
+        List<Comment> comments = commentRepository.findByBoardTypeAndPostId(boardType, postId);
+        for(Comment C:comments){
+            commentRepository.delete((C));
+        }
+    }
+
     // boardTypeId, postId로 해당 글이 존재하는지 확인(true: 글 있음, false: 없음)
     public boolean checkAvailability(String boardTypeName, Long postId) {
         switch(boardTypeName) {
