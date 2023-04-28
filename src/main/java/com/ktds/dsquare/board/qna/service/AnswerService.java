@@ -38,18 +38,29 @@ public class AnswerService {
         answerRepository.save(answer);
     }
 
-    // 답변글 조회
+    // 답변글 전체 조회(질문 번호로 조회)
     public List<AnswerResponse> getAnswersByQuestion(Question qid, Member user) {
         List<AnswerResponse> answerResponses = new ArrayList<>();
         List<Answer> answers = answerRepository.findByQuestionAndDeleteYnOrderByCreateDateAsc(qid, false);
         for(Answer answer:answers){
             Long likeCnt = likeService.findLikeCnt(BoardType.ANSWER, answer.getId());
             Boolean likeYn = likeService.findLikeYn(BoardType.ANSWER, answer.getId(), user);
-            Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.ANSWER, qid.getQid());
+            Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.ANSWER, answer.getId());
             answerResponses.add(AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), likeCnt, likeYn, commentCnt));
         }
         return answerResponses;
     }
+
+    //답변글 상세 조회
+    public AnswerResponse getAnswerDetail(Long aid, Member user){
+        Answer answer = answerRepository.findByDeleteYnAndId(false, aid);
+        Long likeCnt = likeService.findLikeCnt(BoardType.ANSWER, answer.getId());
+        Boolean likeYn = likeService.findLikeYn(BoardType.ANSWER, answer.getId(), user);
+        Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.ANSWER, answer.getId());
+        AnswerResponse answerResponse = AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), likeCnt, likeYn, commentCnt);
+        return answerResponse;
+    }
+
 
     // 답변글 수정
     @Transactional
