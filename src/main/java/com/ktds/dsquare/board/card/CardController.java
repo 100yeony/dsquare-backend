@@ -60,7 +60,7 @@ public class CardController {
 
     //read - 이달의 카드 조회
     @GetMapping("board/cards/card-of-the-month")
-    public ResponseEntity<List<BriefCardResponse>> selectedCardList(){
-        return new ResponseEntity<>(cardService.selectedCardList(), HttpStatus.OK);
+    public ResponseEntity<List<BriefCardResponse>> selectedCardList(@AuthUser Member user){
+        return new ResponseEntity<>(cardService.selectedCardList(user), HttpStatus.OK);
     }
 }
