@@ -1,6 +1,7 @@
 package com.ktds.dsquare.board.qna.service;
 
 import com.ktds.dsquare.board.comment.CommentRepository;
+import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
 import com.ktds.dsquare.board.qna.domain.Answer;
@@ -27,6 +28,7 @@ public class AnswerService {
     private final QuestionRepository questionRepository;
     private final LikeService likeService;
     private final CommentRepository commentRepository;
+    private final CommentService commentService;
 
     // 답변글 작성
     @Transactional
@@ -64,6 +66,7 @@ public class AnswerService {
     public void deleteAnswer(Long aid) {
         Answer answer = answerRepository.findById(aid).orElseThrow(() -> new EntityNotFoundException("Answer does not exist"));
         answer.deleteAnswer();
+        commentService.deleteCommentCascade(BoardType.ANSWER, aid);
     }
 
 }

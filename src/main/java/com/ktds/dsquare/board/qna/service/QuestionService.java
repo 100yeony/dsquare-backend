@@ -1,6 +1,7 @@
 package com.ktds.dsquare.board.qna.service;
 
 import com.ktds.dsquare.board.comment.CommentRepository;
+import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
 import com.ktds.dsquare.board.qna.domain.Answer;
@@ -44,6 +45,7 @@ public class QuestionService {
     private final QuestionTagRepository questionTagRepository;
     private final LikeService likeService;
     private final CommentRepository commentRepository;
+    private final CommentService commentService;
 
     //create - 질문글 작성
     @Transactional
@@ -187,6 +189,7 @@ public class QuestionService {
         // 답변글이 이미 존재할 때 => HTTP Status로 처리해줘야 함(추후 수정 필요)
         if(!answerList.isEmpty()) throw new EntityNotFoundException("Delete Question Fail - Reply exists");
         question.deleteQuestion();
+        commentService.deleteCommentCascade(BoardType.QUESTION, qid);
     }
 
 

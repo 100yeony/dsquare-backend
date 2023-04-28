@@ -96,9 +96,9 @@ public class CarrotService {
         carrot.increaseViewCnt();
         carrotRepository.save(carrot);
 
-        Long likeCnt = likeService.findLikeCnt(BoardType.CARD, carrot.getId());
-        Boolean likeYn = likeService.findLikeYn(BoardType.CARD, carrot.getId(), user);
-        Long commentCnt = (long) commentService.getAllComments("card", carrotId).size();
+        Long likeCnt = likeService.findLikeCnt(BoardType.CARROT, carrot.getId());
+        Boolean likeYn = likeService.findLikeYn(BoardType.CARROT, carrot.getId(), user);
+        Long commentCnt = (long) commentService.getAllComments("carrot", carrotId).size();
         return CarrotResponse.toDto(carrot, carrot.getWriter(), likeCnt, likeYn, commentCnt);
     }
 
@@ -133,6 +133,7 @@ public class CarrotService {
         Carrot carrot = carrotRepository.findById(carrotId)
                 .orElseThrow(()-> new EntityNotFoundException("carrot is not found"));
         carrot.deleteCarrot();
+        commentService.deleteCommentCascade(BoardType.CARROT, carrotId);
     }
 
 
