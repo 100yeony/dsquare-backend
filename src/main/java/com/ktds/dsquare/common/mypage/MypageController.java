@@ -2,6 +2,8 @@ package com.ktds.dsquare.common.mypage;
 
 import com.ktds.dsquare.board.card.dto.BriefCardResponse;
 import com.ktds.dsquare.board.carrot.dto.BriefCarrotResponse;
+import com.ktds.dsquare.board.comment.dto.CommentInfo;
+import com.ktds.dsquare.board.qna.dto.AnswerResponse;
 import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
 import com.ktds.dsquare.board.talk.dto.BriefTalkResponse;
 import com.ktds.dsquare.common.annotatin.AuthUser;
@@ -40,5 +42,17 @@ public class MypageController {
     @GetMapping("/mypage/myCarrots")
     public List<BriefCarrotResponse> getAllMyCarrots(@AuthUser Member user){
         return mypageService.getAllMyCarrots(user);
+    }
+
+    //read - 나의 답변글 전체 조회
+    @GetMapping("/mypage/myAnswers")
+    public List<AnswerResponse> getAllMyAnswers(@AuthUser Member user){
+        return mypageService.getAllMyAnswers(user);
+    }
+
+    //read - 나의 댓글 전체 조회
+    @GetMapping("/mypage/myComments")
+    public List<CommentInfo> getAllMyComments(@AuthUser Member user){
+        return mypageService.getAllMyComments(user);
     }
 }

@@ -7,11 +7,14 @@ import com.ktds.dsquare.board.card.dto.CardSelectionInfo;
 import com.ktds.dsquare.board.carrot.Carrot;
 import com.ktds.dsquare.board.carrot.CarrotRepository;
 import com.ktds.dsquare.board.carrot.dto.BriefCarrotResponse;
+import com.ktds.dsquare.board.comment.Comment;
 import com.ktds.dsquare.board.comment.CommentRepository;
+import com.ktds.dsquare.board.comment.dto.CommentInfo;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.board.qna.dto.AnswerResponse;
 import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.dto.CategoryResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
@@ -66,7 +69,7 @@ public class MypageService {
 
     //read - 나의 카드주세요 글 전체 조회
     public List<BriefCardResponse> getAllMyCards(Member user){
-        List<Card> cards = cardRepository.findByDeleteYnOrderByCreateDateDesc(false);
+        List<Card> cards = cardRepository.findByDeleteYnAndWriter(false, user);
         List<BriefCardResponse> briefCards = new ArrayList<>();
 
         for(Card C : cards){
@@ -118,4 +121,31 @@ public class MypageService {
         }
         return searchResults;
     }
+
+    //read - 나의 답변글 전체 조회
+    public List<AnswerResponse> getAllMyAnswers(Member user){
+        List<Answer> answerList = answerRepository.findByDeleteYnAndWriter(false, user);
+        List<AnswerResponse> searchResults = new ArrayList<>();
+
+        for(Answer A: answerList){
+            Member member = A.getWriter();
+            Long likeCnt = likeService.findLikeCnt(BoardType.ANSWER, A.getId());
+            Boolean likeYn = likeService.findLikeYn(BoardType.ANSWER, A.getId(), user);
+            Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.ANSWER, A.getId());
+            searchResults.add(AnswerResponse.toDto(A, MemberInfo.toDto(member), likeCnt, likeYn, commentCnt));
+        }
+        return searchResults;
+    }
+
+    //read - 나의 댓글 전체 조회
+    public List<CommentInfo> getAllMyComments(Member user){
+        List<Comment> commentList = commentRepository.findByWriter(user);
+        List<CommentInfo> searchResults = new ArrayList<>();
+
+        for(Comment C: commentList){
+            searchResults.add(CommentInfo.toDto(C));
+        }
+        return searchResults;
+    }
+
 }

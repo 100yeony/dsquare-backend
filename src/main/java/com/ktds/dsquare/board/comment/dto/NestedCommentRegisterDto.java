@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NestedCommentRegisterDto {
-    private Long writerId;
+//    private Long writerId;
     private String content;
     private Long originWriterId;
 }

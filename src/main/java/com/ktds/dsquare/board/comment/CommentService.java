@@ -34,24 +34,22 @@ public class CommentService {
 
     // 댓글 작성
     @Transactional
-    public void createComment(String boardTypeName, Long postId, CommentRegisterDto request) {
+    public void createComment(String boardTypeName, Long postId, CommentRegisterDto request, Member user) {
         if(!checkAvailability(boardTypeName, postId))
             throw new RuntimeException("Post Not Found");
-        Member writer = memberRepository.findById(request.getWriterId()).orElseThrow(() -> new RuntimeException("Writer Not Found"));
         BoardType boardType = BoardType.findBoardType(boardTypeName);
-        Comment comment = Comment.toEntity(request, writer, boardType, postId);
+        Comment comment = Comment.toEntity(request, user, boardType, postId);
         commentRepository.save(comment);
     }
 
     // 대댓글 작성
     @Transactional
-    public void createNestedComment(String boardTypeName, Long postId, NestedCommentRegisterDto request) {
+    public void createNestedComment(String boardTypeName, Long postId, NestedCommentRegisterDto request, Member user) {
         if(!checkAvailability(boardTypeName, postId))
             throw new RuntimeException("Post Not Found");
-        Member writer = memberRepository.findById(request.getWriterId()).orElseThrow(() -> new RuntimeException("Writer Not Found"));
         Member originWriter = memberRepository.findById(request.getOriginWriterId()).orElseThrow(() -> new RuntimeException("Origin Writer Not Found"));
         BoardType boardType = BoardType.findBoardType(boardTypeName);
-        Comment comment = Comment.toNestedEntity(request, writer, boardType, postId, originWriter);
+        Comment comment = Comment.toNestedEntity(request, user, boardType, postId, originWriter);
         commentRepository.save(comment);
     }
 
