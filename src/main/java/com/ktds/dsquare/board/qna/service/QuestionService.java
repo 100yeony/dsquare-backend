@@ -64,7 +64,7 @@ public class QuestionService {
      * 2. category없이 제목+내용 or 작성자로 검색하는 경우 -> cid X
      * 3. 둘 다 검색하는 경우 -> cid, key, value
      * */
-    public List<BriefQuestionResponse> getQuestions(Boolean workYn, Integer cid, String key, String value){
+    public List<BriefQuestionResponse> getQuestions(Boolean workYn, Member user, Integer cid, String key, String value){
         //deleteYn = false인 것만 조회
         Specification<Question> filter = Specification.where(QuestionSpecification.equalNotDeleted(false));
         //업무 구분
@@ -125,7 +125,7 @@ public class QuestionService {
             }
 
             Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, q.getQid());
-            Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, q.getQid(), q.getWriter());
+            Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, q.getQid(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, q.getQid());
             searchResults.add(BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, likeCnt, likeYn, commentCnt));
         }

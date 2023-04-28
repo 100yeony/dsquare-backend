@@ -30,7 +30,7 @@ public class QuestionController {
     @GetMapping("/board/questions")
     public List<BriefQuestionResponse> getQuestions(@RequestParam Boolean workYn, @AuthUser Member user, @RequestParam(required = false) Integer cid,
                                                  @RequestParam(required = false) String key, @RequestParam(required = false) String value) {
-        return questionService.getQuestions(workYn, cid, key, value);
+        return questionService.getQuestions(workYn, user, cid, key, value);
     }
 
     //read - 질문글 상세 조회
