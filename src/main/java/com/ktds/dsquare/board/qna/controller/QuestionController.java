@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 
@@ -20,15 +22,21 @@ public class QuestionController {
     private final QuestionService questionService;
 
     //create - 질문글 작성
-    @PostMapping("/board/questions")
-    public ResponseEntity<Void> createQuestion(@RequestBody QuestionRequest request){
-        questionService.createQuestion(request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    @PostMapping(value = "/board/questions")//, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<Void> createQuestion(
+//            @Parameter @ApiParam(name = "Question 게시글 내용")
+            @RequestPart("question") QuestionRequest request,
+//            @ApiParam(name = "Question 게시글 첨부파일")
+            @RequestPart(required = false) MultipartFile attachment,
+            @ApiIgnore @AuthUser Member writer
+    ) throws RuntimeException {
+        questionService.createQuestion(request, attachment, writer);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     //read - 질문글 전체 목록 조회 & 검색
     @GetMapping("/board/questions")
-    public List<BriefQuestionResponse> getQuestions(@RequestParam Boolean workYn, @AuthUser Member user, @RequestParam(required = false) Integer cid,
+    public List<BriefQuestionResponse> getQuestions(@RequestParam Boolean workYn, @ApiIgnore @AuthUser Member user, @RequestParam(required = false) Integer cid,
                                                  @RequestParam(required = false) String key, @RequestParam(required = false) String value) {
         return questionService.getQuestions(workYn, cid, key, value);
     }
@@ -42,8 +50,12 @@ public class QuestionController {
 
     // 질문글 수정
     @PostMapping("/board/questions/{qid}")
-    public ResponseEntity<Void> updateQuestion(@PathVariable("qid") Long qid, @RequestBody QuestionRequest request){
-        questionService.updateQuestion(qid, request);
+    public ResponseEntity<Void> updateQuestion(
+            @PathVariable("qid") Long qid,
+            @RequestPart("question") QuestionRequest request,
+            @RequestPart(name = "attachment", required = false) MultipartFile newAttachment
+    ) {
+        questionService.updateQuestion(qid, request, newAttachment);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

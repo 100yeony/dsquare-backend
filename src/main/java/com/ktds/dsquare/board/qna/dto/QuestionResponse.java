@@ -2,6 +2,7 @@ package com.ktds.dsquare.board.qna.dto;
 
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.domain.QuestionTag;
+import com.ktds.dsquare.common.file.dto.AttachmentDto;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +28,7 @@ public class QuestionResponse {
     private LocalDateTime lastUpdateDate;
     private Long viewCnt;
     private Long commentCnt;
-    private Long atcId;
+    private AttachmentDto attachment;
     private List<String> tags;
     private Long likeCnt;
     private Boolean likeYn;
@@ -48,11 +49,11 @@ public class QuestionResponse {
                 .createDate(LocalDateTime.now())
                 .lastUpdateDate(LocalDateTime.now())
                 .viewCnt(question.getViewCnt())
-                .atcId(question.getAtcId())
                 .tags(tags)
                 .likeCnt(likeCnt)
                 .likeYn(likeYn)
                 .commentCnt(commentCnt)
+                .attachment(AttachmentDto.toDto(question.getAttachment()))
                 .build();
     }
 

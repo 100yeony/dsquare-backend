@@ -17,8 +17,9 @@ public class AttachmentController {
 
     private final AttachmentService attachmentService;
 
-    @PostMapping("/attachment-test")
+    @PostMapping("/attachment-test") // TODO
     public ResponseEntity<?> test(@AuthUser Member member, MultipartFile file) throws IOException {
         return new ResponseEntity<>(attachmentService.insertAttachment(member, file), HttpStatus.OK);
     }
+
 }

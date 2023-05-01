@@ -49,7 +49,7 @@ public class BriefQuestionResponse {
                 .createDate(LocalDateTime.now())
                 .viewCnt(question.getViewCnt())
                 .commentCnt(commentCnt)
-                .atcYn(question.getAtcId()!=null)
+                .atcYn(question.getAttachment()!=null)
                 .answerCnt(answerCnt)
                 .managerAnswerYn(managerAnswerYn)
                 .tags(tags)

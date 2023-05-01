@@ -1,5 +1,6 @@
 package com.ktds.dsquare.common.file;
 
+import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.common.file.dto.FileSavedDto;
 import com.ktds.dsquare.member.Member;
 import lombok.*;
@@ -40,6 +41,18 @@ public class Attachment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Member writer;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Question post; // TODO Grand-refactoring
+
+
+    public void linkPost(Question post) {
+        this.post = post;
+    }
+    public void delinkPost() {
+        this.post = null;
+    }
 
 
     public static Attachment toEntity(Member owner, MultipartFile file, FileSavedDto savedInfo) {

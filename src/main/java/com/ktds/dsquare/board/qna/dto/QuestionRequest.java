@@ -1,14 +1,13 @@
 package com.ktds.dsquare.board.qna.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.ktds.dsquare.common.file.dto.AttachmentDto;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Getter @Builder
+@Getter @Setter
+@Builder
 @NoArgsConstructor @AllArgsConstructor
 public class QuestionRequest {
 
@@ -20,7 +19,7 @@ public class QuestionRequest {
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
     private Long viewCnt;
-    private Long atcId;
+    private AttachmentDto attachment;
     private Boolean deleteYn;
     private List<String> tags;
 
