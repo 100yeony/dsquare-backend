@@ -114,23 +114,25 @@ public class QuestionService {
 
         //BriefQuestionResponse 객체로 만들어줌
         for(Question q: questionList){
-            CategoryResponse categoryRes = CategoryResponse.toDto(q.getCategory());
-            List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(q, false);
-            boolean managerAnswerYn = false;
-            for (Answer A : answers) {
-                if (q.getCategory().getManagerId()==A.getWriter().getId()) {
-                    managerAnswerYn = true;
-                    break;
-                }
-            }
-
-            Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, q.getQid());
-            Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, q.getQid(), user);
-            Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, q.getQid());
-            searchResults.add(BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, likeCnt, likeYn, commentCnt));
+            searchResults.add(makeBriefQuestionRes(q, user));
         }
-
         return searchResults;
+    }
+
+    public BriefQuestionResponse makeBriefQuestionRes(Question q, Member user){
+        CategoryResponse categoryRes = CategoryResponse.toDto(q.getCategory());
+        List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(q, false);
+        boolean managerAnswerYn = false;
+        for (Answer A : answers) {
+            if (q.getCategory().getManagerId()==A.getWriter().getId()) {
+                managerAnswerYn = true;
+                break;
+            }
+        }
+        Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, q.getQid());
+        Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, q.getQid(), user);
+        Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, q.getQid());
+        return BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, likeCnt, likeYn, commentCnt);
     }
 
 
