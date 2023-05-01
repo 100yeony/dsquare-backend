@@ -30,8 +30,8 @@ public class CardResponse {
     private Long viewCnt;
     private Long likeCnt;
     private Boolean likeYn;
-    private CardSelectionInfo selectionInfo;
     private Long commentCnt;
+    private CardSelectionInfo selectionInfo;
 
     public static CardResponse toDto(Card entity, Member writer, Team team, Member cardOwner, Long likeCnt, Boolean likeYn, Long commentCnt) {
         MemberInfo writerInfo = MemberInfo.toDto(writer);
@@ -56,8 +56,8 @@ public class CardResponse {
                 .viewCnt(entity.getViewCnt())
                 .likeCnt(likeCnt)
                 .likeYn(likeYn)
-                .selectionInfo(selectionInfo)
                 .commentCnt(commentCnt)
+                .selectionInfo(selectionInfo)
                 .build();
     }
 

@@ -26,10 +26,10 @@ public class CarrotResponse {
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
     private Long viewCnt;
-    private List<String> tags;
     private Long likeCnt;
     private Boolean likeYn;
     private Long commentCnt;
+    private List<String> tags;
 
     public static CarrotResponse toDto(Carrot entity, Member writer, Long likeCnt, Boolean likeYn, Long commentCnt) {
         MemberInfo writerInfo = MemberInfo.toDto(writer);
@@ -46,10 +46,10 @@ public class CarrotResponse {
                 .createDate(entity.getCreateDate())
                 .lastUpdateDate(entity.getLastUpdateDate())
                 .viewCnt(entity.getViewCnt())
-                .tags(tags)
                 .likeCnt(likeCnt)
                 .likeYn(likeYn)
                 .commentCnt(commentCnt)
+                .tags(tags)
                 .build();
     }
 

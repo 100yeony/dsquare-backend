@@ -21,37 +21,37 @@ public class MypageController {
     private final MypageService mypageService;
 
     //read - 나의 질문글 전체 조회
-    @GetMapping("/mypage/Questions")
+    @GetMapping("/mypage/questions")
     public List<BriefQuestionResponse> getAllMyQuestions(@AuthUser Member user){
         return mypageService.getAllMyQuestions(user);
     }
 
     //read - 나의 카드주세요 글 전체 조회
-    @GetMapping("/mypage/Cards")
+    @GetMapping("/mypage/cards")
     public List<BriefCardResponse> getAllMyCards(@AuthUser Member user){
         return mypageService.getAllMyCards(user);
     }
 
     //read - 나의 소통해요 글 전체 조회
-    @GetMapping("/mypage/Talks")
+    @GetMapping("/mypage/talks")
     public List<BriefTalkResponse> getAllMyTalks(@AuthUser Member user){
         return mypageService.getAllMyTalks(user);
     }
 
     //read - 나의 당근해요 글 전체 조회
-    @GetMapping("/mypage/Carrots")
+    @GetMapping("/mypage/carrots")
     public List<BriefCarrotResponse> getAllMyCarrots(@AuthUser Member user){
         return mypageService.getAllMyCarrots(user);
     }
 
     //read - 나의 답변글 전체 조회
-    @GetMapping("/mypage/Answers")
+    @GetMapping("/mypage/answers")
     public List<AnswerResponse> getAllMyAnswers(@AuthUser Member user){
         return mypageService.getAllMyAnswers(user);
     }
 
     //read - 나의 댓글 전체 조회
-    @GetMapping("/mypage/Comments")
+    @GetMapping("/mypage/comments")
     public List<MyCommentInfo> getAllMyComments(@AuthUser Member user){
         return mypageService.getAllMyComments(user);
     }
