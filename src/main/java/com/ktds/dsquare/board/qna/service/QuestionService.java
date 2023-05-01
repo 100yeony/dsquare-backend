@@ -16,8 +16,7 @@ import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.board.tag.QuestionTag;
 import com.ktds.dsquare.board.tag.Tag;
-import com.ktds.dsquare.board.tag.repository.QuestionTagRepository;
-import com.ktds.dsquare.board.tag.repository.TagRepository;
+import com.ktds.dsquare.board.tag.TagService;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
@@ -41,11 +40,10 @@ public class QuestionService {
     private final AnswerRepository answerRepository;
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
-    private final TagRepository tagRepository;
-    private final QuestionTagRepository questionTagRepository;
     private final LikeService likeService;
     private final CommentRepository commentRepository;
     private final CommentService commentService;
+    private final TagService tagService;
 
     //create - 질문글 작성
     @Transactional
@@ -54,7 +52,7 @@ public class QuestionService {
         Question question = Question.toEntity(dto, user, category);
 
         questionRepository.save(question);
-        insertNewTags(dto.getTags(), question);
+        tagService.insertNewTags(dto.getTags(), question);
     }
 
     //read - 질문글 전체 조회 & 검색
@@ -176,9 +174,9 @@ public class QuestionService {
             if(newTags.contains(oldTagName))
                 newTags.remove(oldTagName);
             else
-                deleteQuestionTagRelation(question, oldTag);
+                tagService.deleteTagRelation(question, oldTag);
         }
-        insertNewTags(newTags, question);
+        tagService.insertNewTags(newTags, question);
     }
 
     // 질문글 삭제
@@ -192,27 +190,6 @@ public class QuestionService {
         if(!answerList.isEmpty()) throw new EntityNotFoundException("Delete Question Fail - Reply exists");
         question.deleteQuestion();
         commentService.deleteCommentCascade(BoardType.QUESTION, qid);
-    }
-
-
-    // 새 태그(키워드) 등록
-    @Transactional
-    public void insertNewTags(List<String> newTags, Question question) {
-        for (String name : newTags) {
-            Tag tag = tagRepository.findByName(name);
-            if(tag == null) {
-                tag = Tag.toEntity(name);
-                tagRepository.save(tag);
-            }
-            QuestionTag qt = QuestionTag.toEntity(question, tag);
-            questionTagRepository.save(qt);
-        }
-    }
-
-    // 태그-질문 간 연관관계 삭제
-    @Transactional
-    public void deleteQuestionTagRelation(Question question, Tag tag) {
-        questionTagRepository.deleteByQuestionAndTag(question, tag);
     }
 
 }
