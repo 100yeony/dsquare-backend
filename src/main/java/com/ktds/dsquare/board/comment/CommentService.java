@@ -34,24 +34,22 @@ public class CommentService {
 
     // 댓글 작성
     @Transactional
-    public void createComment(String boardTypeName, Long postId, CommentRegisterDto request) {
+    public void createComment(String boardTypeName, Long postId, CommentRegisterDto request, Member user) {
         if(!checkAvailability(boardTypeName, postId))
             throw new RuntimeException("Post Not Found");
-        Member writer = memberRepository.findById(request.getWriterId()).orElseThrow(() -> new RuntimeException("Writer Not Found"));
         BoardType boardType = BoardType.findBoardType(boardTypeName);
-        Comment comment = Comment.toEntity(request, writer, boardType, postId);
+        Comment comment = Comment.toEntity(request, user, boardType, postId);
         commentRepository.save(comment);
     }
 
     // 대댓글 작성
     @Transactional
-    public void createNestedComment(String boardTypeName, Long postId, NestedCommentRegisterDto request) {
+    public void createNestedComment(String boardTypeName, Long postId, NestedCommentRegisterDto request, Member user) {
         if(!checkAvailability(boardTypeName, postId))
             throw new RuntimeException("Post Not Found");
-        Member writer = memberRepository.findById(request.getWriterId()).orElseThrow(() -> new RuntimeException("Writer Not Found"));
         Member originWriter = memberRepository.findById(request.getOriginWriterId()).orElseThrow(() -> new RuntimeException("Origin Writer Not Found"));
         BoardType boardType = BoardType.findBoardType(boardTypeName);
-        Comment comment = Comment.toNestedEntity(request, writer, boardType, postId, originWriter);
+        Comment comment = Comment.toNestedEntity(request, user, boardType, postId, originWriter);
         commentRepository.save(comment);
     }
 
@@ -75,6 +73,12 @@ public class CommentService {
     public void deleteComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new RuntimeException("Comment Not Found"));
         commentRepository.delete(comment);
+    }
+
+    //원글이 삭제되면 댓글도 함께 삭제
+    public void deleteCommentCascade(BoardType boardType, Long postId){
+        List<Comment> comments = commentRepository.findByBoardTypeAndPostId(boardType, postId);
+        commentRepository.deleteAllInBatch(comments);
     }
 
     // boardTypeId, postId로 해당 글이 존재하는지 확인(true: 글 있음, false: 없음)

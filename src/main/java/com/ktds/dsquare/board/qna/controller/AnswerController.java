@@ -33,6 +33,12 @@ public class AnswerController {
         return answerService.getAnswersByQuestion(qid, user);
     }
 
+    //답변 상세 조회
+    @GetMapping("/board/answers/{aid}")
+    public AnswerResponse getAnswerDetail(@PathVariable Long aid, @AuthUser Member user){
+        return answerService.getAnswerDetail(aid, user);
+    }
+
     // 답변글 수정
     @PostMapping("/board/questions/{qid}/answers/{aid}")
     public ResponseEntity<Void> updateAnswer(@PathVariable Long qid, @PathVariable Long aid,

@@ -25,16 +25,18 @@ public class BriefTalkResponse {
     private MemberInfo writerInfo;
     @ApiModelProperty(notes="Talk title", example = "소통해요 제목입니다.", required = true)
     private String title;
+    @ApiModelProperty(notes="Talk content", example = "소통해요 내용입니다.", required = true)
+    private String content;
     @ApiModelProperty(notes="작성일 정보", example = "2023-04-26", required = true)
     private LocalDateTime createDate;
     @ApiModelProperty(notes="Talk view count", example = "31", required = true)
     private Long viewCnt;
-    @ApiModelProperty(notes="Talk comment count", example = "2", required = true)
-    private Long commentCnt;
     @ApiModelProperty(notes="Talk like count", example = "5", required = true)
     private Long likeCnt;
     @ApiModelProperty(notes="if current user liked this Post", example = "false", required = true)
     private Boolean likeYn;
+    @ApiModelProperty(notes="Talk comment count", example = "2", required = true)
+    private Long commentCnt;
     @ApiModelProperty(notes="Talk tags", example = "['aa', 'bb', 'cc']", required = true)
     private List<String> tags;
 
@@ -48,11 +50,12 @@ public class BriefTalkResponse {
                 .talkId(talk.getId())
                 .writerInfo(MemberInfo.toDto(talk.getWriter()))
                 .title(talk.getTitle())
+                .content(talk.getContent())
                 .createDate(talk.getCreateDate())
                 .viewCnt(talk.getViewCnt())
-                .commentCnt(commentCnt)
                 .likeCnt(likeCnt)
                 .likeYn(likeYn)
+                .commentCnt(commentCnt)
                 .tags(tags)
                 .build();
     }

@@ -24,10 +24,10 @@ public class BriefCarrotResponse {
     private String content;
     private LocalDateTime createDate;
     private Long viewCnt;
-    private List<String> tags;
     private Long likeCnt;
     private Boolean likeYn;
     private Long commentCnt;
+    private List<String> tags;
 
     public static BriefCarrotResponse toDto(Carrot entity, MemberInfo writerInfo, Long likeCnt, Boolean likeYn, Long commentCnt) {
         List<CarrotTag> carrotTags = entity.getCarrotTags();
@@ -42,10 +42,10 @@ public class BriefCarrotResponse {
                 .content(entity.getContent())
                 .createDate(entity.getCreateDate())
                 .viewCnt(entity.getViewCnt())
-                .tags(tags)
                 .likeCnt(likeCnt)
                 .likeYn(likeYn)
                 .commentCnt(commentCnt)
+                .tags(tags)
                 .build();
     }
 

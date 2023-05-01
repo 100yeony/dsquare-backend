@@ -1,6 +1,7 @@
 package com.ktds.dsquare.board.qna.service;
 
 import com.ktds.dsquare.board.comment.CommentRepository;
+import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
 import com.ktds.dsquare.board.qna.domain.Answer;
@@ -44,6 +45,7 @@ public class QuestionService {
     private final QuestionTagRepository questionTagRepository;
     private final LikeService likeService;
     private final CommentRepository commentRepository;
+    private final CommentService commentService;
 
     //create - 질문글 작성
     @Transactional
@@ -62,7 +64,7 @@ public class QuestionService {
      * 2. category없이 제목+내용 or 작성자로 검색하는 경우 -> cid X
      * 3. 둘 다 검색하는 경우 -> cid, key, value
      * */
-    public List<BriefQuestionResponse> getQuestions(Boolean workYn, Integer cid, String key, String value){
+    public List<BriefQuestionResponse> getQuestions(Boolean workYn, Member user, Integer cid, String key, String value){
         //deleteYn = false인 것만 조회
         Specification<Question> filter = Specification.where(QuestionSpecification.equalNotDeleted(false));
         //업무 구분
@@ -112,23 +114,25 @@ public class QuestionService {
 
         //BriefQuestionResponse 객체로 만들어줌
         for(Question q: questionList){
-            CategoryResponse categoryRes = CategoryResponse.toDto(q.getCategory());
-            List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(q, false);
-            boolean managerAnswerYn = false;
-            for (Answer A : answers) {
-                if (q.getCategory().getManagerId()==A.getWriter().getId()) {
-                    managerAnswerYn = true;
-                    break;
-                }
-            }
-
-            Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, q.getQid());
-            Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, q.getQid(), q.getWriter());
-            Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, q.getQid());
-            searchResults.add(BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, likeCnt, likeYn, commentCnt));
+            searchResults.add(makeBriefQuestionRes(q, user));
         }
-
         return searchResults;
+    }
+
+    public BriefQuestionResponse makeBriefQuestionRes(Question q, Member user){
+        CategoryResponse categoryRes = CategoryResponse.toDto(q.getCategory());
+        List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(q, false);
+        boolean managerAnswerYn = false;
+        for (Answer A : answers) {
+            if (q.getCategory().getManagerId()==A.getWriter().getId()) {
+                managerAnswerYn = true;
+                break;
+            }
+        }
+        Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, q.getQid());
+        Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, q.getQid(), user);
+        Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, q.getQid());
+        return BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, likeCnt, likeYn, commentCnt);
     }
 
 
@@ -187,6 +191,7 @@ public class QuestionService {
         // 답변글이 이미 존재할 때 => HTTP Status로 처리해줘야 함(추후 수정 필요)
         if(!answerList.isEmpty()) throw new EntityNotFoundException("Delete Question Fail - Reply exists");
         question.deleteQuestion();
+        commentService.deleteCommentCascade(BoardType.QUESTION, qid);
     }
 
 

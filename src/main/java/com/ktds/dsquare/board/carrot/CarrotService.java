@@ -3,6 +3,7 @@ package com.ktds.dsquare.board.carrot;
 import com.ktds.dsquare.board.carrot.dto.BriefCarrotResponse;
 import com.ktds.dsquare.board.carrot.dto.CarrotRegisterRequest;
 import com.ktds.dsquare.board.carrot.dto.CarrotResponse;
+import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
@@ -34,6 +35,7 @@ public class CarrotService {
     private final MemberRepository memberRepository;
     private final TagRepository tagRepository;
     private final CarrotTagRepository carrotTagRepository;
+    private final CommentRepository commentRepository;
 
     //create - 당근해요 글 작성
     @Transactional
@@ -83,7 +85,7 @@ public class CarrotService {
         for(Carrot C: carrotList){
             Long likeCnt = likeService.findLikeCnt(BoardType.CARROT, C.getId());
             Boolean likeYn = likeService.findLikeYn(BoardType.CARROT, C.getId(), user);
-            Long commentCnt = (long) commentService.getAllComments("carrot", C.getId()).size();
+            Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARROT, C.getId());
             searchResults.add(BriefCarrotResponse.toDto(C, MemberInfo.toDto(C.getWriter()), likeCnt, likeYn, commentCnt));
         }
 
@@ -96,9 +98,9 @@ public class CarrotService {
         carrot.increaseViewCnt();
         carrotRepository.save(carrot);
 
-        Long likeCnt = likeService.findLikeCnt(BoardType.CARD, carrot.getId());
-        Boolean likeYn = likeService.findLikeYn(BoardType.CARD, carrot.getId(), user);
-        Long commentCnt = (long) commentService.getAllComments("card", carrotId).size();
+        Long likeCnt = likeService.findLikeCnt(BoardType.CARROT, carrot.getId());
+        Boolean likeYn = likeService.findLikeYn(BoardType.CARROT, carrot.getId(), user);
+        Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARROT, carrot.getId());
         return CarrotResponse.toDto(carrot, carrot.getWriter(), likeCnt, likeYn, commentCnt);
     }
 
@@ -133,6 +135,7 @@ public class CarrotService {
         Carrot carrot = carrotRepository.findById(carrotId)
                 .orElseThrow(()-> new EntityNotFoundException("carrot is not found"));
         carrot.deleteCarrot();
+        commentService.deleteCommentCascade(BoardType.CARROT, carrotId);
     }
 
 

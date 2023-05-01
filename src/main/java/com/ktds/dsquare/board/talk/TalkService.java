@@ -1,6 +1,7 @@
 package com.ktds.dsquare.board.talk;
 
 import com.ktds.dsquare.board.comment.CommentRepository;
+import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
 import com.ktds.dsquare.board.tag.Tag;
@@ -33,6 +34,7 @@ public class TalkService {
     private final LikeService likeService;
     private final TagRepository tagRepository;
     private final TalkTagRepository talkTagRepository;
+    private final CommentService commentService;
 
     // 소통해요 작성
     @Transactional
@@ -134,6 +136,7 @@ public class TalkService {
             deleteTalkTagRelation(talk, oldTT.getTag());
         }
         talk.deleteTalk();
+        commentService.deleteCommentCascade(BoardType.TALK, talkId);
     }
 
     // 새 태그(키워드) 등록

@@ -26,11 +26,11 @@ public class QuestionResponse {
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
     private Long viewCnt;
-    private Long commentCnt;
     private Long atcId;
-    private List<String> tags;
     private Long likeCnt;
     private Boolean likeYn;
+    private Long commentCnt;
+    private List<String> tags;
 
     public static QuestionResponse toDto(Question question, MemberInfo writerInfo,
                                          CategoryResponse category, Long likeCnt, Boolean likeYn, Long commentCnt){
@@ -49,10 +49,10 @@ public class QuestionResponse {
                 .lastUpdateDate(question.getLastUpdateDate())
                 .viewCnt(question.getViewCnt())
                 .atcId(question.getAtcId())
-                .tags(tags)
                 .likeCnt(likeCnt)
                 .likeYn(likeYn)
                 .commentCnt(commentCnt)
+                .tags(tags)
                 .build();
     }
 

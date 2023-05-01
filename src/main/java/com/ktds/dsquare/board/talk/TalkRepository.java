@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.talk;
 
+import com.ktds.dsquare.member.Member;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,5 +15,7 @@ public interface TalkRepository extends JpaRepository<Talk,Long>{
     List<Talk> findByDeleteYnOrderByCreateDateDesc(boolean deleteYn);
     Optional<Talk> findById(Long id);
     List<Talk> findAll(Specification<Talk> filter, Sort sort);
+
+    List<Talk> findByDeleteYnAndWriter(Boolean deleteYn, Member writer);
 
 }

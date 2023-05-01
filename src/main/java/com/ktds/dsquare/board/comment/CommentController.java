@@ -2,6 +2,8 @@ package com.ktds.dsquare.board.comment;
 
 import com.ktds.dsquare.board.comment.dto.CommentRegisterDto;
 import com.ktds.dsquare.board.comment.dto.NestedCommentRegisterDto;
+import com.ktds.dsquare.common.annotatin.AuthUser;
+import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,15 +19,17 @@ public class CommentController {
 
     // 댓글 작성
     @PostMapping("/board/{boardTypeName}/{postId}/comments")
-    public ResponseEntity<Void> createComment(@PathVariable String boardTypeName, @PathVariable Long postId, @RequestBody CommentRegisterDto request){
-        commentService.createComment(boardTypeName, postId, request);
+    public ResponseEntity<Void> createComment(@PathVariable String boardTypeName, @PathVariable Long postId,
+                                              @RequestBody CommentRegisterDto request, @AuthUser Member user){
+        commentService.createComment(boardTypeName, postId, request, user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     // 대댓글 작성
     @PostMapping("/board/{boardTypeName}/{postId}/comments/{nestedCommentId}")
-    public ResponseEntity<Void> createNestedComment(@PathVariable String boardTypeName, @PathVariable Long postId, @RequestBody NestedCommentRegisterDto request){
-        commentService.createNestedComment(boardTypeName, postId, request);
+    public ResponseEntity<Void> createNestedComment(@PathVariable String boardTypeName, @PathVariable Long postId,
+                                                    @RequestBody NestedCommentRegisterDto request, @AuthUser Member user){
+        commentService.createNestedComment(boardTypeName, postId, request, user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
