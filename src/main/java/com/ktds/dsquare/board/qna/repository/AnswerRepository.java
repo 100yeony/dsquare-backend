@@ -4,6 +4,8 @@ import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,5 +19,13 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
 
     //마이페이지 관련
     List<Answer> findByDeleteYnAndWriter(Boolean deleteYn, Member writer);
+
+    //대시보드 관련
+    @Query(value = "SELECT a.writer, count(*) " +
+            "FROM answer a " +
+            "GROUP BY a.writer " +
+            "ORDER BY count(*) DESC " +
+            "LIMIT :limit", nativeQuery = true)
+    List<Object[]> findBestUser(@Param("limit") int limit);
 
 }

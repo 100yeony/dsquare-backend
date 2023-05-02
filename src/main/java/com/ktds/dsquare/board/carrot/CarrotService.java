@@ -9,8 +9,7 @@ import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
 import com.ktds.dsquare.board.tag.CarrotTag;
 import com.ktds.dsquare.board.tag.Tag;
-import com.ktds.dsquare.board.tag.repository.CarrotTagRepository;
-import com.ktds.dsquare.board.tag.repository.TagRepository;
+import com.ktds.dsquare.board.tag.TagService;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
@@ -33,16 +32,15 @@ public class CarrotService {
     private final LikeService likeService;
     private final CommentService commentService;
     private final MemberRepository memberRepository;
-    private final TagRepository tagRepository;
-    private final CarrotTagRepository carrotTagRepository;
     private final CommentRepository commentRepository;
+    private final TagService tagService;
 
     //create - 당근해요 글 작성
     @Transactional
     public void createCarrot(CarrotRegisterRequest dto, Member user){
         Carrot carrot = Carrot.toEntity(dto, user);
         carrotRepository.save(carrot);
-        insertNewTags(dto.getTags(), carrot);
+        tagService.insertNewTags(dto.getTags(), carrot);
     }
 
     //read - 당근해요 글 전체 조회 & 검색
@@ -123,9 +121,9 @@ public class CarrotService {
             if(newTags.contains(oldTagName))
                 newTags.remove(oldTagName);
             else
-                deleteCarrotTagRelation(carrot, oldTag);
+                tagService.deleteTagRelation(carrot, oldTag);
         }
-        insertNewTags(newTags, carrot);
+        tagService.insertNewTags(newTags, carrot);
 
     }
 
@@ -136,27 +134,6 @@ public class CarrotService {
                 .orElseThrow(()-> new EntityNotFoundException("carrot is not found"));
         carrot.deleteCarrot();
         commentService.deleteCommentCascade(BoardType.CARROT, carrotId);
-    }
-
-
-    // 새 태그(키워드) 등록
-    @Transactional
-    public void insertNewTags(List<String> newTags, Carrot carrot) {
-        for (String name : newTags) {
-            Tag tag = tagRepository.findByName(name);
-            if(tag == null) {
-                tag = Tag.toEntity(name);
-                tagRepository.save(tag);
-            }
-            CarrotTag ct = CarrotTag.toEntity(carrot, tag);
-            carrotTagRepository.save(ct);
-        }
-    }
-
-    // 태그-질문 간 연관관계 삭제
-    @Transactional
-    public void deleteCarrotTagRelation(Carrot carrot, Tag tag) {
-        carrotTagRepository.deleteByCarrotAndTag(carrot, tag);
     }
 
 }
