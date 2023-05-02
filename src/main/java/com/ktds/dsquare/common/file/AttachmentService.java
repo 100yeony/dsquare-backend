@@ -62,6 +62,9 @@ public class AttachmentService {
     }
     @Transactional
     public Attachment saveAttachment(Member member, @NotNull MultipartFile file, Question post) throws RuntimeException {
+        if (ObjectUtils.isEmpty(file))
+            return null;
+
         Attachment savedAttachment = saveAttachment(member, file);
         savedAttachment.linkPost(post);
         return savedAttachment;

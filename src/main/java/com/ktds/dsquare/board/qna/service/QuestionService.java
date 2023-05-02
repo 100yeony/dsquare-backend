@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
@@ -196,8 +195,7 @@ public class QuestionService {
         // 1. Handle changes in existing attachment
         attachmentService.updateAttachment(attachment, question.getAttachment());
         // 2. Handle attachment newly getting in
-        return ObjectUtils.isEmpty(newAttachment)
-                ? null : attachmentService.saveAttachment(question.getWriter(), newAttachment, question);
+        return attachmentService.saveAttachment(question.getWriter(), newAttachment, question);
     }
 
     // 질문글 삭제
