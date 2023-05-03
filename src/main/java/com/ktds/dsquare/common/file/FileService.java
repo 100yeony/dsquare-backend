@@ -24,6 +24,7 @@ public class FileService {
 
     @Transactional
     public FileSavedDto uploadFile(MultipartFile file) throws IOException {
+        // TODO rename uploadFile() to upload()
         log.info("File description | Original filename : {} | Name : {} | Size : {} | Content Type : {}",
                 file.getOriginalFilename(),
                 file.getName(),
@@ -96,6 +97,12 @@ public class FileService {
 
     private void download(String eTag) {
 //        s3Client.get
+    }
+
+    public void delete(String key) {
+        // TODO separate bucket
+        log.info("Trying to delete {}", key);
+//        s3Client.deleteObject(AwsProperties.BUCKET_NAME(), key);
     }
 
 }
