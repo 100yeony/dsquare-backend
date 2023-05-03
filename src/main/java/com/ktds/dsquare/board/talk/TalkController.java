@@ -3,7 +3,7 @@ package com.ktds.dsquare.board.talk;
 import com.ktds.dsquare.board.talk.dto.BriefTalkResponse;
 import com.ktds.dsquare.board.talk.dto.TalkRegisterRequest;
 import com.ktds.dsquare.board.talk.dto.TalkResponse;
-import com.ktds.dsquare.common.annotatin.AuthUser;
+import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.member.Member;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

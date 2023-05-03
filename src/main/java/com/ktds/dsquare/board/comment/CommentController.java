@@ -2,7 +2,7 @@ package com.ktds.dsquare.board.comment;
 
 import com.ktds.dsquare.board.comment.dto.CommentRegisterDto;
 import com.ktds.dsquare.board.comment.dto.NestedCommentRegisterDto;
-import com.ktds.dsquare.common.annotatin.AuthUser;
+import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
