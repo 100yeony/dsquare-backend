@@ -28,6 +28,9 @@ public class Tag {
     private List<QuestionTag> questionTags;
 
     @OneToMany(mappedBy = "tag", orphanRemoval = true)
+    private List<TalkTag> talkTags;
+
+    @OneToMany(mappedBy = "tag", orphanRemoval = true)
     private List<CarrotTag> carrotTags;
 
     public static Tag toEntity(String name) {

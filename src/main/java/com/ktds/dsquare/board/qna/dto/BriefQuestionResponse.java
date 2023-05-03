@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.qna.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.tag.QuestionTag;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
@@ -23,6 +24,7 @@ public class BriefQuestionResponse {
     private CategoryResponse category;
     private String title;
     private String content;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createDate; //정렬 기준
     private Long viewCnt;
     private Long answerCnt;

@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.carrot.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.carrot.Carrot;
 import com.ktds.dsquare.board.tag.CarrotTag;
 import com.ktds.dsquare.member.Member;
@@ -23,7 +24,9 @@ public class CarrotResponse {
     private MemberInfo writerInfo;
     private String title;
     private String content;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime lastUpdateDate;
     private Long viewCnt;
     private Long likeCnt;
