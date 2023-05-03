@@ -20,6 +20,7 @@ public class MemberInfo {
     private String name;
     private String contact;
     private List<String> teamHierarchy;
+    private String profileImage;
 
 
     public static MemberInfo toDto(Member entity) {
@@ -31,6 +32,7 @@ public class MemberInfo {
                 .name(entity.getName())
                 .contact(entity.getContact())
                 .teamHierarchy(entity.getTeam().getTeamHierarchy())
+                .profileImage(entity.getProfileImage())
                 .build();
     }
 
