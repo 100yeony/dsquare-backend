@@ -1,6 +1,7 @@
 package com.ktds.dsquare.common.file.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import lombok.*;
@@ -23,6 +24,7 @@ public class AttachmentDto {
     private String url;
     private String extension;
     private Long size;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createDate;
 
     private BriefMemberInfo owner;

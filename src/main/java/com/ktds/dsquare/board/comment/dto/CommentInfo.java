@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.comment.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.comment.Comment;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ public class CommentInfo {
     private Long commentId;
     private MemberInfo writerInfo;
     private String content;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createDate;
 
     public static CommentInfo toDto(Comment comment) {

@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.talk.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.tag.TalkTag;
 import com.ktds.dsquare.board.talk.Talk;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
@@ -28,6 +29,7 @@ public class TalkResponse {
     @ApiModelProperty(notes="Talk content", example = "소통해요 내용입니다.", required = true)
     private String content;
     @ApiModelProperty(notes="작성일 정보", example = "2023-04-26", required = true)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createDate;
     @ApiModelProperty(notes="Talk view count", example = "31", required = true)
     private Long viewCnt;

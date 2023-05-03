@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.card.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.card.Card;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
@@ -25,7 +26,9 @@ public class CardResponse {
     private String content;
     private Integer teammateCnt;
     private String teammate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime lastUpdateDate;
     private Long viewCnt;
     private Long likeCnt;
