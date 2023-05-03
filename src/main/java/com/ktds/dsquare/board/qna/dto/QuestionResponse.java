@@ -2,10 +2,9 @@ package com.ktds.dsquare.board.qna.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.board.qna.domain.QuestionTag;
+import com.ktds.dsquare.board.tag.QuestionTag;
 import com.ktds.dsquare.common.file.dto.AttachmentDto;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,7 +35,6 @@ public class QuestionResponse {
     private Long likeCnt;
     private Boolean likeYn;
     private Long commentCnt;
-    private List<String> tags;
 
     public static QuestionResponse toDto(Question question, MemberInfo writerInfo,
                                          CategoryResponse category, Long likeCnt, Boolean likeYn, Long commentCnt){
