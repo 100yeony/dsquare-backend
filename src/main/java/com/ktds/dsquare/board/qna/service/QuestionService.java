@@ -1,19 +1,25 @@
-
-
 package com.ktds.dsquare.board.qna.service;
 
+import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
-import com.ktds.dsquare.board.qna.domain.*;
+import com.ktds.dsquare.board.qna.domain.Answer;
+import com.ktds.dsquare.board.qna.domain.Category;
+import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.dto.CategoryResponse;
 import com.ktds.dsquare.board.qna.dto.QuestionRequest;
 import com.ktds.dsquare.board.qna.dto.QuestionResponse;
-import com.ktds.dsquare.board.qna.repository.*;
 import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.common.file.AttachmentService;
 import com.ktds.dsquare.common.file.dto.AttachmentDto;
+import com.ktds.dsquare.board.qna.repository.AnswerRepository;
+import com.ktds.dsquare.board.qna.repository.CategoryRepository;
+import com.ktds.dsquare.board.qna.repository.QuestionRepository;
+import com.ktds.dsquare.board.tag.QuestionTag;
+import com.ktds.dsquare.board.tag.Tag;
+import com.ktds.dsquare.board.tag.TagService;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
@@ -44,13 +50,14 @@ public class QuestionService {
 
     /*** Service ***/
     private final LikeService likeService;
+    private final CommentRepository commentRepository;
     private final CommentService commentService;
     private final AttachmentService attachmentService;
+    private final TagService tagService;
 
     //create - 질문글 작성
     @Transactional
     public void createQuestion(QuestionRequest dto, MultipartFile attachment, Member writer) throws RuntimeException {
-//        Member writer = memberRepository.findById(dto.getWriterId()).orElseThrow(() -> new EntityNotFoundException("Writer does not exist"));
         Category category = categoryRepository.findById(dto.getCid()).orElseThrow(() -> new EntityNotFoundException("Category does not exist"));
         Question question = Question.toEntity(dto, writer, category);
 
@@ -58,7 +65,7 @@ public class QuestionService {
         question.registerAttachment(savedAttachment);
 
         questionRepository.save(question);
-        insertNewTags(dto.getTags(), question);
+        tagService.insertNewTags(dto.getTags(), question);
     }
     private Attachment saveAttachment(Member user, MultipartFile attachment, Question question) throws RuntimeException {
         return attachmentService.saveAttachment(user, attachment, question);
@@ -71,7 +78,7 @@ public class QuestionService {
      * 2. category없이 제목+내용 or 작성자로 검색하는 경우 -> cid X
      * 3. 둘 다 검색하는 경우 -> cid, key, value
      * */
-    public List<BriefQuestionResponse> getQuestions(Boolean workYn, Integer cid, String key, String value){
+    public List<BriefQuestionResponse> getQuestions(Boolean workYn, Member user, Integer cid, String key, String value){
         //deleteYn = false인 것만 조회
         Specification<Question> filter = Specification.where(QuestionSpecification.equalNotDeleted(false));
         //업무 구분
@@ -121,24 +128,25 @@ public class QuestionService {
 
         //BriefQuestionResponse 객체로 만들어줌
         for(Question q: questionList){
-            CategoryResponse categoryRes = CategoryResponse.toDto(q.getCategory());
-            List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(q, false);
-            boolean managerAnswerYn = false;
-            for (Answer A : answers) {
-                if (q.getCategory().getManagerId()==A.getWriter().getId()) {
-                    managerAnswerYn = true;
-                    break;
-                }
-            }
-
-            Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, q.getQid());
-            Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, q.getQid(), q.getWriter());
-            Long commentCnt = (long) commentService.getAllComments("question", q.getQid()).size();
-
-            searchResults.add(BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, likeCnt, likeYn, commentCnt));
+            searchResults.add(makeBriefQuestionRes(q, user));
         }
-
         return searchResults;
+    }
+
+    public BriefQuestionResponse makeBriefQuestionRes(Question q, Member user){
+        CategoryResponse categoryRes = CategoryResponse.toDto(q.getCategory());
+        List<Answer> answers = answerRepository.findByQuestionAndDeleteYn(q, false);
+        boolean managerAnswerYn = false;
+        for (Answer A : answers) {
+            if (q.getCategory().getManagerId()==A.getWriter().getId()) {
+                managerAnswerYn = true;
+                break;
+            }
+        }
+        Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, q.getQid());
+        Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, q.getQid(), user);
+        Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, q.getQid());
+        return BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, likeCnt, likeYn, commentCnt);
     }
 
 
@@ -154,7 +162,7 @@ public class QuestionService {
 
         Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, qid);
         Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, qid, user);
-        Long commentCnt = (long) commentService.getAllComments("question", qid).size();
+        Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, qid);
         return QuestionResponse.toDto(question, writer, categoryRes, likeCnt, likeYn, commentCnt);
     }
 
@@ -183,9 +191,9 @@ public class QuestionService {
             if(newTags.contains(oldTagName))
                 newTags.remove(oldTagName);
             else
-                deleteQuestionTagRelation(question, oldTag);
+                tagService.deleteTagRelation(question, oldTag);
         }
-        insertNewTags(newTags, question);
+        tagService.insertNewTags(newTags, question);
     }
     private Attachment updateQuestionAttachment(
             AttachmentDto attachment,
@@ -209,6 +217,7 @@ public class QuestionService {
         if(!answerList.isEmpty()) throw new EntityNotFoundException("Delete Question Fail - Reply exists");
         deleteAttachment(question.getAttachment());
         question.deleteQuestion();
+        commentService.deleteCommentCascade(BoardType.QUESTION, qid);
     }
     private void deleteAttachment(Attachment attachment) {
         deleteAttachment(List.of(attachment));

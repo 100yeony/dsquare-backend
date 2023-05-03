@@ -22,8 +22,8 @@ public class AnswerController {
 
     //create - 답변글 작성
     @PostMapping("/board/questions/{qid}/answers")
-    public ResponseEntity<Void> createAnswer(@PathVariable("qid") Long qid, @RequestBody AnswerRequest request){
-        answerService.createAnswer(qid, request);
+    public ResponseEntity<Void> createAnswer(@PathVariable("qid") Long qid, @RequestBody AnswerRequest request, @AuthUser Member user){
+        answerService.createAnswer(qid, request, user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -31,6 +31,12 @@ public class AnswerController {
     @GetMapping("/board/questions/{qid}/answers")
     public List<AnswerResponse> getAnswersByQid(@PathVariable Question qid, @AuthUser Member user) {
         return answerService.getAnswersByQuestion(qid, user);
+    }
+
+    //답변 상세 조회
+    @GetMapping("/board/answers/{aid}")
+    public AnswerResponse getAnswerDetail(@PathVariable Long aid, @AuthUser Member user){
+        return answerService.getAnswerDetail(aid, user);
     }
 
     // 답변글 수정

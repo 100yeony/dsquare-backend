@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.card;
 
+import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.team.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -32,5 +33,7 @@ public interface CardRepository extends JpaRepository<Card,Long>, JpaSpecificati
             "ORDER BY extract(month from c.selected_date), like_cnt DESC", nativeQuery = true)
     List<Card> findSelectedCard();
 
+    //마이페이지 관련
+    List<Card> findByDeleteYnAndWriter(Boolean deleteYn, Member writer);
 
 }

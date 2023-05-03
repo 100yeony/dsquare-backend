@@ -1,8 +1,9 @@
 package com.ktds.dsquare.board.qna.service;
 
+import com.ktds.dsquare.board.comment.CommentRepository;
+import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeService;
-import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.AnswerRequest;
@@ -10,7 +11,6 @@ import com.ktds.dsquare.board.qna.dto.AnswerResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.member.Member;
-import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,31 +26,41 @@ public class AnswerService {
 
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
-    private final MemberRepository memberRepository;
     private final LikeService likeService;
+    private final CommentRepository commentRepository;
     private final CommentService commentService;
 
     // 답변글 작성
     @Transactional
-    public void createAnswer(Long qid, AnswerRequest dto) {
+    public void createAnswer(Long qid, AnswerRequest dto, Member user) {
         Question question = questionRepository.findById(qid).orElseThrow(() -> new EntityNotFoundException("Question not found"));
-        Member writer = memberRepository.findById(dto.getWriterId()).orElseThrow(() -> new EntityNotFoundException("Question not found"));
-        Answer answer = Answer.toEntity(dto, writer, question);
+        Answer answer = Answer.toEntity(dto, user, question);
         answerRepository.save(answer);
     }
 
-    // 답변글 조회
+    // 답변글 전체 조회(질문 번호로 조회)
     public List<AnswerResponse> getAnswersByQuestion(Question qid, Member user) {
         List<AnswerResponse> answerResponses = new ArrayList<>();
         List<Answer> answers = answerRepository.findByQuestionAndDeleteYnOrderByCreateDateAsc(qid, false);
         for(Answer answer:answers){
             Long likeCnt = likeService.findLikeCnt(BoardType.ANSWER, answer.getId());
             Boolean likeYn = likeService.findLikeYn(BoardType.ANSWER, answer.getId(), user);
-            Long commentCnt = (long) commentService.getAllComments("answer", qid.getQid()).size();
+            Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.ANSWER, answer.getId());
             answerResponses.add(AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), likeCnt, likeYn, commentCnt));
         }
         return answerResponses;
     }
+
+    //답변글 상세 조회
+    public AnswerResponse getAnswerDetail(Long aid, Member user){
+        Answer answer = answerRepository.findByDeleteYnAndId(false, aid);
+        Long likeCnt = likeService.findLikeCnt(BoardType.ANSWER, answer.getId());
+        Boolean likeYn = likeService.findLikeYn(BoardType.ANSWER, answer.getId(), user);
+        Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.ANSWER, answer.getId());
+        AnswerResponse answerResponse = AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), likeCnt, likeYn, commentCnt);
+        return answerResponse;
+    }
+
 
     // 답변글 수정
     @Transactional
@@ -67,6 +77,7 @@ public class AnswerService {
     public void deleteAnswer(Long aid) {
         Answer answer = answerRepository.findById(aid).orElseThrow(() -> new EntityNotFoundException("Answer does not exist"));
         answer.deleteAnswer();
+        commentService.deleteCommentCascade(BoardType.ANSWER, aid);
     }
 
 }

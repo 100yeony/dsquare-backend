@@ -4,6 +4,7 @@ import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.domain.QuestionTag;
 import com.ktds.dsquare.common.file.dto.AttachmentDto;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,11 +28,12 @@ public class QuestionResponse {
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
     private Long viewCnt;
-    private Long commentCnt;
     private AttachmentDto attachment;
     private List<String> tags;
     private Long likeCnt;
     private Boolean likeYn;
+    private Long commentCnt;
+    private List<String> tags;
 
     public static QuestionResponse toDto(Question question, MemberInfo writerInfo,
                                          CategoryResponse category, Long likeCnt, Boolean likeYn, Long commentCnt){
@@ -46,14 +48,14 @@ public class QuestionResponse {
                 .category(category)
                 .title(question.getTitle())
                 .content(question.getContent())
-                .createDate(LocalDateTime.now())
-                .lastUpdateDate(LocalDateTime.now())
+                .createDate(question.getCreateDate())
+                .lastUpdateDate(question.getLastUpdateDate())
                 .viewCnt(question.getViewCnt())
-                .tags(tags)
+                .attachment(AttachmentDto.toDto(question.getAttachment()))
                 .likeCnt(likeCnt)
                 .likeYn(likeYn)
                 .commentCnt(commentCnt)
-                .attachment(AttachmentDto.toDto(question.getAttachment()))
+                .tags(tags)
                 .build();
     }
 

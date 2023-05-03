@@ -12,7 +12,6 @@ import java.util.List;
 public class QuestionRequest {
 
     private Long qid;
-    private Long writerId;
     private Integer cid;
     private String title;
     private String content;

@@ -15,6 +15,7 @@ public class MemberInfo {
 
     private Long id;
     private String email;
+    private String ktMail;
     private String nickname;
     private String name;
     private String contact;
@@ -25,6 +26,7 @@ public class MemberInfo {
         return MemberInfo.builder()
                 .id(entity.getId())
                 .email(entity.getEmail())
+                .ktMail(entity.getKtMail())
                 .nickname(entity.getNickname())
                 .name(entity.getName())
                 .contact(entity.getContact())

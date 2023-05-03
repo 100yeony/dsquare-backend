@@ -3,7 +3,9 @@ package com.ktds.dsquare.board.qna.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ktds.dsquare.board.qna.dto.QuestionRequest;
 import com.ktds.dsquare.common.file.Attachment;
+import com.ktds.dsquare.board.tag.QuestionTag;
 import com.ktds.dsquare.member.Member;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +13,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -50,7 +51,7 @@ public class Question {
     private Member writer;
 
     @OneToMany(mappedBy = "question")
-    private List<QuestionTag> questionTags = new ArrayList<>();
+    private List<QuestionTag> questionTags;
 
     public static Question toEntity(QuestionRequest dto, Member writer, Category category){
         LocalDateTime now = LocalDateTime.now();

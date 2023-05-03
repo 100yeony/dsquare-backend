@@ -1,7 +1,7 @@
 package com.ktds.dsquare.board.like;
 
 import com.ktds.dsquare.board.enums.BoardType;
-import com.ktds.dsquare.board.like.dto.LikeRequest;
+import com.ktds.dsquare.board.like.dto.LikeRegisterRequest;
 import com.ktds.dsquare.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,7 +36,7 @@ public class Like {
     @Column(nullable = false)
     private LocalDateTime createDate;
 
-    public static Like toEntity(LikeRequest dto, BoardType boardType, Member user){
+    public static Like toEntity(LikeRegisterRequest dto, BoardType boardType, Member user){
         LocalDateTime now = LocalDateTime.now();
         return Like.builder()
                 .boardType(boardType)

@@ -1,5 +1,7 @@
-package com.ktds.dsquare.board.qna.domain;
+package com.ktds.dsquare.board.tag;
 
+import com.ktds.dsquare.board.carrot.Carrot;
+import com.ktds.dsquare.board.qna.domain.Question;
 import lombok.*;
 
 import javax.persistence.*;
@@ -23,7 +25,10 @@ public class Tag {
 //    private Long cnt;
 
     @OneToMany(mappedBy = "tag", orphanRemoval = true)
-    private List<QuestionTag> questionTags = new ArrayList<>();
+    private List<QuestionTag> questionTags;
+
+    @OneToMany(mappedBy = "tag", orphanRemoval = true)
+    private List<CarrotTag> carrotTags;
 
     public static Tag toEntity(String name) {
         return Tag.builder()
@@ -31,6 +36,7 @@ public class Tag {
                 .build();
     }
 
+    //궁금해요
     public List<Question> getQuestions() {
         List<Question> questions = new ArrayList<>();
         for (QuestionTag questionTag : this.questionTags) {
@@ -41,6 +47,20 @@ public class Tag {
 
     public void removeQuestion(Question question) {
         this.questionTags.remove(question);
+    }
+
+
+    //당근해요
+    public List<Carrot> getCarrots() {
+        List<Carrot> carrots = new ArrayList<>();
+        for (CarrotTag carrotTag : this.carrotTags) {
+            carrots.add(carrotTag.getCarrot());
+        }
+        return carrots;
+    }
+
+    public void removeCarrot(Carrot carrot) {
+        this.carrotTags.remove(carrot);
     }
 
 }

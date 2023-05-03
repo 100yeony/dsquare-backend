@@ -1,7 +1,7 @@
 package com.ktds.dsquare.board.card;
 
 import com.ktds.dsquare.board.card.dto.BriefCardResponse;
-import com.ktds.dsquare.board.card.dto.CardRequest;
+import com.ktds.dsquare.board.card.dto.CardRegisterRequest;
 import com.ktds.dsquare.board.card.dto.CardResponse;
 import com.ktds.dsquare.common.annotatin.AuthUser;
 import com.ktds.dsquare.member.Member;
@@ -20,8 +20,8 @@ public class CardController {
 
     //create - 카드주세요 글 작성
     @PostMapping("/board/cards")
-    public ResponseEntity<Void> createCard(@RequestBody CardRequest request){
-        cardService.createCard(request);
+    public ResponseEntity<Void> createCard(@RequestBody CardRegisterRequest request, @AuthUser Member user){
+        cardService.createCard(request, user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -46,7 +46,7 @@ public class CardController {
 
     //update - 카드주세요 글 수정
     @PostMapping("board/cards/{cardId}")
-    public ResponseEntity<CardResponse> updateCard(@PathVariable("cardId") Long cardId, @RequestBody CardRequest request){
+    public ResponseEntity<CardResponse> updateCard(@PathVariable("cardId") Long cardId, @RequestBody CardRegisterRequest request){
         cardService.updateCard(cardId, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -60,7 +60,7 @@ public class CardController {
 
     //read - 이달의 카드 조회
     @GetMapping("board/cards/card-of-the-month")
-    public ResponseEntity<List<BriefCardResponse>> selectedCardList(){
-        return new ResponseEntity<>(cardService.selectedCardList(), HttpStatus.OK);
+    public ResponseEntity<List<BriefCardResponse>> selectedCardList(@AuthUser Member user){
+        return new ResponseEntity<>(cardService.selectedCardList(user), HttpStatus.OK);
     }
 }
