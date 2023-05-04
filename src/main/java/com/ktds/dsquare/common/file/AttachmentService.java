@@ -127,6 +127,9 @@ public class AttachmentService {
         deleteAttachment(deleted);
     }
     private void deleteAttachment(List<Attachment> deleted) {
+        if (ObjectUtils.isEmpty(deleted))
+            return;
+
         deleted.parallelStream()
                 .forEach(attachment -> {
                     fileService.delete(attachment.getPath());
