@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -28,10 +29,13 @@ public class CarrotTag {
     @JoinColumn(name = "tag_id")
     private Tag tag;
 
+    private LocalDateTime createDate;
+
     public static CarrotTag toEntity(Carrot carrot, Tag tag) {
         return CarrotTag.builder()
                 .carrot(carrot)
                 .tag(tag)
+                .createDate(LocalDateTime.now())
                 .build();
     }
 

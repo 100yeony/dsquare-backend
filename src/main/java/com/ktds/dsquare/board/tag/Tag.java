@@ -21,9 +21,6 @@ public class Tag {
     @Column(unique = true, nullable = false, length = 15)
     private String name;
 
-//    위클리 핫토픽의 기준으로 사용할 필드
-//    private Long cnt;
-
     @OneToMany(mappedBy = "tag", orphanRemoval = true)
     private List<QuestionTag> questionTags;
 
