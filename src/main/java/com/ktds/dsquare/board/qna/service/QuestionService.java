@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
@@ -222,6 +223,9 @@ public class QuestionService {
         commentService.deleteCommentCascade(BoardType.QUESTION, qid);
     }
     private void deleteAttachment(Attachment attachment) {
+        if (ObjectUtils.isEmpty(attachment))
+            return;
+
         deleteAttachment(List.of(attachment));
     }
     private void deleteAttachment(List<Attachment> attachment) {
