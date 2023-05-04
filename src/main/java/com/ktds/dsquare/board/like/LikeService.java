@@ -38,7 +38,6 @@ public class LikeService {
     private final CardService cardService;
     private final TalkService talkService;
     private final CarrotService carrotService;
-//    private final BoardType boardType;
 
     //create - 좋아요 등록
     public void like(LikeRegisterRequest dto, Member user) {
