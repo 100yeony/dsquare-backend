@@ -50,6 +50,8 @@ public class Question {
     @OneToMany(mappedBy = "question")
     private List<QuestionTag> questionTags;
 
+    private Long likeCnt;
+
     public static Question toEntity(QuestionRequest dto, Member writer, Category category){
         LocalDateTime now = LocalDateTime.now();
         return Question.builder()
@@ -61,6 +63,7 @@ public class Question {
                 .atcId(dto.getAtcId())
                 .deleteYn(false)
                 .category(category)
+                .likeCnt(0L)
                 .build();
     }
 
@@ -77,8 +80,10 @@ public class Question {
         this.deleteYn = true;
     }
 
-    public void increaseViewCnt() {
-        this.viewCnt += 1;
-    }
+    public void increaseViewCnt() { this.viewCnt += 1; }
+
+    public void like() { this.likeCnt += 1; }
+
+    public void cancleLike(){ this.likeCnt -= 1; }
 
 }

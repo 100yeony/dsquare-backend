@@ -38,6 +38,8 @@ public class Answer {
     @JoinColumn(name = "question")
     private Question question;
 
+    private Long likeCnt;
+
     public static Answer toEntity(AnswerRequest dto, Member writer, Question question){
         LocalDateTime now = LocalDateTime.now();
         return Answer.builder()
@@ -47,6 +49,7 @@ public class Answer {
                 .atcId(dto.getAtcId())
                 .deleteYn(false)
                 .question(question)
+                .likeCnt(0L)
                 .build();
     }
 
@@ -60,6 +63,12 @@ public class Answer {
     public void deleteAnswer(){
         this.deleteYn = true;
     }
+
+    public void like() {
+        this.likeCnt += 1;
+    }
+
+    public void cancleLike(){ this.likeCnt -= 1; }
 
 }
 

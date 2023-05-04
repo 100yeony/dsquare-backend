@@ -3,7 +3,7 @@ package com.ktds.dsquare.board.qna.service;
 import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
-import com.ktds.dsquare.board.like.LikeService;
+import com.ktds.dsquare.board.like.LikeRepository;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
@@ -40,10 +40,11 @@ public class QuestionService {
     private final AnswerRepository answerRepository;
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
-    private final LikeService likeService;
+//    private final LikeService likeService;
     private final CommentRepository commentRepository;
     private final CommentService commentService;
     private final TagService tagService;
+    private final LikeRepository likeRepository;
 
     //create - 질문글 작성
     @Transactional
@@ -127,10 +128,9 @@ public class QuestionService {
                 break;
             }
         }
-        Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, q.getQid());
-        Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, q.getQid(), user);
+        Boolean likeYn = findLikeYn(BoardType.QUESTION, q.getQid(), user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, q.getQid());
-        return BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, likeCnt, likeYn, commentCnt);
+        return BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, q.getLikeCnt(), likeYn, commentCnt);
     }
 
 
@@ -144,10 +144,9 @@ public class QuestionService {
         MemberInfo writer = MemberInfo.toDto(member);
         CategoryResponse categoryRes = CategoryResponse.toDto(question.getCategory());
 
-        Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, qid);
-        Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, qid, user);
+        Boolean likeYn = findLikeYn(BoardType.QUESTION, qid, user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, qid);
-        return QuestionResponse.toDto(question, writer, categoryRes, likeCnt, likeYn, commentCnt);
+        return QuestionResponse.toDto(question, writer, categoryRes, question.getLikeCnt(), likeYn, commentCnt);
     }
 
     // 질문글 수정
@@ -190,6 +189,20 @@ public class QuestionService {
         if(!answerList.isEmpty()) throw new EntityNotFoundException("Delete Question Fail - Reply exists");
         question.deleteQuestion();
         commentService.deleteCommentCascade(BoardType.QUESTION, qid);
+    }
+
+    public void like(Question question) {
+        question.like();
+        questionRepository.save(question);
+    }
+
+    public void cancleLike(Question question){
+        question.cancleLike();
+        questionRepository.save(question);
+    }
+
+    public Boolean findLikeYn(BoardType boardType, Long postId, Member user){
+        return likeRepository.existsByBoardTypeAndPostIdAndMember(boardType, postId, user);
     }
 
 }
