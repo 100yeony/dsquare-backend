@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -64,30 +64,28 @@ public class TagService {
     public List<String> selectTop7Tags() {
         LocalDateTime weekAgo = LocalDateTime.now().minusDays(7);
 
-        List<Object[]> weeklyTags = new ArrayList<>();
+        List<WeeklyTagDTO> weeklyTags = new ArrayList<>();
         weeklyTags.addAll(carrotTagRepository.findTagsWithinLastWeek(weekAgo));
         weeklyTags.addAll(questionTagRepository.findTagsWithinLastWeek(weekAgo));
         weeklyTags.addAll(talkTagRepository.findTagsWithinLastWeek(weekAgo));
 
         // 최신순으로 먼저 정렬
-        List<Object[]> sortedTags = weeklyTags.stream()
-                .sorted(Comparator.comparingLong(o -> -((Timestamp) o[2]).getTime()))
-                .collect(Collectors.toList());
+        Collections.sort(weeklyTags, Comparator.comparing(o -> -((o.getCreateDate().toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli()))));
 
         // 태그별 사용횟수 카운트
-        Map<Integer, Integer> tagCounts = new LinkedHashMap<>();
-        for (Object[] tag : sortedTags) {
-            Integer k = Integer.parseInt(String.valueOf(tag[0]));
-            Integer v = Integer.parseInt(String.valueOf(tag[1]));
-            tagCounts.put(k, tagCounts.getOrDefault(k, 0) + v);
+        Map<Long, Long> tagCounts = new LinkedHashMap<>();
+        for (WeeklyTagDTO tag : weeklyTags) {
+            Long k = tag.getTagId();
+            Long v = tag.getTagCount();
+            tagCounts.put(k, tagCounts.getOrDefault(k, 0L) + v);
         }
 
         // 카운트 많은 순으로 정렬
-        List<Map.Entry<Integer, Integer>> sortedTagCounts = new ArrayList<>(tagCounts.entrySet());
-        sortedTagCounts.sort(Map.Entry.<Integer, Integer>comparingByValue().reversed());
+        List<Map.Entry<Long, Long>> sortedTagCounts = new ArrayList<>(tagCounts.entrySet());
+        sortedTagCounts.sort(Map.Entry.<Long, Long>comparingByValue().reversed());
 
         // 카운트가 최소 3번 이상인 태그 중 최대 7개만 가져오기
-        List<Integer> top7TagsId = sortedTagCounts.stream()
+        List<Long> top7TagsId = sortedTagCounts.stream()
                 .filter(entry -> entry.getValue() >= 3)
                 .limit(7)
                 .map(Map.Entry::getKey)
@@ -95,9 +93,9 @@ public class TagService {
 
         // 태그 id를 이용해서 태그 이름 가져오기
         List<String> top7Tags = new ArrayList<>();
-        for (Integer tagId : top7TagsId) {
-            String newTagName = tagRepository.findTagById(tagId.longValue()).getName();
-            top7Tags.add(newTagName);
+        for (Long tagId : top7TagsId) {
+            Tag tag = tagRepository.findById(tagId).orElseThrow(() -> new RuntimeException("Tag Not Found"));
+            top7Tags.add(tag.getName());
         }
 
         return top7Tags;

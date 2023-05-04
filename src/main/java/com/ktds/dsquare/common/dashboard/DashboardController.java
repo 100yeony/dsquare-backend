@@ -24,7 +24,7 @@ public class DashboardController {
     }
 
     // 핫토픽 키워드
-    @GetMapping("/board/dashboard/top7Tags")
+    @GetMapping("/board/dashboard/top7-tags")
     public ResponseEntity<List<String>> selectTop7Tags() {
         return ResponseEntity.ok(tagService.selectTop7Tags());
     }
