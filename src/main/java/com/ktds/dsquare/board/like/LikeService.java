@@ -38,6 +38,7 @@ public class LikeService {
     private final CardService cardService;
     private final TalkService talkService;
     private final CarrotService carrotService;
+//    private final BoardType boardType;
 
     //create - 좋아요 등록
     public void like(LikeRegisterRequest dto, Member user) {
@@ -48,27 +49,27 @@ public class LikeService {
         } else {
             Like like = Like.toEntity(dto, boardType, user);
             likeRepository.save(like);
-            switch (dto.getBoardType()) {
-                case "question":
+            switch (boardType) {
+                case QUESTION:
                     Question question = questionRepository.findById(dto.getPostId())
                             .orElseThrow(() -> new EntityNotFoundException("question not found"));
                     questionService.like(question);
                     break;
-                case "answer":
+                case ANSWER:
                     Answer answer = answerRepository.findById(dto.getPostId())
                             .orElseThrow(() -> new EntityNotFoundException("answer not found"));
                     answerService.like(answer);
-                case "card":
+                case CARD:
                     Card card = cardRepository.findById(dto.getPostId())
                             .orElseThrow(() -> new EntityNotFoundException("card not found"));
                     cardService.like(card);
                     break;
-                case "talk":
+                case TALK:
                     Talk talk = talkRepository.findById(dto.getPostId())
                             .orElseThrow(() -> new EntityNotFoundException("talk not found"));
                     talkService.like(talk);
                     break;
-                case "carrot":
+                case CARROT:
                     Carrot carrot = carrotRepository.findById(dto.getPostId())
                             .orElseThrow(() -> new EntityNotFoundException("carrot not found"));
                     carrotService.like(carrot);
@@ -84,27 +85,27 @@ public class LikeService {
         BoardType boardType = BoardType.findBoardType(dto.getBoardType());
         Like like = likeRepository.findByBoardTypeAndPostIdAndMember(boardType, dto.getPostId(), user);
         likeRepository.delete(like);
-        switch (dto.getBoardType()) {
-            case "question":
+        switch (boardType) {
+            case QUESTION:
                 Question question = questionRepository.findById(dto.getPostId())
                         .orElseThrow(() -> new EntityNotFoundException("question not found"));
                 questionService.cancleLike(question);
                 break;
-            case "answer":
+            case ANSWER:
                 Answer answer = answerRepository.findById(dto.getPostId())
                         .orElseThrow(() -> new EntityNotFoundException("answer not found"));
                 answerService.cancleLike(answer);
-            case "card":
+            case CARD:
                 Card card = cardRepository.findById(dto.getPostId())
                         .orElseThrow(() -> new EntityNotFoundException("card not found"));
                 cardService.cancleLike(card);
                 break;
-            case "talk":
+            case TALK:
                 Talk talk = talkRepository.findById(dto.getPostId())
                         .orElseThrow(() -> new EntityNotFoundException("talk not found"));
                 talkService.cancleLike(talk);
                 break;
-            case "carrot":
+            case CARROT:
                 Carrot carrot = carrotRepository.findById(dto.getPostId())
                         .orElseThrow(() -> new EntityNotFoundException("carrot not found"));
                 carrotService.cancleLike(carrot);
