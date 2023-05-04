@@ -2,8 +2,10 @@ package com.ktds.dsquare.board.qna.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ktds.dsquare.board.qna.dto.QuestionRequest;
+import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.board.tag.QuestionTag;
 import com.ktds.dsquare.member.Member;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,7 +40,8 @@ public class Question {
     @Column(nullable = false)
     private Long viewCnt;       // 기본값 0
 
-    private Long atcId;
+    @OneToOne(mappedBy = "post", fetch = FetchType.LAZY)
+    private Attachment attachment;
     @Column(nullable = false)
     private Boolean deleteYn;       // 기본값 false
 
@@ -60,20 +63,22 @@ public class Question {
                 .content(dto.getContent())
                 .createDate(now)
                 .viewCnt(0L)
-                .atcId(dto.getAtcId())
                 .deleteYn(false)
                 .category(category)
                 .likeCnt(0L)
                 .build();
     }
 
-    public void updateQuestion(String title, String content, Category category, Long atcId){
+    public void registerAttachment(Attachment attachment) {
+        this.attachment = attachment;
+    }
+
+    public void updateQuestion(String title, String content, Category category){
         LocalDateTime now = LocalDateTime.now();
         this.title = title;
         this.content = content;
         this.lastUpdateDate = now;
         this.category = category;
-        this.atcId = atcId;
     }
 
     public void deleteQuestion(){

@@ -17,6 +17,11 @@ import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.board.tag.QuestionTag;
 import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.board.tag.TagService;
+import com.ktds.dsquare.board.tag.repository.QuestionTagRepository;
+import com.ktds.dsquare.board.tag.repository.TagRepository;
+import com.ktds.dsquare.common.file.Attachment;
+import com.ktds.dsquare.common.file.AttachmentService;
+import com.ktds.dsquare.common.file.dto.AttachmentDto;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
@@ -24,6 +29,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
@@ -36,24 +43,35 @@ import java.util.List;
 @RequiredArgsConstructor
 public class QuestionService {
 
+    /*** Repository ***/
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
-//    private final LikeService likeService;
+    private final TagRepository tagRepository;
+    private final QuestionTagRepository questionTagRepository;
+    private final LikeRepository likeRepository;
+
+    /*** Service ***/
     private final CommentRepository commentRepository;
     private final CommentService commentService;
+    private final AttachmentService attachmentService;
     private final TagService tagService;
-    private final LikeRepository likeRepository;
 
     //create - 질문글 작성
     @Transactional
-    public void createQuestion(QuestionRequest dto, Member user) {
+    public void createQuestion(QuestionRequest dto, MultipartFile attachment, Member writer) throws RuntimeException {
         Category category = categoryRepository.findById(dto.getCid()).orElseThrow(() -> new EntityNotFoundException("Category does not exist"));
-        Question question = Question.toEntity(dto, user, category);
+        Question question = Question.toEntity(dto, writer, category);
+
+        Attachment savedAttachment = saveAttachment(writer, attachment, question);
+        question.registerAttachment(savedAttachment);
 
         questionRepository.save(question);
         tagService.insertNewTags(dto.getTags(), question);
+    }
+    private Attachment saveAttachment(Member user, MultipartFile attachment, Question question) throws RuntimeException {
+        return attachmentService.saveAttachment(user, attachment, question);
     }
 
     //read - 질문글 전체 조회 & 검색
@@ -151,14 +169,15 @@ public class QuestionService {
 
     // 질문글 수정
     @Transactional
-    public void updateQuestion(Long qid, QuestionRequest request) {
+    public void updateQuestion(Long qid, QuestionRequest request, MultipartFile newAttachment) {
         Question question = questionRepository.findByDeleteYnAndQid(false, qid);
         if(question==null){
             throw new EntityNotFoundException("Question not found. qid is " + qid);
         }
         Category category = categoryRepository.findById(request.getCid())
                 .orElseThrow(()-> new EntityNotFoundException("category not found. category is " + request.getCid()));
-        question.updateQuestion(request.getTitle(), request.getContent(), category, request.getAtcId());
+        Attachment savedAttachment = updateQuestionAttachment(request.getAttachment(), newAttachment, question);
+        question.updateQuestion(request.getTitle(), request.getContent(), category);
 
         // 태그 수정
         List<QuestionTag> oldQTs = question.getQuestionTags();
@@ -177,6 +196,16 @@ public class QuestionService {
         }
         tagService.insertNewTags(newTags, question);
     }
+    private Attachment updateQuestionAttachment(
+            AttachmentDto attachment,
+            MultipartFile newAttachment,
+            Question question
+    ) {
+        // 1. Handle changes in existing attachment
+        attachmentService.updateAttachment(attachment, question.getAttachment());
+        // 2. Handle attachment newly getting in
+        return attachmentService.saveAttachment(question.getWriter(), newAttachment, question);
+    }
 
     // 질문글 삭제
     @Transactional
@@ -187,8 +216,38 @@ public class QuestionService {
 
         // 답변글이 이미 존재할 때 => HTTP Status로 처리해줘야 함(추후 수정 필요)
         if(!answerList.isEmpty()) throw new EntityNotFoundException("Delete Question Fail - Reply exists");
+        deleteAttachment(question.getAttachment());
         question.deleteQuestion();
         commentService.deleteCommentCascade(BoardType.QUESTION, qid);
+    }
+    private void deleteAttachment(Attachment attachment) {
+        if (ObjectUtils.isEmpty(attachment))
+            return;
+
+        deleteAttachment(List.of(attachment));
+    }
+    private void deleteAttachment(List<Attachment> attachment) {
+        attachmentService.deleteAttachmentByPostDeletion(attachment);
+    }
+
+    // 새 태그(키워드) 등록
+    @Transactional
+    public void insertNewTags(List<String> newTags, Question question) {
+        for (String name : newTags) {
+            Tag tag = tagRepository.findByName(name);
+            if(tag == null) {
+                tag = Tag.toEntity(name);
+                tagRepository.save(tag);
+            }
+            QuestionTag qt = QuestionTag.toEntity(question, tag);
+            questionTagRepository.save(qt);
+        }
+    }
+
+    // 태그-질문 간 연관관계 삭제
+    @Transactional
+    public void deleteQuestionTagRelation(Question question, Tag tag) {
+        questionTagRepository.deleteByQuestionAndTag(question, tag);
     }
 
     public void like(Question question) {

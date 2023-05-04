@@ -3,6 +3,7 @@ package com.ktds.dsquare.board.qna.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.tag.QuestionTag;
+import com.ktds.dsquare.common.file.dto.AttachmentDto;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,11 +30,11 @@ public class QuestionResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime lastUpdateDate;
     private Long viewCnt;
-    private Long atcId;
+    private AttachmentDto attachment;
+    private List<String> tags;
     private Long likeCnt;
     private Boolean likeYn;
     private Long commentCnt;
-    private List<String> tags;
 
     public static QuestionResponse toDto(Question question, MemberInfo writerInfo,
                                          CategoryResponse category, Long likeCnt, Boolean likeYn, Long commentCnt){
@@ -51,7 +52,7 @@ public class QuestionResponse {
                 .createDate(question.getCreateDate())
                 .lastUpdateDate(question.getLastUpdateDate())
                 .viewCnt(question.getViewCnt())
-                .atcId(question.getAtcId())
+                .attachment(AttachmentDto.toDto(question.getAttachment()))
                 .likeCnt(likeCnt)
                 .likeYn(likeYn)
                 .commentCnt(commentCnt)

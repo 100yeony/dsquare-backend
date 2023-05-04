@@ -1,5 +1,6 @@
 package com.ktds.dsquare.common.file;
 
+import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.common.file.dto.FileSavedDto;
 import com.ktds.dsquare.member.Member;
 import lombok.*;
@@ -18,14 +19,14 @@ public class Attachment {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "store_file_name", unique = true, length = 50)
+    @Column(name = "store_file_name", unique = true)
     private String filename;
-    @Column(name = "origin_file_name", nullable = false, length = 50)
+    @Column(name = "origin_file_name", nullable = false)
     private String originalFilename;
 
-    @Column(name = "store_path", nullable = false, length = 100)
+    @Column(name = "store_path", nullable = false)
     private String path;
-    @Column(name = "file_url", nullable = false, length = 100)
+    @Column(name = "file_url", nullable = false)
     private String url;
 
     @Column(nullable = false, length = 5)
@@ -40,6 +41,18 @@ public class Attachment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Member writer;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Question post; // TODO Grand-refactoring
+
+
+    public void linkPost(Question post) {
+        this.post = post;
+    }
+    public void delinkPost() {
+        this.post = null;
+    }
 
 
     public static Attachment toEntity(Member owner, MultipartFile file, FileSavedDto savedInfo) {
