@@ -7,7 +7,7 @@ import com.ktds.dsquare.board.card.dto.CardSelectionInfo;
 import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
-import com.ktds.dsquare.board.like.LikeService;
+import com.ktds.dsquare.board.like.LikeRepository;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import com.ktds.dsquare.member.dto.response.TeamInfo;
@@ -27,9 +27,9 @@ public class CardService {
 
     private final CardRepository cardRepository;
     private final TeamRepository teamRepository;
-    private final LikeService likeService;
     private final CommentRepository commentRepository;
     private final CommentService commentService;
+    private final LikeRepository likeRepository;
 
     //create - 카드주세요 글 작성
     @Transactional
@@ -79,10 +79,9 @@ public class CardService {
         }else{
             selectionInfo = null;
         }
-        Long likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
-        Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), user);
+        Boolean likeYn = findLikeYn(BoardType.CARD, C.getId(), user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARD, C.getId());
-        return BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, likeCnt, likeYn, commentCnt);
+        return BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, C.getLikeCnt(), likeYn, commentCnt);
     }
 
     //read - 카드주세요 글 상세 조회
@@ -91,10 +90,9 @@ public class CardService {
         card.increaseViewCnt();
         cardRepository.save(card);
 
-        Long likeCnt = likeService.findLikeCnt(BoardType.CARD, card.getId());
-        Boolean likeYn = likeService.findLikeYn(BoardType.CARD, card.getId(), user);
+        Boolean likeYn = findLikeYn(BoardType.CARD, card.getId(), user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARD, cardId);
-        return CardResponse.toDto(card, card.getWriter(), card.getProjTeam(), card.getCardOwner(), likeCnt, likeYn, commentCnt);
+        return CardResponse.toDto(card, card.getWriter(), card.getProjTeam(), card.getCardOwner(), card.getLikeCnt(), likeYn, commentCnt);
     }
 
     //update - 카드주세요 선정
@@ -139,11 +137,24 @@ public class CardService {
             }else{
                 selectionInfo = null;
             }
-            Long likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
-            Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), user);
+            Boolean likeYn = findLikeYn(BoardType.CARD, C.getId(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARD, C.getId());
-            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(C.getProjTeam()), selectionInfo, likeCnt, likeYn, commentCnt));
+            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(C.getProjTeam()), selectionInfo, C.getLikeCnt(), likeYn, commentCnt));
         }
         return briefCards;
+    }
+
+    public void like(Card card) {
+        card.like();
+        cardRepository.save(card);
+    }
+
+    public void cancleLike(Card card){
+        card.cancleLike();
+        cardRepository.save(card);
+    }
+
+    public Boolean findLikeYn(BoardType boardType, Long postId, Member user){
+        return likeRepository.existsByBoardTypeAndPostIdAndMember(boardType, postId, user);
     }
 }

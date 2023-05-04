@@ -11,7 +11,7 @@ import com.ktds.dsquare.board.comment.Comment;
 import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.dto.MyCommentInfo;
 import com.ktds.dsquare.board.enums.BoardType;
-import com.ktds.dsquare.board.like.LikeService;
+import com.ktds.dsquare.board.like.LikeRepository;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.AnswerResponse;
@@ -37,12 +37,12 @@ public class MypageService {
     private final QuestionRepository questionRepository;
     private final QuestionService questionService;
     private final AnswerRepository answerRepository;
-    private final LikeService likeService;
     private final CommentRepository commentRepository;
     private final CardRepository cardRepository;
     private final TalkRepository talkRepository;
     private final CarrotRepository carrotRepository;
     private final CardService cardService;
+    private final LikeRepository likeRepository;
 
     //read - 나의 질문글 전체 조회
     public List<BriefQuestionResponse> getAllMyQuestions(Member user){
@@ -72,10 +72,9 @@ public class MypageService {
         List<BriefTalkResponse> searchResults = new ArrayList<>();
 
         for(Talk T: talkList){
-            Long likeCnt = likeService.findLikeCnt(BoardType.TALK, T.getId());
-            Boolean likeYn = likeService.findLikeYn(BoardType.TALK, T.getId(), user);
+            Boolean likeYn = findLikeYn(BoardType.TALK, T.getId(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.TALK, T.getId());
-            searchResults.add(BriefTalkResponse.toDto(T, commentCnt, likeCnt, likeYn));
+            searchResults.add(BriefTalkResponse.toDto(T, commentCnt, T.getLikeCnt(), likeYn));
         }
         return searchResults;
     }
@@ -87,10 +86,9 @@ public class MypageService {
 
         for(Carrot C: carrotList){
             Member member = C.getWriter();
-            Long likeCnt = likeService.findLikeCnt(BoardType.CARROT, C.getId());
-            Boolean likeYn = likeService.findLikeYn(BoardType.CARROT, C.getId(), user);
+            Boolean likeYn = findLikeYn(BoardType.CARROT, C.getId(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARROT, C.getId());
-            searchResults.add(BriefCarrotResponse.toDto(C, MemberInfo.toDto(member), likeCnt, likeYn, commentCnt));
+            searchResults.add(BriefCarrotResponse.toDto(C, MemberInfo.toDto(member), C.getLikeCnt(), likeYn, commentCnt));
         }
         return searchResults;
     }
@@ -102,10 +100,9 @@ public class MypageService {
 
         for(Answer A: answerList){
             Member member = A.getWriter();
-            Long likeCnt = likeService.findLikeCnt(BoardType.ANSWER, A.getId());
-            Boolean likeYn = likeService.findLikeYn(BoardType.ANSWER, A.getId(), user);
+            Boolean likeYn = findLikeYn(BoardType.ANSWER, A.getId(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.ANSWER, A.getId());
-            searchResults.add(AnswerResponse.toDto(A, MemberInfo.toDto(member), likeCnt, likeYn, commentCnt));
+            searchResults.add(AnswerResponse.toDto(A, MemberInfo.toDto(member), A.getLikeCnt(), likeYn, commentCnt));
         }
         return searchResults;
     }
@@ -118,6 +115,10 @@ public class MypageService {
         for(Comment comment : commentList)
             commentDto.add(MyCommentInfo.toDto(comment));
         return commentDto;
+    }
+
+    public Boolean findLikeYn(BoardType boardType, Long postId, Member user){
+        return likeRepository.existsByBoardTypeAndPostIdAndMember(boardType, postId, user);
     }
 
 }

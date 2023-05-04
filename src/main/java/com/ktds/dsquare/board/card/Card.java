@@ -59,6 +59,8 @@ public class Card {
     @Column(nullable = false)
     private Boolean deleteYn;
 
+    private Long likeCnt;
+
     public static Card toEntity(CardRegisterRequest dto, Member writer, Team projTeam){
         String teammate = dto.getTeammate().toString();
         LocalDateTime now = LocalDateTime.now();
@@ -72,6 +74,7 @@ public class Card {
                 .createDate(now)
                 .viewCnt(0L)
                 .deleteYn(false)
+                .likeCnt(0L)
                 .build();
     }
 
@@ -100,4 +103,8 @@ public class Card {
     public void increaseViewCnt() {
         this.viewCnt += 1;
     }
+
+    public void like() { this.likeCnt += 1; }
+
+    public void cancleLike(){ this.likeCnt -= 1; }
 }

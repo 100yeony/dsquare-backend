@@ -3,7 +3,7 @@ package com.ktds.dsquare.board.talk;
 import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
-import com.ktds.dsquare.board.like.LikeService;
+import com.ktds.dsquare.board.like.LikeRepository;
 import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.board.tag.TagService;
 import com.ktds.dsquare.board.tag.TalkTag;
@@ -30,9 +30,9 @@ public class TalkService {
     private final MemberRepository memberRepository;
     private final TalkRepository talkRepository;
     private final CommentRepository commentRepository;
-    private final LikeService likeService;
     private final CommentService commentService;
     private final TagService tagService;
+    private final LikeRepository likeRepository;
 
     // 소통해요 작성
     @Transactional
@@ -77,10 +77,9 @@ public class TalkService {
         List<BriefTalkResponse> searchResults = new ArrayList<>();
 
         for(Talk t : talkList){
-            Long likeCnt = likeService.findLikeCnt(BoardType.TALK, t.getId());
-            Boolean likeYn = likeService.findLikeYn(BoardType.TALK, t.getId(), user);
+            Boolean likeYn = findLikeYn(BoardType.TALK, t.getId(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.TALK, t.getId());
-            searchResults.add(BriefTalkResponse.toDto(t, commentCnt, likeCnt, likeYn));
+            searchResults.add(BriefTalkResponse.toDto(t, commentCnt, t.getLikeCnt(), likeYn));
         }
 
         return searchResults;
@@ -93,11 +92,10 @@ public class TalkService {
         talk.increaseViewCnt();
         talkRepository.save(talk);
 
-        Long likeCnt = likeService.findLikeCnt(BoardType.TALK, talkId);
-        Boolean likeYn = likeService.findLikeYn(BoardType.TALK, talkId, user);
+        Boolean likeYn = findLikeYn(BoardType.TALK, talkId, user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.TALK, talkId);
 
-        return TalkResponse.toDto(talk, commentCnt, likeCnt, likeYn);
+        return TalkResponse.toDto(talk, commentCnt, talk.getLikeCnt(), likeYn);
     }
 
     // 소통해요 수정
@@ -135,6 +133,20 @@ public class TalkService {
         }
         talk.deleteTalk();
         commentService.deleteCommentCascade(BoardType.TALK, talkId);
+    }
+
+    public void like(Talk talk) {
+        talk.like();
+        talkRepository.save(talk);
+    }
+
+    public void cancleLike(Talk talk){
+        talk.cancleLike();
+        talkRepository.save(talk);
+    }
+
+    public Boolean findLikeYn(BoardType boardType, Long postId, Member user){
+        return likeRepository.existsByBoardTypeAndPostIdAndMember(boardType, postId, user);
     }
 
 
