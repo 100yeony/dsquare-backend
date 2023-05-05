@@ -37,17 +37,13 @@ public class CardController {
         return new ResponseEntity<>(cardService.getCardDetail(cardId, user), HttpStatus.OK);
     }
 
-    //update - 카드주세요 선정
+    //update - 카드주세요 글 수정 & 선정
     @PatchMapping("board/cards/{cardId}")
-    public ResponseEntity<Void> giveCard(@PathVariable("cardId") Long cardId, @AuthUser Member user){
-        cardService.giveCard(cardId, user);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    //update - 카드주세요 글 수정
-    @PostMapping("board/cards/{cardId}")
-    public ResponseEntity<CardResponse> updateCard(@PathVariable("cardId") Long cardId, @RequestBody CardRegisterRequest request){
-        cardService.updateCard(cardId, request);
+    public ResponseEntity<CardResponse> updateCard(@PathVariable("cardId") Long cardId, @RequestBody(required = false) CardRegisterRequest request, @AuthUser Member user){
+        if (request==null) //카드주세요 선정
+            cardService.giveCard(cardId, user);
+        else // 카드주세요 글 수정
+            cardService.updateCard(cardId, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

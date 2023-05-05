@@ -40,7 +40,7 @@ public class AnswerController {
     }
 
     // 답변글 수정
-    @PostMapping("/board/questions/{qid}/answers/{aid}")
+    @PatchMapping("/board/questions/{qid}/answers/{aid}")
     public ResponseEntity<Void> updateAnswer(@PathVariable Long qid, @PathVariable Long aid,
                                              @RequestBody AnswerRequest request) {
         answerService.updateAnswer(aid, request);
