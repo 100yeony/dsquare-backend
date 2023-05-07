@@ -29,10 +29,10 @@ public class Card {
     @JoinColumn(name = "proj_team")
     private Team projTeam;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 300)
     private String content;
 
     private Integer teammateCnt;

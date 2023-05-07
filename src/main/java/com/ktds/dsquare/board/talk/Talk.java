@@ -26,9 +26,9 @@ public class Talk {
     @JoinColumn(name = "writer")
     private Member writer;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String title;
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false, length = 10000)
     private String content;
 
     @Column(nullable = false)

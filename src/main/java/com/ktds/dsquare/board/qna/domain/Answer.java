@@ -22,7 +22,7 @@ public class Answer {
     @JoinColumn(name = "writer")
     private Member writer;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false, length = 10000)
     private String content;
 
     @Column(nullable = false)
