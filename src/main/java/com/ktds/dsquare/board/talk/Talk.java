@@ -26,9 +26,9 @@ public class Talk {
     @JoinColumn(name = "writer")
     private Member writer;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String title;
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false, length = 10000)
     private String content;
 
     @Column(nullable = false)
@@ -44,6 +44,8 @@ public class Talk {
     @OneToMany(mappedBy = "talk")
     private List<TalkTag> TalkTags;
 
+    private Long likeCnt;
+
     public static Talk toEntity(TalkRegisterRequest request, Member writer) {
         return Talk.builder()
                 .writer(writer)
@@ -52,6 +54,7 @@ public class Talk {
                 .createDate(LocalDateTime.now())
                 .viewCnt(0L)
                 .deleteYn(false)
+                .likeCnt(0L)
                 .build();
     }
 
@@ -68,5 +71,9 @@ public class Talk {
     public void deleteTalk(){
         this.deleteYn = true;
     }
+
+    public void like() { this.likeCnt += 1; }
+
+    public void cancleLike(){ this.likeCnt -= 1; }
 
 }

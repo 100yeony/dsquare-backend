@@ -3,7 +3,7 @@ package com.ktds.dsquare.board.qna.service;
 import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
-import com.ktds.dsquare.board.like.LikeService;
+import com.ktds.dsquare.board.like.LikeRepository;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.AnswerRequest;
@@ -26,9 +26,9 @@ public class AnswerService {
 
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
-    private final LikeService likeService;
     private final CommentRepository commentRepository;
     private final CommentService commentService;
+    private final LikeRepository likeRepository;
 
     // 답변글 작성
     @Transactional
@@ -43,10 +43,9 @@ public class AnswerService {
         List<AnswerResponse> answerResponses = new ArrayList<>();
         List<Answer> answers = answerRepository.findByQuestionAndDeleteYnOrderByCreateDateAsc(qid, false);
         for(Answer answer:answers){
-            Long likeCnt = likeService.findLikeCnt(BoardType.ANSWER, answer.getId());
-            Boolean likeYn = likeService.findLikeYn(BoardType.ANSWER, answer.getId(), user);
+            Boolean likeYn = findLikeYn(BoardType.ANSWER, answer.getId(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.ANSWER, answer.getId());
-            answerResponses.add(AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), likeCnt, likeYn, commentCnt));
+            answerResponses.add(AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), answer.getLikeCnt(), likeYn, commentCnt));
         }
         return answerResponses;
     }
@@ -54,10 +53,9 @@ public class AnswerService {
     //답변글 상세 조회
     public AnswerResponse getAnswerDetail(Long aid, Member user){
         Answer answer = answerRepository.findByDeleteYnAndId(false, aid);
-        Long likeCnt = likeService.findLikeCnt(BoardType.ANSWER, answer.getId());
-        Boolean likeYn = likeService.findLikeYn(BoardType.ANSWER, answer.getId(), user);
+        Boolean likeYn = findLikeYn(BoardType.ANSWER, answer.getId(), user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.ANSWER, answer.getId());
-        AnswerResponse answerResponse = AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), likeCnt, likeYn, commentCnt);
+        AnswerResponse answerResponse = AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), answer.getLikeCnt(), likeYn, commentCnt);
         return answerResponse;
     }
 
@@ -78,6 +76,20 @@ public class AnswerService {
         Answer answer = answerRepository.findById(aid).orElseThrow(() -> new EntityNotFoundException("Answer does not exist"));
         answer.deleteAnswer();
         commentService.deleteCommentCascade(BoardType.ANSWER, aid);
+    }
+
+    public void like(Answer answer) {
+        answer.like();
+        answerRepository.save(answer);
+    }
+
+    public void cancleLike(Answer answer){
+        answer.cancleLike();
+        answerRepository.save(answer);
+    }
+
+    public Boolean findLikeYn(BoardType boardType, Long postId, Member user){
+        return likeRepository.existsByBoardTypeAndPostIdAndMember(boardType, postId, user);
     }
 
 }

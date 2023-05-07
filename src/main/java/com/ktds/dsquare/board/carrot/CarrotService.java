@@ -6,7 +6,7 @@ import com.ktds.dsquare.board.carrot.dto.CarrotResponse;
 import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
-import com.ktds.dsquare.board.like.LikeService;
+import com.ktds.dsquare.board.like.LikeRepository;
 import com.ktds.dsquare.board.tag.CarrotTag;
 import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.board.tag.TagService;
@@ -14,6 +14,9 @@ import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -29,11 +32,11 @@ import java.util.List;
 public class CarrotService {
 
     private final CarrotRepository carrotRepository;
-    private final LikeService likeService;
     private final CommentService commentService;
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
     private final TagService tagService;
+    private final LikeRepository likeRepository;
 
     //create - 당근해요 글 작성
     @Transactional
@@ -44,11 +47,18 @@ public class CarrotService {
     }
 
     //read - 당근해요 글 전체 조회 & 검색
-    public List<BriefCarrotResponse> getCarrots(Member user, String key, String value){
+    public List<BriefCarrotResponse> getCarrots(Member user, String key, String value, String order, Pageable pageable){
+        Pageable page;
+        if(order.equals("create")){
+            page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
+        } else if (order.equals("like")) {
+            page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("likeCnt").descending());
+        } else {
+            throw new RuntimeException("Invalid order. Using create || like");
+        }
+
         //deleteYn = false인 것만 조회
         Specification<Carrot> filter = Specification.where(CarrotSpecification.equalNotDeleted(false));
-        //업무 구분
-
 
         //사용자 이름 검색(2글자로도 포함된 사람 검색 & 다른 조건과 모두 AND)
         if (key != null && key.equals("member") && value != null) {
@@ -76,15 +86,14 @@ public class CarrotService {
             filter = filter.and(CarrotSpecification.equalTitleAndContentContaining(value));
         }
 
-        List<Carrot> carrotList = carrotRepository.findAll(filter, Sort.by(Sort.Direction.DESC, "createDate"));
+        Page<Carrot> carrotList = carrotRepository.findAll(filter, page);
         List<BriefCarrotResponse> searchResults = new ArrayList<>();
 
         //BriefCarrotResponse 객체로 만들어줌
         for(Carrot C: carrotList){
-            Long likeCnt = likeService.findLikeCnt(BoardType.CARROT, C.getId());
-            Boolean likeYn = likeService.findLikeYn(BoardType.CARROT, C.getId(), user);
+            Boolean likeYn = findLikeYn(BoardType.CARROT, C.getId(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARROT, C.getId());
-            searchResults.add(BriefCarrotResponse.toDto(C, MemberInfo.toDto(C.getWriter()), likeCnt, likeYn, commentCnt));
+            searchResults.add(BriefCarrotResponse.toDto(C, MemberInfo.toDto(C.getWriter()), C.getLikeCnt(), likeYn, commentCnt));
         }
 
         return searchResults;
@@ -96,10 +105,9 @@ public class CarrotService {
         carrot.increaseViewCnt();
         carrotRepository.save(carrot);
 
-        Long likeCnt = likeService.findLikeCnt(BoardType.CARROT, carrot.getId());
-        Boolean likeYn = likeService.findLikeYn(BoardType.CARROT, carrot.getId(), user);
+        Boolean likeYn = findLikeYn(BoardType.CARROT, carrot.getId(), user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARROT, carrot.getId());
-        return CarrotResponse.toDto(carrot, carrot.getWriter(), likeCnt, likeYn, commentCnt);
+        return CarrotResponse.toDto(carrot, carrot.getWriter(), carrot.getLikeCnt(), likeYn, commentCnt);
     }
 
     //update - 당근해요 글 수정
@@ -134,6 +142,20 @@ public class CarrotService {
                 .orElseThrow(()-> new EntityNotFoundException("carrot is not found"));
         carrot.deleteCarrot();
         commentService.deleteCommentCascade(BoardType.CARROT, carrotId);
+    }
+
+    public void like(Carrot carrot) {
+        carrot.like();
+        carrotRepository.save(carrot);
+    }
+
+    public void cancleLike(Carrot carrot){
+        carrot.cancleLike();
+        carrotRepository.save(carrot);
+    }
+
+    public Boolean findLikeYn(BoardType boardType, Long postId, Member user){
+        return likeRepository.existsByBoardTypeAndPostIdAndMember(boardType, postId, user);
     }
 
 }

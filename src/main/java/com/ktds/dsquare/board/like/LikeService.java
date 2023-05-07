@@ -1,45 +1,120 @@
 package com.ktds.dsquare.board.like;
 
+import com.ktds.dsquare.board.card.Card;
+import com.ktds.dsquare.board.card.CardRepository;
+import com.ktds.dsquare.board.card.CardService;
+import com.ktds.dsquare.board.carrot.Carrot;
+import com.ktds.dsquare.board.carrot.CarrotRepository;
+import com.ktds.dsquare.board.carrot.CarrotService;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.dto.LikeRegisterRequest;
+import com.ktds.dsquare.board.qna.domain.Answer;
+import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.board.qna.repository.AnswerRepository;
+import com.ktds.dsquare.board.qna.repository.QuestionRepository;
+import com.ktds.dsquare.board.qna.service.AnswerService;
+import com.ktds.dsquare.board.qna.service.QuestionService;
+import com.ktds.dsquare.board.talk.Talk;
+import com.ktds.dsquare.board.talk.TalkRepository;
+import com.ktds.dsquare.board.talk.TalkService;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class LikeService {
 
     private final LikeRepository likeRepository;
+    private final QuestionService questionService;
+    private final AnswerService answerService;
+    private final QuestionRepository questionRepository;
+    private final AnswerRepository answerRepository;
+    private final TalkRepository talkRepository;
+    private final CardRepository cardRepository;
+    private final CarrotRepository carrotRepository;
+    private final CardService cardService;
+    private final TalkService talkService;
+    private final CarrotService carrotService;
 
-    //create - 좋아요 등록(Question, Ansewr, Card) + Talk, Carrot(예정)
-    public void like(LikeRegisterRequest dto, Member user){
+    //create - 좋아요 등록
+    @Transactional
+    public void like(LikeRegisterRequest dto, Member user) {
         BoardType boardType = BoardType.findBoardType(dto.getBoardType());
         Boolean likeCheck = likeRepository.existsByBoardTypeAndPostIdAndMember(boardType, dto.getPostId(), user);
-        if(likeCheck){
+        if (likeCheck) {
             throw new RuntimeException("like already exist");
-        }else{
+        } else {
             Like like = Like.toEntity(dto, boardType, user);
             likeRepository.save(like);
+            switch (boardType) {
+                case QUESTION:
+                    Question question = questionRepository.findById(dto.getPostId())
+                            .orElseThrow(() -> new EntityNotFoundException("question not found"));
+                    questionService.like(question);
+                    break;
+                case ANSWER:
+                    Answer answer = answerRepository.findById(dto.getPostId())
+                            .orElseThrow(() -> new EntityNotFoundException("answer not found"));
+                    answerService.like(answer);
+                case CARD:
+                    Card card = cardRepository.findById(dto.getPostId())
+                            .orElseThrow(() -> new EntityNotFoundException("card not found"));
+                    cardService.like(card);
+                    break;
+                case TALK:
+                    Talk talk = talkRepository.findById(dto.getPostId())
+                            .orElseThrow(() -> new EntityNotFoundException("talk not found"));
+                    talkService.like(talk);
+                    break;
+                case CARROT:
+                    Carrot carrot = carrotRepository.findById(dto.getPostId())
+                            .orElseThrow(() -> new EntityNotFoundException("carrot not found"));
+                    carrotService.like(carrot);
+                    break;
+                default:
+                    throw new RuntimeException("Invalid board type.");
+            }
         }
     }
 
-    //read - 전체조회(Question 전체조회, Question 상세조회, Answer 조회, Card 전체조회, Card 상세조회)
-    //게시글 입장에서 총 좋아요 수
-    public Long findLikeCnt(BoardType boardType, Long postId){
-        return likeRepository.countByBoardTypeAndPostId(boardType, postId);
-    }
-
-    //로그인한 사용자 입장에서 해당 게시글에 좋아요 여부
-    public Boolean findLikeYn(BoardType boardType, Long postId, Member user){
-        return likeRepository.existsByBoardTypeAndPostIdAndMember(boardType, postId, user);
-    }
-
     //delete - 좋아요 취소
+    @Transactional
     public void cancelLike(LikeRegisterRequest dto, Member user){
         BoardType boardType = BoardType.findBoardType(dto.getBoardType());
         Like like = likeRepository.findByBoardTypeAndPostIdAndMember(boardType, dto.getPostId(), user);
         likeRepository.delete(like);
+        switch (boardType) {
+            case QUESTION:
+                Question question = questionRepository.findById(dto.getPostId())
+                        .orElseThrow(() -> new EntityNotFoundException("question not found"));
+                questionService.cancleLike(question);
+                break;
+            case ANSWER:
+                Answer answer = answerRepository.findById(dto.getPostId())
+                        .orElseThrow(() -> new EntityNotFoundException("answer not found"));
+                answerService.cancleLike(answer);
+            case CARD:
+                Card card = cardRepository.findById(dto.getPostId())
+                        .orElseThrow(() -> new EntityNotFoundException("card not found"));
+                cardService.cancleLike(card);
+                break;
+            case TALK:
+                Talk talk = talkRepository.findById(dto.getPostId())
+                        .orElseThrow(() -> new EntityNotFoundException("talk not found"));
+                talkService.cancleLike(talk);
+                break;
+            case CARROT:
+                Carrot carrot = carrotRepository.findById(dto.getPostId())
+                        .orElseThrow(() -> new EntityNotFoundException("carrot not found"));
+                carrotService.cancleLike(carrot);
+                break;
+            default:
+                throw new RuntimeException("Invalid board type.");
+        }
     }
 
 
