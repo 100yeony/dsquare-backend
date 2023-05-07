@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +41,7 @@ public class LikeService {
     private final CarrotService carrotService;
 
     //create - 좋아요 등록
+    @Transactional
     public void like(LikeRegisterRequest dto, Member user) {
         BoardType boardType = BoardType.findBoardType(dto.getBoardType());
         Boolean likeCheck = likeRepository.existsByBoardTypeAndPostIdAndMember(boardType, dto.getPostId(), user);
@@ -80,6 +82,7 @@ public class LikeService {
     }
 
     //delete - 좋아요 취소
+    @Transactional
     public void cancelLike(LikeRegisterRequest dto, Member user){
         BoardType boardType = BoardType.findBoardType(dto.getBoardType());
         Like like = likeRepository.findByBoardTypeAndPostIdAndMember(boardType, dto.getPostId(), user);
