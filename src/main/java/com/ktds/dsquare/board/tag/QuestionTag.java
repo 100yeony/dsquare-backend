@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -28,10 +29,13 @@ public class QuestionTag {
     @JoinColumn(name = "tag_id")
     private Tag tag;
 
+    private LocalDateTime createDate;
+
     public static QuestionTag toEntity(Question question, Tag tag) {
         return QuestionTag.builder()
                 .question(question)
                 .tag(tag)
+                .createDate(LocalDateTime.now())
                 .build();
     }
 

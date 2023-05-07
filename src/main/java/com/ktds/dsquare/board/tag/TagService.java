@@ -11,7 +11,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -55,5 +58,46 @@ public class TagService {
         } else if (obj instanceof Carrot) {
             carrotTagRepository.deleteByCarrotAndTag((Carrot) obj, tag);
         }
+    }
+
+    // 대시보드 - 핫토픽 키워드 조회
+    public List<String> selectTop7Tags() {
+        LocalDateTime weekAgo = LocalDateTime.now().minusDays(7);
+
+        List<WeeklyTagDTO> weeklyTags = new ArrayList<>();
+        weeklyTags.addAll(carrotTagRepository.findTagsWithinLastWeek(weekAgo));
+        weeklyTags.addAll(questionTagRepository.findTagsWithinLastWeek(weekAgo));
+        weeklyTags.addAll(talkTagRepository.findTagsWithinLastWeek(weekAgo));
+
+        // 최신순으로 먼저 정렬
+        Collections.sort(weeklyTags, Comparator.comparing(o -> -((o.getCreateDate().toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli()))));
+
+        // 태그별 사용횟수 카운트
+        Map<Long, Long> tagCounts = new LinkedHashMap<>();
+        for (WeeklyTagDTO tag : weeklyTags) {
+            Long k = tag.getTagId();
+            Long v = tag.getTagCount();
+            tagCounts.put(k, tagCounts.getOrDefault(k, 0L) + v);
+        }
+
+        // 카운트 많은 순으로 정렬
+        List<Map.Entry<Long, Long>> sortedTagCounts = new ArrayList<>(tagCounts.entrySet());
+        sortedTagCounts.sort(Map.Entry.<Long, Long>comparingByValue().reversed());
+
+        // 카운트가 최소 3번 이상인 태그 중 최대 7개만 가져오기
+        List<Long> top7TagsId = sortedTagCounts.stream()
+                .filter(entry -> entry.getValue() >= 3)
+                .limit(7)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
+        // 태그 id를 이용해서 태그 이름 가져오기
+        List<String> top7Tags = new ArrayList<>();
+        for (Long tagId : top7TagsId) {
+            Tag tag = tagRepository.findById(tagId).orElseThrow(() -> new RuntimeException("Tag Not Found"));
+            top7Tags.add(tag.getName());
+        }
+
+        return top7Tags;
     }
 }
