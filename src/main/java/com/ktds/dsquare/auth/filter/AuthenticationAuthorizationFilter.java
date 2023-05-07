@@ -49,6 +49,7 @@ public class AuthenticationAuthorizationFilter extends BasicAuthenticationFilter
             log.info("Authorized : {}", principal.getUsername());
         } catch (TokenExpiredException e) {
             handleTokenExpiration(response);
+            return;
         } catch (UsernameNotFoundException e) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             log.error("Token was for a user who doesn't exist.", e);
