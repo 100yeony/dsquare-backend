@@ -14,6 +14,10 @@ import com.ktds.dsquare.member.dto.response.TeamInfo;
 import com.ktds.dsquare.member.team.Team;
 import com.ktds.dsquare.member.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -42,17 +46,26 @@ public class CardService {
     }
 
     //read - 카드주세요 글 전체 조회 & 검색
-    public List<BriefCardResponse> getCards(Long projTeamId, Member user){
+    public List<BriefCardResponse> getCards(Long projTeamId, Member user, String order, Pageable pageable){
+        Pageable page;
+        if(order.equals("create")){
+            page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
+        } else if (order.equals("like")) {
+            page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("likeCnt").descending());
+        } else {
+            throw new RuntimeException("Invalid order. Using create || like");
+        }
+
         List<BriefCardResponse> briefCards = new ArrayList<>();
-        List<Card> cards;
+        Page<Card> cards;
         if(projTeamId != null){
             //검색
             Team team = teamRepository.findById(projTeamId)
                     .orElseThrow(()-> new EntityNotFoundException("team not found"));
-            cards = cardRepository.findByDeleteYnAndProjTeamOrderByCreateDateDesc(false, team);
+            cards = cardRepository.findByDeleteYnAndProjTeamOrderByCreateDateDesc(false, team, page);
         }else{
             //전체조회
-            cards = cardRepository.findByDeleteYnOrderByCreateDateDesc(false);
+            cards = cardRepository.findByDeleteYnOrderByCreateDateDesc(false, page);
         }
         for(Card C : cards){
             briefCards.add(makeBriefCardRes(C, user, projTeamId));

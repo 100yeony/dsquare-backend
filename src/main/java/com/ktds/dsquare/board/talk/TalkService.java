@@ -13,6 +13,9 @@ import com.ktds.dsquare.board.talk.dto.TalkResponse;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -43,7 +46,16 @@ public class TalkService {
     }
 
     // 소통해요 전체조회 + 검색
-    public List<BriefTalkResponse> getTalks(Member user, String key, String value){
+    public List<BriefTalkResponse> getTalks(Member user, String key, String value, String order, Pageable pageable){
+        Pageable page;
+        if(order.equals("create")){
+            page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
+        } else if (order.equals("like")) {
+            page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("likeCnt").descending());
+        } else {
+            throw new RuntimeException("Invalid order. Using create || like");
+        }
+
         //deleteYn = false인 것만 조회
         Specification<Talk> filter = Specification.where(TalkSpecification.equalNotDeleted(false));
 
@@ -73,7 +85,7 @@ public class TalkService {
             filter = filter.and(TalkSpecification.equalTitleAndContentContaining(value));
         }
 
-        List<Talk> talkList = talkRepository.findAll(filter, Sort.by(Sort.Direction.DESC, "createDate"));
+        Page<Talk> talkList = talkRepository.findAll(filter, page);
         List<BriefTalkResponse> searchResults = new ArrayList<>();
 
         for(Talk t : talkList){

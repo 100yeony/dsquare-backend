@@ -14,6 +14,9 @@ import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -44,11 +47,18 @@ public class CarrotService {
     }
 
     //read - 당근해요 글 전체 조회 & 검색
-    public List<BriefCarrotResponse> getCarrots(Member user, String key, String value){
+    public List<BriefCarrotResponse> getCarrots(Member user, String key, String value, String order, Pageable pageable){
+        Pageable page;
+        if(order.equals("create")){
+            page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
+        } else if (order.equals("like")) {
+            page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("likeCnt").descending());
+        } else {
+            throw new RuntimeException("Invalid order. Using create || like");
+        }
+
         //deleteYn = false인 것만 조회
         Specification<Carrot> filter = Specification.where(CarrotSpecification.equalNotDeleted(false));
-        //업무 구분
-
 
         //사용자 이름 검색(2글자로도 포함된 사람 검색 & 다른 조건과 모두 AND)
         if (key != null && key.equals("member") && value != null) {
@@ -76,7 +86,7 @@ public class CarrotService {
             filter = filter.and(CarrotSpecification.equalTitleAndContentContaining(value));
         }
 
-        List<Carrot> carrotList = carrotRepository.findAll(filter, Sort.by(Sort.Direction.DESC, "createDate"));
+        Page<Carrot> carrotList = carrotRepository.findAll(filter, page);
         List<BriefCarrotResponse> searchResults = new ArrayList<>();
 
         //BriefCarrotResponse 객체로 만들어줌

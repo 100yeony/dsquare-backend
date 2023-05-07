@@ -2,6 +2,8 @@ package com.ktds.dsquare.board.card;
 
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.team.Team;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -13,13 +15,13 @@ import java.util.List;
 public interface CardRepository extends JpaRepository<Card,Long>, JpaSpecificationExecutor<Card>{
 
     //전체 조회 관련
-    List<Card>  findByDeleteYnOrderByCreateDateDesc(Boolean deleteYn);
+    Page<Card>  findByDeleteYnOrderByCreateDateDesc(Boolean deleteYn, Pageable pageable);
 
     //상세 조회 관련
     Card findByDeleteYnAndId(Boolean deleteYn, Long cardId);
 
     //검색 관련
-    List<Card> findByDeleteYnAndProjTeamOrderByCreateDateDesc(Boolean deleteYn, Team projTeamId);
+    Page<Card> findByDeleteYnAndProjTeamOrderByCreateDateDesc(Boolean deleteYn, Team projTeamId, Pageable pageable);
 
     //이달의 카드 조회 관련
     @Query(value = "SELECT DISTINCT ON (extract(month from c.selected_date)) " +

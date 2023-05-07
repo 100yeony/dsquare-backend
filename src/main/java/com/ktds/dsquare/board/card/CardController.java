@@ -6,6 +6,7 @@ import com.ktds.dsquare.board.card.dto.CardResponse;
 import com.ktds.dsquare.common.annotatin.AuthUser;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +28,9 @@ public class CardController {
 
     //read - 카드주세요 글 전체 목록 조회 & 검색
     @GetMapping("board/cards")
-    public ResponseEntity<List<BriefCardResponse>> getCards(@RequestParam(required = false) Long projTeamId, @AuthUser Member user){
-        return new ResponseEntity<>(cardService.getCards(projTeamId, user), HttpStatus.OK);
+    public ResponseEntity<List<BriefCardResponse>> getCards(@RequestParam(required = false) Long projTeamId,
+                                                            @AuthUser Member user, String order, Pageable pageable){
+        return new ResponseEntity<>(cardService.getCards(projTeamId, user, order, pageable), HttpStatus.OK);
     }
 
     //read - 카드주세요 글 상세 조회
