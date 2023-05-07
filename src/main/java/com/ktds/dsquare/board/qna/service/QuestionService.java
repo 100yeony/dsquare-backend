@@ -26,6 +26,9 @@ import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -81,7 +84,16 @@ public class QuestionService {
      * 2. category없이 제목+내용 or 작성자로 검색하는 경우 -> cid X
      * 3. 둘 다 검색하는 경우 -> cid, key, value
      * */
-    public List<BriefQuestionResponse> getQuestions(Boolean workYn, Member user, Integer cid, String key, String value){
+    public List<BriefQuestionResponse> getQuestions(Boolean workYn, Member user, Integer cid, String key, String value, String order, Pageable pageable){
+        Pageable page;
+        if(order.equals("create")){
+            page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
+        } else if (order.equals("like")) {
+            page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("likeCnt").descending());
+        } else {
+            throw new RuntimeException("Invalid order. Using create || like");
+        }
+
         //deleteYn = false인 것만 조회
         Specification<Question> filter = Specification.where(QuestionSpecification.equalNotDeleted(false));
         //업무 구분
@@ -126,7 +138,7 @@ public class QuestionService {
             filter = filter.and(QuestionSpecification.equalTitleAndContentContaining(value));
         }
 
-        List<Question> questionList = questionRepository.findAll(filter, Sort.by(Sort.Direction.DESC, "createDate"));
+        Page<Question> questionList = questionRepository.findAll(filter, page);
         List<BriefQuestionResponse> searchResults = new ArrayList<>();
 
         //BriefQuestionResponse 객체로 만들어줌
