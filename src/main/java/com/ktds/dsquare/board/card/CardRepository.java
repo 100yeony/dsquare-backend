@@ -23,9 +23,8 @@ public interface CardRepository extends JpaRepository<Card,Long>, JpaSpecificati
 
     //이달의 카드 조회 관련
     @Query(value = "SELECT DISTINCT ON (extract(month from c.selected_date)) " +
-            "c.*, count(*) AS like_cnt " +
+            "c.* " +
             "FROM comm_card c " +
-            "JOIN like_post l ON c.id = l.post_id AND l.board_Type = 'CARD' " +
             "WHERE c.selection_yn IS true " +
             "AND c.delete_yn IS false " +
             "GROUP BY c.id, " +
