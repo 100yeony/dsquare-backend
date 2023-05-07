@@ -1,6 +1,6 @@
-package com.ktds.dsquare.common.annotatin.resolver;
+package com.ktds.dsquare.common.annotation.resolver;
 
-import com.ktds.dsquare.common.annotatin.AuthUser;
+import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import lombok.RequiredArgsConstructor;

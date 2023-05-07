@@ -18,6 +18,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ResponseType._401_FAILED_LOGIN, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler({ IllegalStateException.class })
+    private ResponseEntity<ResponseType> illegalStateExceptionHandler(IllegalStateException e) {
+        log.info(String.valueOf(e));
+        return new ResponseEntity<>(ResponseType._400_BAD_REQUEST, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     private ResponseEntity<?> globalRuntimeExceptionHandler(RuntimeException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

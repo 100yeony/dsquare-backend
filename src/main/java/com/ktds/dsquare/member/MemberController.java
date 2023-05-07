@@ -1,5 +1,6 @@
 package com.ktds.dsquare.member;
 
+import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.common.exception.MemberException;
 import com.ktds.dsquare.common.mailing.MailService;
 import com.ktds.dsquare.member.dto.request.MemberUpdateRequest;
@@ -12,7 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +58,10 @@ public class MemberController {
     @PatchMapping("/member/members/{id}")
     public ResponseEntity<?> updateMember(@PathVariable Long id, @RequestBody MemberUpdateRequest request) {
         return new ResponseEntity<>(memberService.updateMember(id, request), HttpStatus.OK);
+    }
+    @PatchMapping("/member/members/{id}/profile/image")
+    public ResponseEntity<?> updateMemberProfileImage(@PathVariable Long id, @RequestPart MultipartFile image, @AuthUser Member user) throws IOException {
+        return new ResponseEntity<>(memberService.updateMember(id, image, user), HttpStatus.OK);
     }
 
     /**

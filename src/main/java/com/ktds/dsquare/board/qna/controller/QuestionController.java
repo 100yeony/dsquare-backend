@@ -4,7 +4,7 @@ import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.dto.QuestionRequest;
 import com.ktds.dsquare.board.qna.dto.QuestionResponse;
 import com.ktds.dsquare.board.qna.service.QuestionService;
-import com.ktds.dsquare.common.annotatin.AuthUser;
+import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

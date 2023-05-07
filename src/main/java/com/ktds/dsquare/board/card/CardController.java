@@ -3,7 +3,7 @@ package com.ktds.dsquare.board.card;
 import com.ktds.dsquare.board.card.dto.BriefCardResponse;
 import com.ktds.dsquare.board.card.dto.CardRegisterRequest;
 import com.ktds.dsquare.board.card.dto.CardResponse;
-import com.ktds.dsquare.common.annotatin.AuthUser;
+import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
