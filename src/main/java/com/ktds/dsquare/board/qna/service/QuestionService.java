@@ -151,15 +151,15 @@ public class QuestionService {
                 break;
             }
         }
-        Boolean likeYn = findLikeYn(BoardType.QUESTION, q.getQid(), user);
-        Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, q.getQid());
+        Boolean likeYn = findLikeYn(BoardType.QUESTION, q.getId(), user);
+        Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, q.getId());
         return BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, q.getLikeCnt(), likeYn, commentCnt);
     }
 
 
     //read - 질문글 상세 조회
     public QuestionResponse getQuestionDetail(Member user, Long qid) {
-        Question question = questionRepository.findByDeleteYnAndQid(false, qid);
+        Question question = questionRepository.findByDeleteYnAndId(false, qid);
         question.increaseViewCnt();
         questionRepository.save(question);
 
@@ -175,7 +175,7 @@ public class QuestionService {
     // 질문글 수정
     @Transactional
     public void updateQuestion(Long qid, QuestionRequest request, MultipartFile newAttachment) {
-        Question question = questionRepository.findByDeleteYnAndQid(false, qid);
+        Question question = questionRepository.findByDeleteYnAndId(false, qid);
         if(question==null){
             throw new EntityNotFoundException("Question not found. qid is " + qid);
         }
@@ -252,7 +252,7 @@ public class QuestionService {
     // 태그-질문 간 연관관계 삭제
     @Transactional
     public void deleteQuestionTagRelation(Question question, Tag tag) {
-        questionTagRepository.deleteByQuestionAndTag(question, tag);
+        questionTagRepository.deleteByPostAndTag(question, tag);
     }
 
     public void like(Question question) {

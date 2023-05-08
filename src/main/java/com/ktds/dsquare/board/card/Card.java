@@ -1,10 +1,14 @@
 package com.ktds.dsquare.board.card;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.ktds.dsquare.board.Post;
 import com.ktds.dsquare.board.card.dto.CardRegisterRequest;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.team.Team;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -14,10 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 @Table(name = "COMM_CARD")
-public class Card {
-
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Card extends Post {
 
     @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)

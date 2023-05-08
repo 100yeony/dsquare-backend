@@ -32,7 +32,7 @@ public class AnswerResponse {
 
     public static AnswerResponse toDto(Answer answer, MemberInfo writerInfo, Long likeCnt, Boolean likeYn, Long commentCnt){
         Question q = answer.getQuestion();
-        Long qid = q.getQid();
+        Long qid = q.getId();
         return AnswerResponse.builder()
                 .aid(answer.getId())
                 .writerInfo(writerInfo)

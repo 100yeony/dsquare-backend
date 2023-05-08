@@ -1,26 +1,34 @@
 package com.ktds.dsquare.board.enums;
 
 public enum BoardType {
-    QUESTION,
-    ANSWER,
-    CARD,
-    TALK,
-    CARROT;
+    QUESTION(Constant.QUESTION),
+    ANSWER(Constant.ANSWER),
+    CARD(Constant.CARD),
+    TALK(Constant.TALK),
+    CARROT(Constant.CARROT)
+    ;
+
+
+    public final String name;
+
+    BoardType(String name) {
+        this.name = name;
+    }
 
     public static BoardType findBoardType(String boardTypeName) {
-        switch(boardTypeName) {
-            case "question":
-                return BoardType.QUESTION;
-            case "answer":
-                return BoardType.ANSWER;
-            case "card":
-                return BoardType.CARD;
-            case "talk":
-                return BoardType.TALK;
-            case "carrot":
-                return BoardType.CARROT;
-            default:
-                throw new RuntimeException("BoardType Not Found");
+        for (BoardType boardType : BoardType.values()) {
+            if (boardType.name.equals(boardTypeName))
+                return boardType;
         }
+        throw new RuntimeException("BoardType Not Found");
     }
+
+    public static class Constant {
+        public static final String QUESTION = "question";
+        public static final String ANSWER = "answer";
+        public static final String CARD = "card";
+        public static final String TALK = "talk";
+        public static final String CARROT = "carrot";
+    }
+
 }

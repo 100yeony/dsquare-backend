@@ -1,7 +1,8 @@
 package com.ktds.dsquare.board.qna.domain;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.ktds.dsquare.board.Post;
+import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.qna.dto.AnswerRequest;
 import com.ktds.dsquare.member.Member;
 import lombok.*;
@@ -10,13 +11,11 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@DiscriminatorValue(BoardType.Constant.ANSWER)
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
-public class Answer {
-
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Answer extends Post {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer")
@@ -33,7 +32,6 @@ public class Answer {
     @Column(nullable = false)
     private boolean deleteYn;
 
-    @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question")
     private Question question;

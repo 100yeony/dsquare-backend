@@ -63,7 +63,7 @@ public class Member {
     @OneToMany(mappedBy = "manager")
     private List<Category> cid;
 
-    @OneToMany(mappedBy = "qid")
+    @OneToMany(mappedBy = "writer")
     private List<Question> questionsList;
     
     @OneToMany(mappedBy = "writer")

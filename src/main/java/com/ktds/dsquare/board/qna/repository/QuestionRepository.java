@@ -16,7 +16,7 @@ import java.util.List;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question,Long>, JpaSpecificationExecutor<Question> {
 
-    Question findByDeleteYnAndQid(Boolean deleteYn, Long qid);
+    Question findByDeleteYnAndId(Boolean deleteYn, Long qid);
 
     //전체조회 & 검색 관련
     Page<Question> findAll(Specification<Question> filter, Pageable pageable);

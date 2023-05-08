@@ -43,7 +43,7 @@ public class BriefQuestionResponse {
             tags.add(questionTag.getTag().getName());
 
         return BriefQuestionResponse.builder()
-                .qid(question.getQid())
+                .qid(question.getId())
                 .writerInfo(writerInfo)
                 .title(question.getTitle())
                 .category(category)
