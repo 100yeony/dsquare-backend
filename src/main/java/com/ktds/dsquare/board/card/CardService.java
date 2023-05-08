@@ -1,9 +1,6 @@
 package com.ktds.dsquare.board.card;
 
-import com.ktds.dsquare.board.card.dto.BriefCardResponse;
-import com.ktds.dsquare.board.card.dto.CardRegisterRequest;
-import com.ktds.dsquare.board.card.dto.CardResponse;
-import com.ktds.dsquare.board.card.dto.CardSelectionInfo;
+import com.ktds.dsquare.board.card.dto.*;
 import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
@@ -110,7 +107,7 @@ public class CardService {
 
     //update - 카드주세요 글 수정
     @Transactional
-    public void updateCard(Long cardId, CardRegisterRequest request){
+    public void updateCard(Long cardId, CardUpdateRequest request){
         Card card = cardRepository.findByDeleteYnAndId(false, cardId);
         Team projTeam = teamRepository.findById(request.getProjTeamId())
                 .orElseThrow(() -> new EntityNotFoundException("team is not found"));

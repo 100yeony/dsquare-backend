@@ -2,6 +2,7 @@ package com.ktds.dsquare.board.card;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ktds.dsquare.board.card.dto.CardRegisterRequest;
+import com.ktds.dsquare.board.card.dto.CardUpdateRequest;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.team.Team;
 import lombok.*;
@@ -37,7 +38,7 @@ public class Card {
 
     private Integer teammateCnt;
 
-    private String teammate;
+    private String teammates;
 
     @Column(nullable = false)
     private LocalDateTime createDate;
@@ -62,7 +63,7 @@ public class Card {
     private Long likeCnt;
 
     public static Card toEntity(CardRegisterRequest dto, Member writer, Team projTeam){
-        String teammate = dto.getTeammate().toString();
+        String teammates = dto.getTeammates().toString();
         LocalDateTime now = LocalDateTime.now();
         return Card.builder()
                 .writer(writer)
@@ -70,7 +71,7 @@ public class Card {
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .teammateCnt(dto.getTeammateCnt())
-                .teammate(teammate)
+                .teammates(teammates)
                 .createDate(now)
                 .viewCnt(0L)
                 .deleteYn(false)
@@ -85,14 +86,14 @@ public class Card {
         this.selectedDate = now;
     }
 
-    public void updateCard(Team projTeam, CardRegisterRequest dto){
-        String teammate = dto.getTeammate().toString();
+    public void updateCard(Team projTeam, CardUpdateRequest dto){
+        String teammates = dto.getTeammates().toString();
         LocalDateTime now = LocalDateTime.now();
         this.projTeam = projTeam;
         this.title = dto.getTitle();
         this.content = dto.getContent();
         this.teammateCnt = dto.getTeammateCnt();
-        this.teammate = teammate;
+        this.teammates = teammates;
         this.lastUpdateDate = now;
     }
 
