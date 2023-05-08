@@ -10,7 +10,7 @@ public class PagingService {
 
     public Pageable orderPage(String order, Pageable pageable){
         Pageable page;
-        if(order.equals("create")){
+        if(order == null || order.equals("create")){
             page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
         } else if (order.equals("like")) {
             page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("likeCnt").descending());

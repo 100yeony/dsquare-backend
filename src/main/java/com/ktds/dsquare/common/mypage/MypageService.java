@@ -124,7 +124,7 @@ public class MypageService {
     }
 
     //read - 나의 댓글 전체 조회
-    public List<MyCommentInfo> getAllMyComments(Member user, String order, Pageable pageable){
+    public List<MyCommentInfo> getAllMyComments(Member user, Pageable pageable){
         Pageable page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
 
         Page<Comment> commentList = commentRepository.findByWriter(user, page);

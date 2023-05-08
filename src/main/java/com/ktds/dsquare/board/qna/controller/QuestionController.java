@@ -39,7 +39,7 @@ public class QuestionController {
     @GetMapping("/board/questions")
     public List<BriefQuestionResponse> getQuestions(@RequestParam Boolean workYn, @ApiIgnore @AuthUser Member user, @RequestParam(required = false) Integer cid,
                                                     @RequestParam(required = false) String key, @RequestParam(required = false) String value,
-                                                    String order, Pageable pageable) {
+                                                    @RequestParam(required = false) String order, Pageable pageable) {
         return questionService.getQuestions(workYn, user, cid, key, value, order, pageable);
     }
 
