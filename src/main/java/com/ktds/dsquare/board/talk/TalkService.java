@@ -10,13 +10,12 @@ import com.ktds.dsquare.board.tag.TalkTag;
 import com.ktds.dsquare.board.talk.dto.BriefTalkResponse;
 import com.ktds.dsquare.board.talk.dto.TalkRegisterRequest;
 import com.ktds.dsquare.board.talk.dto.TalkResponse;
+import com.ktds.dsquare.common.Paging.PagingService;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +35,7 @@ public class TalkService {
     private final CommentService commentService;
     private final TagService tagService;
     private final LikeRepository likeRepository;
+    private final PagingService pagingService;
 
     // 소통해요 작성
     @Transactional
@@ -47,14 +47,7 @@ public class TalkService {
 
     // 소통해요 전체조회 + 검색
     public List<BriefTalkResponse> getTalks(Member user, String key, String value, String order, Pageable pageable){
-        Pageable page;
-        if(order.equals("create")){
-            page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
-        } else if (order.equals("like")) {
-            page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("likeCnt").descending());
-        } else {
-            throw new RuntimeException("Invalid order. Using create || like");
-        }
+        Pageable page = pagingService.orderPage(order, pageable);
 
         //deleteYn = false인 것만 조회
         Specification<Talk> filter = Specification.where(TalkSpecification.equalNotDeleted(false));

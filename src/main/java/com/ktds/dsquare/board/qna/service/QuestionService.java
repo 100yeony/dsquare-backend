@@ -19,6 +19,7 @@ import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.board.tag.TagService;
 import com.ktds.dsquare.board.tag.repository.QuestionTagRepository;
 import com.ktds.dsquare.board.tag.repository.TagRepository;
+import com.ktds.dsquare.common.Paging.PagingService;
 import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.common.file.AttachmentService;
 import com.ktds.dsquare.common.file.dto.AttachmentDto;
@@ -27,9 +28,7 @@ import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -60,6 +59,7 @@ public class QuestionService {
     private final CommentService commentService;
     private final AttachmentService attachmentService;
     private final TagService tagService;
+    private final PagingService pagingService;
 
     //create - 질문글 작성
     @Transactional
@@ -85,14 +85,7 @@ public class QuestionService {
      * 3. 둘 다 검색하는 경우 -> cid, key, value
      * */
     public List<BriefQuestionResponse> getQuestions(Boolean workYn, Member user, Integer cid, String key, String value, String order, Pageable pageable){
-        Pageable page;
-        if(order.equals("create")){
-            page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
-        } else if (order.equals("like")) {
-            page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("likeCnt").descending());
-        } else {
-            throw new RuntimeException("Invalid order. Using create || like");
-        }
+        Pageable page = pagingService.orderPage(order, pageable);
 
         //deleteYn = false인 것만 조회
         Specification<Question> filter = Specification.where(QuestionSpecification.equalNotDeleted(false));
