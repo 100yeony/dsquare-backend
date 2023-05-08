@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.tag.QuestionTag;
 import com.ktds.dsquare.common.file.dto.AttachmentDto;
-import com.ktds.dsquare.member.dto.response.MemberInfo;
+import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +21,7 @@ import java.util.List;
 public class QuestionResponse {
 
     private Long qid;
-    private MemberInfo writerInfo;
+    private BriefMemberInfo writerInfo;
     private CategoryResponse category;
     private String title;
     private String content;
@@ -36,7 +36,7 @@ public class QuestionResponse {
     private Boolean likeYn;
     private Long commentCnt;
 
-    public static QuestionResponse toDto(Question question, MemberInfo writerInfo,
+    public static QuestionResponse toDto(Question question,
                                          CategoryResponse category, Long likeCnt, Boolean likeYn, Long commentCnt){
         List<QuestionTag> questionTags = question.getQuestionTags();
         List<String> tags = new ArrayList<>();
@@ -45,7 +45,7 @@ public class QuestionResponse {
 
         return QuestionResponse.builder()
                 .qid(question.getQid())
-                .writerInfo(writerInfo)
+                .writerInfo(BriefMemberInfo.toDto(question.getWriter()))
                 .category(category)
                 .title(question.getTitle())
                 .content(question.getContent())

@@ -10,7 +10,7 @@ import com.ktds.dsquare.board.tag.TalkTag;
 import com.ktds.dsquare.board.talk.dto.BriefTalkResponse;
 import com.ktds.dsquare.board.talk.dto.TalkRegisterRequest;
 import com.ktds.dsquare.board.talk.dto.TalkResponse;
-import com.ktds.dsquare.common.Paging.PagingService;
+import com.ktds.dsquare.board.paging.PagingService;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import lombok.RequiredArgsConstructor;

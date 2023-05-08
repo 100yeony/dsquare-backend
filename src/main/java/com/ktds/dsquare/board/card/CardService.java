@@ -8,9 +8,9 @@ import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeRepository;
-import com.ktds.dsquare.common.Paging.PagingService;
+import com.ktds.dsquare.board.paging.PagingService;
 import com.ktds.dsquare.member.Member;
-import com.ktds.dsquare.member.dto.response.MemberInfo;
+import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import com.ktds.dsquare.member.dto.response.TeamInfo;
 import com.ktds.dsquare.member.team.Team;
 import com.ktds.dsquare.member.team.TeamRepository;
@@ -80,14 +80,14 @@ public class CardService {
                     .orElseThrow(()-> new EntityNotFoundException("team not found"));
         }
         if(owner != null){
-            MemberInfo cardOwner = MemberInfo.toDto(owner);
+            BriefMemberInfo cardOwner = BriefMemberInfo.toDto(owner);
             selectionInfo = CardSelectionInfo.toDto(C, cardOwner);
         }else{
             selectionInfo = null;
         }
         Boolean likeYn = findLikeYn(BoardType.CARD, C.getId(), user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARD, C.getId());
-        return BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, C.getLikeCnt(), likeYn, commentCnt);
+        return BriefCardResponse.toDto(C, TeamInfo.toDto(team), selectionInfo, C.getLikeCnt(), likeYn, commentCnt);
     }
 
     //read - 카드주세요 글 상세 조회
@@ -98,7 +98,7 @@ public class CardService {
 
         Boolean likeYn = findLikeYn(BoardType.CARD, card.getId(), user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARD, cardId);
-        return CardResponse.toDto(card, card.getWriter(), card.getProjTeam(), card.getCardOwner(), card.getLikeCnt(), likeYn, commentCnt);
+        return CardResponse.toDto(card, card.getProjTeam(), card.getCardOwner(), card.getLikeCnt(), likeYn, commentCnt);
     }
 
     //update - 카드주세요 선정
@@ -138,14 +138,14 @@ public class CardService {
             CardSelectionInfo selectionInfo;
 
             if(owner != null){
-                MemberInfo cardOwner = MemberInfo.toDto(owner);
+                BriefMemberInfo cardOwner = BriefMemberInfo.toDto(owner);
                 selectionInfo = CardSelectionInfo.toDto(C, cardOwner);
             }else{
                 selectionInfo = null;
             }
             Boolean likeYn = findLikeYn(BoardType.CARD, C.getId(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARD, C.getId());
-            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(C.getProjTeam()), selectionInfo, C.getLikeCnt(), likeYn, commentCnt));
+            briefCards.add(BriefCardResponse.toDto(C, TeamInfo.toDto(C.getProjTeam()), selectionInfo, C.getLikeCnt(), likeYn, commentCnt));
         }
         return briefCards;
     }

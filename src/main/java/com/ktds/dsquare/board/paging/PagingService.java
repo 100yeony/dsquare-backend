@@ -1,4 +1,4 @@
-package com.ktds.dsquare.common.Paging;
+package com.ktds.dsquare.board.paging;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

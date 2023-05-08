@@ -3,7 +3,7 @@ package com.ktds.dsquare.board.qna.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.member.dto.response.MemberInfo;
+import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Component
 public class AnswerResponse {
     private Long aid;
-    private MemberInfo writerInfo;
+    private BriefMemberInfo writerInfo;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
@@ -30,12 +30,12 @@ public class AnswerResponse {
     private Boolean likeYn;
     private Long commentCnt;
 
-    public static AnswerResponse toDto(Answer answer, MemberInfo writerInfo, Long likeCnt, Boolean likeYn, Long commentCnt){
+    public static AnswerResponse toDto(Answer answer, Long likeCnt, Boolean likeYn, Long commentCnt){
         Question q = answer.getQuestion();
         Long qid = q.getQid();
         return AnswerResponse.builder()
                 .aid(answer.getId())
-                .writerInfo(writerInfo)
+                .writerInfo(BriefMemberInfo.toDto(answer.getWriter()))
                 .content(answer.getContent())
                 .createDate(answer.getCreateDate())
                 .lastUpdateDate(answer.getLastUpdateDate())

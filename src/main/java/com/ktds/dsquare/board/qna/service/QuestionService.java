@@ -17,13 +17,13 @@ import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.board.tag.QuestionTag;
 import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.board.tag.TagService;
-import com.ktds.dsquare.common.Paging.PagingService;
+import com.ktds.dsquare.board.paging.PagingService;
 import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.common.file.AttachmentService;
 import com.ktds.dsquare.common.file.dto.AttachmentDto;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
-import com.ktds.dsquare.member.dto.response.MemberInfo;
+import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -149,7 +149,7 @@ public class QuestionService {
         }
         Boolean likeYn = findLikeYn(BoardType.QUESTION, q.getQid(), user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, q.getQid());
-        return BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, q.getLikeCnt(), likeYn, commentCnt);
+        return BriefQuestionResponse.toDto(q,categoryRes ,(long)answers.size(), managerAnswerYn, q.getLikeCnt(), likeYn, commentCnt);
     }
 
 
@@ -160,12 +160,12 @@ public class QuestionService {
         questionRepository.save(question);
 
         Member member = question.getWriter();
-        MemberInfo writer = MemberInfo.toDto(member);
+        BriefMemberInfo writer = BriefMemberInfo.toDto(member);
         CategoryResponse categoryRes = CategoryResponse.toDto(question.getCategory());
 
         Boolean likeYn = findLikeYn(BoardType.QUESTION, qid, user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, qid);
-        return QuestionResponse.toDto(question, writer, categoryRes, question.getLikeCnt(), likeYn, commentCnt);
+        return QuestionResponse.toDto(question, categoryRes, question.getLikeCnt(), likeYn, commentCnt);
     }
 
     // 질문글 수정

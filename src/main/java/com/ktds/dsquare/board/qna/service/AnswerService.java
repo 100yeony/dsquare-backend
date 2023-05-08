@@ -11,7 +11,6 @@ import com.ktds.dsquare.board.qna.dto.AnswerResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.member.Member;
-import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +44,7 @@ public class AnswerService {
         for(Answer answer:answers){
             Boolean likeYn = findLikeYn(BoardType.ANSWER, answer.getId(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.ANSWER, answer.getId());
-            answerResponses.add(AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), answer.getLikeCnt(), likeYn, commentCnt));
+            answerResponses.add(AnswerResponse.toDto(answer, answer.getLikeCnt(), likeYn, commentCnt));
         }
         return answerResponses;
     }
@@ -55,7 +54,7 @@ public class AnswerService {
         Answer answer = answerRepository.findByDeleteYnAndId(false, aid);
         Boolean likeYn = findLikeYn(BoardType.ANSWER, answer.getId(), user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.ANSWER, answer.getId());
-        return AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), answer.getLikeCnt(), likeYn, commentCnt);
+        return AnswerResponse.toDto(answer, answer.getLikeCnt(), likeYn, commentCnt);
     }
 
 

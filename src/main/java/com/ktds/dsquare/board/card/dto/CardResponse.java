@@ -3,7 +3,7 @@ package com.ktds.dsquare.board.card.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.card.Card;
 import com.ktds.dsquare.member.Member;
-import com.ktds.dsquare.member.dto.response.MemberInfo;
+import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import com.ktds.dsquare.member.dto.response.TeamInfo;
 import com.ktds.dsquare.member.team.Team;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 public class CardResponse {
 
     private Long cardId;
-    private MemberInfo writerInfo;
+    private BriefMemberInfo writerInfo;
     private TeamInfo projTeamInfo;
     private String title;
     private String content;
@@ -36,19 +36,18 @@ public class CardResponse {
     private Long commentCnt;
     private CardSelectionInfo selectionInfo;
 
-    public static CardResponse toDto(Card entity, Member writer, Team team, Member cardOwner, Long likeCnt, Boolean likeYn, Long commentCnt) {
-        MemberInfo writerInfo = MemberInfo.toDto(writer);
+    public static CardResponse toDto(Card entity, Team team, Member cardOwner, Long likeCnt, Boolean likeYn, Long commentCnt) {
         TeamInfo teamInfo = TeamInfo.toDto(team);
         CardSelectionInfo selectionInfo;
         if(cardOwner != null){
-            selectionInfo = CardSelectionInfo.toDto(entity, MemberInfo.toDto(cardOwner));
+            selectionInfo = CardSelectionInfo.toDto(entity, BriefMemberInfo.toDto(cardOwner));
         }else {
             selectionInfo = null;
         }
 
         return CardResponse.builder()
                 .cardId(entity.getId())
-                .writerInfo(writerInfo)
+                .writerInfo(BriefMemberInfo.toDto(entity.getWriter()))
                 .projTeamInfo(teamInfo)
                 .title(entity.getTitle())
                 .content(entity.getContent())

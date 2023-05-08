@@ -1,9 +1,9 @@
-package com.ktds.dsquare.common.dashboard;
+package com.ktds.dsquare.board.dashboard;
 
 import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
 import com.ktds.dsquare.board.tag.TagService;
 import com.ktds.dsquare.common.annotation.AuthUser;
-import com.ktds.dsquare.common.dashboard.dto.BestUserResponse;
+import com.ktds.dsquare.board.dashboard.dto.BestUserResponse;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

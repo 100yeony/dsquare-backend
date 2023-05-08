@@ -1,4 +1,4 @@
-package com.ktds.dsquare.common.mypage;
+package com.ktds.dsquare.board.mypage;
 
 import com.ktds.dsquare.board.card.Card;
 import com.ktds.dsquare.board.card.CardRepository;
@@ -12,6 +12,7 @@ import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.dto.MyCommentInfo;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeRepository;
+import com.ktds.dsquare.board.paging.PagingService;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.AnswerResponse;
@@ -22,9 +23,7 @@ import com.ktds.dsquare.board.qna.service.QuestionService;
 import com.ktds.dsquare.board.talk.Talk;
 import com.ktds.dsquare.board.talk.TalkRepository;
 import com.ktds.dsquare.board.talk.dto.BriefTalkResponse;
-import com.ktds.dsquare.common.Paging.PagingService;
 import com.ktds.dsquare.member.Member;
-import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -102,7 +101,7 @@ public class MypageService {
             Member member = C.getWriter();
             Boolean likeYn = findLikeYn(BoardType.CARROT, C.getId(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARROT, C.getId());
-            searchResults.add(BriefCarrotResponse.toDto(C, MemberInfo.toDto(member), C.getLikeCnt(), likeYn, commentCnt));
+            searchResults.add(BriefCarrotResponse.toDto(C, C.getLikeCnt(), likeYn, commentCnt));
         }
         return searchResults;
     }
@@ -118,7 +117,7 @@ public class MypageService {
             Member member = A.getWriter();
             Boolean likeYn = findLikeYn(BoardType.ANSWER, A.getId(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.ANSWER, A.getId());
-            searchResults.add(AnswerResponse.toDto(A, MemberInfo.toDto(member), A.getLikeCnt(), likeYn, commentCnt));
+            searchResults.add(AnswerResponse.toDto(A, A.getLikeCnt(), likeYn, commentCnt));
         }
         return searchResults;
     }
