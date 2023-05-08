@@ -4,6 +4,7 @@ package com.ktds.dsquare.board.qna.domain;
 import com.ktds.dsquare.board.Post;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.qna.dto.AnswerRequest;
+import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.member.Member;
 import lombok.*;
 
@@ -28,7 +29,9 @@ public class Answer extends Post {
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
 
-    private Long atcId;
+    @OneToOne(mappedBy = "post", fetch = FetchType.LAZY)
+    private Attachment attachment;
+
     @Column(nullable = false)
     private boolean deleteYn;
 
@@ -44,18 +47,16 @@ public class Answer extends Post {
                 .writer(writer)
                 .content(dto.getContent())
                 .createDate(now)
-                .atcId(dto.getAtcId())
                 .deleteYn(false)
                 .question(question)
                 .likeCnt(0L)
                 .build();
     }
 
-    public void updateAnswer(String content, Long atcId){
+    public void updateAnswer(String content){
         LocalDateTime now = LocalDateTime.now();
         this.content = content;
         this.lastUpdateDate = now;
-        this.atcId = atcId;
     }
 
     public void deleteAnswer(){

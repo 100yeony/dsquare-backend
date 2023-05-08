@@ -10,10 +10,14 @@ import com.ktds.dsquare.board.qna.dto.AnswerRequest;
 import com.ktds.dsquare.board.qna.dto.AnswerResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
+import com.ktds.dsquare.common.file.Attachment;
+import com.ktds.dsquare.common.file.AttachmentService;
+import com.ktds.dsquare.common.file.dto.AttachmentDto;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
@@ -24,18 +28,29 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AnswerService {
 
+    /*** Service ***/
+    private final CommentService commentService;
+    private final AttachmentService attachmentService;
+
+    /*** Repository ***/
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
     private final CommentRepository commentRepository;
-    private final CommentService commentService;
     private final LikeRepository likeRepository;
 
     // 답변글 작성
     @Transactional
-    public void createAnswer(Long qid, AnswerRequest dto, Member user) {
+    public void createAnswer(Long qid, AnswerRequest dto, MultipartFile attachment, Member user) {
         Question question = questionRepository.findById(qid).orElseThrow(() -> new EntityNotFoundException("Question not found"));
         Answer answer = Answer.toEntity(dto, user, question);
+        saveAttachment(attachment, answer);
         answerRepository.save(answer);
+    }
+    @Transactional // TODO code duplication
+    public void saveAttachment(MultipartFile attachment, Answer answer) {
+        Attachment savedAttachment = attachmentService.saveAttachment(answer.getWriter(), attachment, answer);
+        if (savedAttachment != null)
+            savedAttachment.linkPost(answer);
     }
 
     // 답변글 전체 조회(질문 번호로 조회)
@@ -62,12 +77,19 @@ public class AnswerService {
 
     // 답변글 수정
     @Transactional
-    public void updateAnswer(Long aid, AnswerRequest request) {
+    public void updateAnswer(Long qid, Long aid, AnswerRequest request, MultipartFile newAttachment) {
+        // TODO validate qid <> aid.qid
         Answer answer = answerRepository.findByDeleteYnAndId(false, aid);
         if(answer==null){
             throw new EntityNotFoundException("answer not found. aid is " + aid);
         }
-        answer.updateAnswer(request.getContent(), request.getAtcId());
+        answer.updateAnswer(request.getContent());
+        updateAttachment(request.getAttachment(), newAttachment, answer);
+    }
+    @Transactional
+    public void updateAttachment(AttachmentDto attachment, MultipartFile newAttachment, Answer answer) {
+        attachmentService.updateAttachment(attachment, answer.getAttachment());
+        saveAttachment(newAttachment, answer);
     }
 
     // 답변글 삭제

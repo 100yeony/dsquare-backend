@@ -69,10 +69,6 @@ public class Question extends Post {
                 .build();
     }
 
-    public void registerAttachment(Attachment attachment) {
-        this.attachment = attachment;
-    }
-
     public void updateQuestion(String title, String content, Category category){
         LocalDateTime now = LocalDateTime.now();
         this.title = title;

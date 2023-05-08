@@ -53,8 +53,8 @@ public class AttachmentDto {
                 && Objects.equals(this.path, o.path)
                 && Objects.equals(this.url, o.url)
                 && Objects.equals(this.extension, o.extension)
-                && Objects.equals(this.size, o.size)
-                && Objects.equals(this.createDate, o.createDate);
+                && Objects.equals(this.size, o.size);
+//                && Objects.equals(this.createDate, o.createDate);
     }
 
     public static AttachmentDto toDto(Attachment entity) {

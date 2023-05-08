@@ -1,18 +1,21 @@
 package com.ktds.dsquare.board.qna.dto;
 
-import lombok.*;
-
-import java.time.LocalDateTime;
+import com.ktds.dsquare.common.file.dto.AttachmentDto;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter @Builder
 @NoArgsConstructor @AllArgsConstructor
 public class AnswerRequest {
 
     private Long id;
-    private LocalDateTime createDate;
-    private LocalDateTime lastUpdateDate;
+//    private LocalDateTime createDate;
+//    private LocalDateTime lastUpdateDate;
     private String content;
-    private Long atcId;
+    private AttachmentDto attachment;
     private Boolean deleteYn;
     private Long qid;
+
 }

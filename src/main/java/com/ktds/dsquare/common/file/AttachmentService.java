@@ -1,6 +1,6 @@
 package com.ktds.dsquare.common.file;
 
-import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.board.Post;
 import com.ktds.dsquare.common.file.dto.AttachmentDto;
 import com.ktds.dsquare.common.file.dto.FileSavedDto;
 import com.ktds.dsquare.member.Member;
@@ -61,7 +61,7 @@ public class AttachmentService {
         }
     }
     @Transactional
-    public Attachment saveAttachment(Member member, @NotNull MultipartFile file, Question post) throws RuntimeException {
+    public Attachment saveAttachment(Member member, @NotNull MultipartFile file, Post post) throws RuntimeException {
         if (ObjectUtils.isEmpty(file))
             return null;
 
