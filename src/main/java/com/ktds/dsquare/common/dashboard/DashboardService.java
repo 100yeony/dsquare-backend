@@ -59,7 +59,7 @@ public class DashboardService {
                 .setMaxResults(5)
                 .getResultList();
         for (Long q : resultList) {
-            Question question = questionRepository.findById((Long) q)
+            Question question = questionRepository.findById(q)
                     .orElseThrow(() -> new EntityNotFoundException());
             bestQnaList.add(questionService.makeBriefQuestionRes(question, user));
         }
