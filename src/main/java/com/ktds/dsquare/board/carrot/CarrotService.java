@@ -137,14 +137,17 @@ public class CarrotService {
         commentService.deleteCommentCascade(BoardType.CARROT, carrotId);
     }
 
-    public void like(Carrot carrot) {
+    public void like(Long id) {
+        Carrot carrot = carrotRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("carrot not found"));
         carrot.like();
-        carrotRepository.save(carrot);
     }
 
-    public void cancleLike(Carrot carrot){
+
+    public void cancleLike(Long id){
+        Carrot carrot = carrotRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("carrot not found"));
         carrot.cancleLike();
-        carrotRepository.save(carrot);
     }
 
     public Boolean findLikeYn(BoardType boardType, Long postId, Member user){

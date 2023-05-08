@@ -150,14 +150,17 @@ public class CardService {
         return briefCards;
     }
 
-    public void like(Card card) {
+    public void like(Long id) {
+        Card card = cardRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("answer not found"));
         card.like();
-        cardRepository.save(card);
     }
 
-    public void cancleLike(Card card){
+
+    public void cancleLike(Long id){
+        Card card = cardRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("answer not found"));
         card.cancleLike();
-        cardRepository.save(card);
     }
 
     public Boolean findLikeYn(BoardType boardType, Long postId, Member user){

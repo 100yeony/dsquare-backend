@@ -231,14 +231,17 @@ public class QuestionService {
         attachmentService.deleteAttachmentByPostDeletion(attachment);
     }
 
-    public void like(Question question) {
+    public void like(Long id) {
+        Question question = questionRepository.findById(id)
+                        .orElseThrow(()-> new EntityNotFoundException("question not found"));
         question.like();
-        questionRepository.save(question);
     }
 
-    public void cancleLike(Question question){
+
+    public void cancleLike(Long id){
+        Question question = questionRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("question not found"));
         question.cancleLike();
-        questionRepository.save(question);
     }
 
     public Boolean findLikeYn(BoardType boardType, Long postId, Member user){

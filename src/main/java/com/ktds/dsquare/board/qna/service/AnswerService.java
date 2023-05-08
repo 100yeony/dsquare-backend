@@ -55,8 +55,7 @@ public class AnswerService {
         Answer answer = answerRepository.findByDeleteYnAndId(false, aid);
         Boolean likeYn = findLikeYn(BoardType.ANSWER, answer.getId(), user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.ANSWER, answer.getId());
-        AnswerResponse answerResponse = AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), answer.getLikeCnt(), likeYn, commentCnt);
-        return answerResponse;
+        return AnswerResponse.toDto(answer, MemberInfo.toDto(answer.getWriter()), answer.getLikeCnt(), likeYn, commentCnt);
     }
 
 
@@ -78,14 +77,17 @@ public class AnswerService {
         commentService.deleteCommentCascade(BoardType.ANSWER, aid);
     }
 
-    public void like(Answer answer) {
+    public void like(Long id) {
+        Answer answer = answerRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("answer not found"));
         answer.like();
-        answerRepository.save(answer);
     }
 
-    public void cancleLike(Answer answer){
+
+    public void cancleLike(Long id){
+        Answer answer = answerRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("answer not found"));
         answer.cancleLike();
-        answerRepository.save(answer);
     }
 
     public Boolean findLikeYn(BoardType boardType, Long postId, Member user){

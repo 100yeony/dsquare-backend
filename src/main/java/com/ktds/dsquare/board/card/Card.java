@@ -5,6 +5,7 @@ import com.ktds.dsquare.board.card.dto.CardRegisterRequest;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.team.Team;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
+@DynamicUpdate
 @Table(name = "COMM_CARD")
 public class Card {
 
