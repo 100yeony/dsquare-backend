@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 @Getter
@@ -15,7 +17,7 @@ public class BriefMemberInfo {
     private String email;
     private String nickname;
     private String name;
-    private String teamName;
+    private List<String> teamHierarchy;
     private String profileImage;
 
 
@@ -25,7 +27,7 @@ public class BriefMemberInfo {
                 .email(entity.getEmail())
                 .nickname(entity.getNickname())
                 .name(entity.getName())
-                .teamName(entity.getTeam().getName())
+                .teamHierarchy(entity.getTeam().getTeamHierarchy())
                 .profileImage(entity.getProfileImage())
                 .build();
     }
