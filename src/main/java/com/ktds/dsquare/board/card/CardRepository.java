@@ -35,6 +35,6 @@ public interface CardRepository extends JpaRepository<Card,Long>, JpaSpecificati
     List<Card> findSelectedCard();
 
     //마이페이지 관련
-    List<Card> findByDeleteYnAndWriter(Boolean deleteYn, Member writer);
+    Page<Card> findByDeleteYnAndWriter(Boolean deleteYn, Member writer, Pageable pageable);
 
 }

@@ -7,7 +7,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -17,6 +16,8 @@ public interface TalkRepository extends JpaRepository<Talk,Long>{
 
     //전체조회 & 검색 관련
     Page<Talk> findAll(Specification<Talk> filter, Pageable pageable);
-    List<Talk> findByDeleteYnAndWriter(Boolean deleteYn, Member writer);
+
+    //마이페이지 관련
+    Page<Talk> findByDeleteYnAndWriter(Boolean deleteYn, Member writer, Pageable pageable);
 
 }

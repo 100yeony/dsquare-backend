@@ -22,9 +22,14 @@ import com.ktds.dsquare.board.qna.service.QuestionService;
 import com.ktds.dsquare.board.talk.Talk;
 import com.ktds.dsquare.board.talk.TalkRepository;
 import com.ktds.dsquare.board.talk.dto.BriefTalkResponse;
+import com.ktds.dsquare.common.Paging.PagingService;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -43,10 +48,13 @@ public class MypageService {
     private final CarrotRepository carrotRepository;
     private final CardService cardService;
     private final LikeRepository likeRepository;
+    private final PagingService pagingService;
 
     //read - 나의 질문글 전체 조회
-    public List<BriefQuestionResponse> getAllMyQuestions(Member user){
-        List<Question> questionList = questionRepository.findByDeleteYnAndWriter(false, user);
+    public List<BriefQuestionResponse> getAllMyQuestions(Member user, String order, Pageable pageable){
+        Pageable page = pagingService.orderPage(order, pageable);
+
+        Page<Question> questionList = questionRepository.findByDeleteYnAndWriter(false, user, page);
         List<BriefQuestionResponse> searchResults = new ArrayList<>();
 
         for(Question q: questionList){
@@ -56,8 +64,10 @@ public class MypageService {
     }
 
     //read - 나의 카드주세요 글 전체 조회
-    public List<BriefCardResponse> getAllMyCards(Member user){
-        List<Card> cards = cardRepository.findByDeleteYnAndWriter(false, user);
+    public List<BriefCardResponse> getAllMyCards(Member user, String order, Pageable pageable){
+        Pageable page = pagingService.orderPage(order, pageable);
+
+        Page<Card> cards = cardRepository.findByDeleteYnAndWriter(false, user, page);
         List<BriefCardResponse> briefCards = new ArrayList<>();
 
         for(Card C : cards){
@@ -67,8 +77,10 @@ public class MypageService {
     }
 
     //read - 나의 소통해요 글 전체 조회
-    public List<BriefTalkResponse> getAllMyTalks(Member user){
-        List<Talk> talkList = talkRepository.findByDeleteYnAndWriter(false, user);
+    public List<BriefTalkResponse> getAllMyTalks(Member user, String order, Pageable pageable){
+        Pageable page = pagingService.orderPage(order, pageable);
+
+        Page<Talk> talkList = talkRepository.findByDeleteYnAndWriter(false, user, page);
         List<BriefTalkResponse> searchResults = new ArrayList<>();
 
         for(Talk T: talkList){
@@ -80,8 +92,10 @@ public class MypageService {
     }
 
     //read - 나의 당근해요 글 전체 조회
-    public List<BriefCarrotResponse> getAllMyCarrots(Member user){
-        List<Carrot> carrotList = carrotRepository.findByDeleteYnAndWriter(false, user);
+    public List<BriefCarrotResponse> getAllMyCarrots(Member user, String order, Pageable pageable){
+        Pageable page = pagingService.orderPage(order, pageable);
+
+        Page<Carrot> carrotList = carrotRepository.findByDeleteYnAndWriter(false, user, page);
         List<BriefCarrotResponse> searchResults = new ArrayList<>();
 
         for(Carrot C: carrotList){
@@ -94,8 +108,10 @@ public class MypageService {
     }
 
     //read - 나의 답변글 전체 조회
-    public List<AnswerResponse> getAllMyAnswers(Member user){
-        List<Answer> answerList = answerRepository.findByDeleteYnAndWriter(false, user);
+    public List<AnswerResponse> getAllMyAnswers(Member user, String order, Pageable pageable){
+        Pageable page = pagingService.orderPage(order, pageable);
+
+        Page<Answer> answerList = answerRepository.findByDeleteYnAndWriter(false, user, page);
         List<AnswerResponse> searchResults = new ArrayList<>();
 
         for(Answer A: answerList){
@@ -108,8 +124,10 @@ public class MypageService {
     }
 
     //read - 나의 댓글 전체 조회
-    public List<MyCommentInfo> getAllMyComments(Member user){
-        List<Comment> commentList = commentRepository.findByWriter(user);
+    public List<MyCommentInfo> getAllMyComments(Member user, String order, Pageable pageable){
+        Pageable page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
+
+        Page<Comment> commentList = commentRepository.findByWriter(user, page);
         List<MyCommentInfo> commentDto = new ArrayList<>();
 
         for(Comment comment : commentList)
