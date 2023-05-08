@@ -38,7 +38,7 @@ public class Comment {
     private LocalDateTime createDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "originWriter")
+    @JoinColumn(name = "origin_writer")
     private Member originWriter;
 
     public static Comment toEntity(CommentRegisterDto request, Member writer, BoardType boardType, Long postId) {
