@@ -1,4 +1,4 @@
-package com.ktds.dsquare.common.mypage;
+package com.ktds.dsquare.board.mypage;
 
 import com.ktds.dsquare.board.card.dto.BriefCardResponse;
 import com.ktds.dsquare.board.carrot.dto.BriefCarrotResponse;

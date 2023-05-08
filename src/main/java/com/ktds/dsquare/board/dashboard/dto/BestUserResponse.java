@@ -1,6 +1,6 @@
-package com.ktds.dsquare.common.dashboard.dto;
+package com.ktds.dsquare.board.dashboard.dto;
 
-import com.ktds.dsquare.member.dto.response.MemberInfo;
+import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,10 +12,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BestUserResponse {
 
-    private MemberInfo memberInfo;
+    private BriefMemberInfo memberInfo;
     private Long postCnt;
 
-    public static BestUserResponse toDto(MemberInfo memberInfo, Long postCnt){
+    public static BestUserResponse toDto(BriefMemberInfo memberInfo, Long postCnt){
         return BestUserResponse.builder()
                 .memberInfo(memberInfo)
                 .postCnt(postCnt)

@@ -1,27 +1,16 @@
 package com.ktds.dsquare.board.like;
 
-import com.ktds.dsquare.board.card.Card;
-import com.ktds.dsquare.board.card.CardRepository;
 import com.ktds.dsquare.board.card.CardService;
-import com.ktds.dsquare.board.carrot.Carrot;
-import com.ktds.dsquare.board.carrot.CarrotRepository;
 import com.ktds.dsquare.board.carrot.CarrotService;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.dto.LikeRegisterRequest;
-import com.ktds.dsquare.board.qna.domain.Answer;
-import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.board.qna.repository.AnswerRepository;
-import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.board.qna.service.AnswerService;
 import com.ktds.dsquare.board.qna.service.QuestionService;
-import com.ktds.dsquare.board.talk.Talk;
-import com.ktds.dsquare.board.talk.TalkRepository;
 import com.ktds.dsquare.board.talk.TalkService;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
 @Service
@@ -31,11 +20,6 @@ public class LikeService {
     private final LikeRepository likeRepository;
     private final QuestionService questionService;
     private final AnswerService answerService;
-    private final QuestionRepository questionRepository;
-    private final AnswerRepository answerRepository;
-    private final TalkRepository talkRepository;
-    private final CardRepository cardRepository;
-    private final CarrotRepository carrotRepository;
     private final CardService cardService;
     private final TalkService talkService;
     private final CarrotService carrotService;
@@ -52,28 +36,18 @@ public class LikeService {
             likeRepository.save(like);
             switch (boardType) {
                 case QUESTION:
-                    Question question = questionRepository.findById(dto.getPostId())
-                            .orElseThrow(() -> new EntityNotFoundException("question not found"));
-                    questionService.like(question);
+                    questionService.like(dto.getPostId());
                     break;
                 case ANSWER:
-                    Answer answer = answerRepository.findById(dto.getPostId())
-                            .orElseThrow(() -> new EntityNotFoundException("answer not found"));
-                    answerService.like(answer);
+                    answerService.like(dto.getPostId());
                 case CARD:
-                    Card card = cardRepository.findById(dto.getPostId())
-                            .orElseThrow(() -> new EntityNotFoundException("card not found"));
-                    cardService.like(card);
+                    cardService.like(dto.getPostId());
                     break;
                 case TALK:
-                    Talk talk = talkRepository.findById(dto.getPostId())
-                            .orElseThrow(() -> new EntityNotFoundException("talk not found"));
-                    talkService.like(talk);
+                    talkService.like(dto.getPostId());
                     break;
                 case CARROT:
-                    Carrot carrot = carrotRepository.findById(dto.getPostId())
-                            .orElseThrow(() -> new EntityNotFoundException("carrot not found"));
-                    carrotService.like(carrot);
+                    carrotService.like(dto.getPostId());
                     break;
                 default:
                     throw new RuntimeException("Invalid board type.");
@@ -89,28 +63,18 @@ public class LikeService {
         likeRepository.delete(like);
         switch (boardType) {
             case QUESTION:
-                Question question = questionRepository.findById(dto.getPostId())
-                        .orElseThrow(() -> new EntityNotFoundException("question not found"));
-                questionService.cancleLike(question);
+                questionService.cancleLike(dto.getPostId());
                 break;
             case ANSWER:
-                Answer answer = answerRepository.findById(dto.getPostId())
-                        .orElseThrow(() -> new EntityNotFoundException("answer not found"));
-                answerService.cancleLike(answer);
+                answerService.cancleLike(dto.getPostId());
             case CARD:
-                Card card = cardRepository.findById(dto.getPostId())
-                        .orElseThrow(() -> new EntityNotFoundException("card not found"));
-                cardService.cancleLike(card);
+                cardService.cancleLike(dto.getPostId());
                 break;
             case TALK:
-                Talk talk = talkRepository.findById(dto.getPostId())
-                        .orElseThrow(() -> new EntityNotFoundException("talk not found"));
-                talkService.cancleLike(talk);
+                talkService.cancleLike(dto.getPostId());
                 break;
             case CARROT:
-                Carrot carrot = carrotRepository.findById(dto.getPostId())
-                        .orElseThrow(() -> new EntityNotFoundException("carrot not found"));
-                carrotService.cancleLike(carrot);
+                carrotService.cancleLike(dto.getPostId());
                 break;
             default:
                 throw new RuntimeException("Invalid board type.");
