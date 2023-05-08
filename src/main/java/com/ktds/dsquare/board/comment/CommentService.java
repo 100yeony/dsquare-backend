@@ -13,6 +13,10 @@ import com.ktds.dsquare.board.talk.TalkRepository;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -54,11 +58,13 @@ public class CommentService {
     }
 
     // 댓글 조회(글에 달린 댓글 전체 조회)
-    public List<Object> getAllComments(String boardTypeName, Long postId) {
+    public List<Object> getAllComments(String boardTypeName, Long postId, Pageable pageable) {
+        Pageable page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate"));
+
         if(!checkAvailability(boardTypeName, postId))
             throw new RuntimeException("Post Not Found");
         BoardType boardType = BoardType.findBoardType(boardTypeName);
-        List<Comment> comments = commentRepository.findByBoardTypeAndPostId(boardType, postId);
+        Page<Comment> comments = commentRepository.findByBoardTypeAndPostId(boardType, postId, page);
         List<Object> commentDto = new ArrayList<>();
         for(Comment comment : comments)
             if(ObjectUtils.isEmpty(comment.getOriginWriter()))
