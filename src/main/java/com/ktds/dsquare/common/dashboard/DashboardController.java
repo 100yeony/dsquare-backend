@@ -1,8 +1,8 @@
 package com.ktds.dsquare.common.dashboard;
 
 import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
-import com.ktds.dsquare.common.annotatin.AuthUser;
 import com.ktds.dsquare.board.tag.TagService;
+import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.common.dashboard.dto.BestUserResponse;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 
 @RestController
