@@ -2,10 +2,7 @@ package com.ktds.dsquare.board.comment;
 
 import com.ktds.dsquare.board.card.CardRepository;
 import com.ktds.dsquare.board.carrot.CarrotRepository;
-import com.ktds.dsquare.board.comment.dto.CommentInfo;
-import com.ktds.dsquare.board.comment.dto.CommentRegisterDto;
-import com.ktds.dsquare.board.comment.dto.NestedCommentInfo;
-import com.ktds.dsquare.board.comment.dto.NestedCommentRegisterDto;
+import com.ktds.dsquare.board.comment.dto.*;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
@@ -69,6 +66,8 @@ public class CommentService {
         for(Comment comment : comments)
             if(ObjectUtils.isEmpty(comment.getOriginWriter()))
                 commentDto.add(CommentInfo.toDto(comment));
+            else if(boardType.equals(BoardType.TALK))
+                commentDto.add(NestedTalkCommentInfo.toDto(comment));
             else
                 commentDto.add(NestedCommentInfo.toDto(comment));
         return commentDto;
