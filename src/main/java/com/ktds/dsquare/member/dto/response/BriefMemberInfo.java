@@ -14,7 +14,9 @@ public class BriefMemberInfo {
     private Long id;
     private String email;
     private String nickname;
+    private String name;
     private String teamName;
+    private String profileImage;
 
 
     public static BriefMemberInfo toDto(Member entity) {
@@ -22,7 +24,9 @@ public class BriefMemberInfo {
                 .id(entity.getId())
                 .email(entity.getEmail())
                 .nickname(entity.getNickname())
+                .name(entity.getName())
                 .teamName(entity.getTeam().getName())
+                .profileImage(entity.getProfileImage())
                 .build();
     }
 
