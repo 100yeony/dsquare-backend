@@ -4,9 +4,10 @@ import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.dto.QuestionRequest;
 import com.ktds.dsquare.board.qna.dto.QuestionResponse;
 import com.ktds.dsquare.board.qna.service.QuestionService;
-import com.ktds.dsquare.common.annotatin.AuthUser;
+import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,8 +38,9 @@ public class QuestionController {
     //read - 질문글 전체 목록 조회 & 검색
     @GetMapping("/board/questions")
     public List<BriefQuestionResponse> getQuestions(@RequestParam Boolean workYn, @ApiIgnore @AuthUser Member user, @RequestParam(required = false) Integer cid,
-                                                 @RequestParam(required = false) String key, @RequestParam(required = false) String value) {
-        return questionService.getQuestions(workYn, user, cid, key, value);
+                                                    @RequestParam(required = false) String key, @RequestParam(required = false) String value,
+                                                    @RequestParam(required = false) String order, Pageable pageable) {
+        return questionService.getQuestions(workYn, user, cid, key, value, order, pageable);
     }
 
     //read - 질문글 상세 조회

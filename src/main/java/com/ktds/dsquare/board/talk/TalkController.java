@@ -3,11 +3,12 @@ package com.ktds.dsquare.board.talk;
 import com.ktds.dsquare.board.talk.dto.BriefTalkResponse;
 import com.ktds.dsquare.board.talk.dto.TalkRegisterRequest;
 import com.ktds.dsquare.board.talk.dto.TalkResponse;
-import com.ktds.dsquare.common.annotatin.AuthUser;
+import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.member.Member;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,8 +32,9 @@ public class TalkController {
     // 소통해요 전체조회(정렬포함) + 검색 한번에
     @ApiOperation(value="소통해요 전체조회, 검색", notes="소통해요 전체조회, 검색")
     @GetMapping("/board/talks")
-    public ResponseEntity<List<BriefTalkResponse>> getTalks(@AuthUser Member user, @RequestParam(required = false) String key, @RequestParam(required = false) String value){
-        return new ResponseEntity<>(talkService.getTalks(user, key, value), HttpStatus.OK);
+    public ResponseEntity<List<BriefTalkResponse>> getTalks(@AuthUser Member user, @RequestParam(required = false) String key,
+                                                            @RequestParam(required = false) String value, @RequestParam(required = false) String order, Pageable pageable){
+        return new ResponseEntity<>(talkService.getTalks(user, key, value, order, pageable), HttpStatus.OK);
     }
 
     // 소통해요 상세조회

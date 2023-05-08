@@ -3,7 +3,7 @@ package com.ktds.dsquare.board.qna.service;
 import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
-import com.ktds.dsquare.board.like.LikeService;
+import com.ktds.dsquare.board.like.LikeRepository;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
@@ -19,6 +19,7 @@ import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.board.tag.TagService;
 import com.ktds.dsquare.board.tag.repository.QuestionTagRepository;
 import com.ktds.dsquare.board.tag.repository.TagRepository;
+import com.ktds.dsquare.common.Paging.PagingService;
 import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.common.file.AttachmentService;
 import com.ktds.dsquare.common.file.dto.AttachmentDto;
@@ -26,7 +27,8 @@ import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -50,13 +52,14 @@ public class QuestionService {
     private final MemberRepository memberRepository;
     private final TagRepository tagRepository;
     private final QuestionTagRepository questionTagRepository;
+    private final LikeRepository likeRepository;
 
     /*** Service ***/
-    private final LikeService likeService;
     private final CommentRepository commentRepository;
     private final CommentService commentService;
     private final AttachmentService attachmentService;
     private final TagService tagService;
+    private final PagingService pagingService;
 
     //create - 질문글 작성
     @Transactional
@@ -81,7 +84,9 @@ public class QuestionService {
      * 2. category없이 제목+내용 or 작성자로 검색하는 경우 -> cid X
      * 3. 둘 다 검색하는 경우 -> cid, key, value
      * */
-    public List<BriefQuestionResponse> getQuestions(Boolean workYn, Member user, Integer cid, String key, String value){
+    public List<BriefQuestionResponse> getQuestions(Boolean workYn, Member user, Integer cid, String key, String value, String order, Pageable pageable){
+        Pageable page = pagingService.orderPage(order, pageable);
+
         //deleteYn = false인 것만 조회
         Specification<Question> filter = Specification.where(QuestionSpecification.equalNotDeleted(false));
         //업무 구분
@@ -126,7 +131,7 @@ public class QuestionService {
             filter = filter.and(QuestionSpecification.equalTitleAndContentContaining(value));
         }
 
-        List<Question> questionList = questionRepository.findAll(filter, Sort.by(Sort.Direction.DESC, "createDate"));
+        Page<Question> questionList = questionRepository.findAll(filter, page);
         List<BriefQuestionResponse> searchResults = new ArrayList<>();
 
         //BriefQuestionResponse 객체로 만들어줌
@@ -146,10 +151,9 @@ public class QuestionService {
                 break;
             }
         }
-        Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, q.getQid());
-        Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, q.getQid(), user);
+        Boolean likeYn = findLikeYn(BoardType.QUESTION, q.getQid(), user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, q.getQid());
-        return BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, likeCnt, likeYn, commentCnt);
+        return BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, q.getLikeCnt(), likeYn, commentCnt);
     }
 
 
@@ -163,10 +167,9 @@ public class QuestionService {
         MemberInfo writer = MemberInfo.toDto(member);
         CategoryResponse categoryRes = CategoryResponse.toDto(question.getCategory());
 
-        Long likeCnt = likeService.findLikeCnt(BoardType.QUESTION, qid);
-        Boolean likeYn = likeService.findLikeYn(BoardType.QUESTION, qid, user);
+        Boolean likeYn = findLikeYn(BoardType.QUESTION, qid, user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, qid);
-        return QuestionResponse.toDto(question, writer, categoryRes, likeCnt, likeYn, commentCnt);
+        return QuestionResponse.toDto(question, writer, categoryRes, question.getLikeCnt(), likeYn, commentCnt);
     }
 
     // 질문글 수정
@@ -250,6 +253,20 @@ public class QuestionService {
     @Transactional
     public void deleteQuestionTagRelation(Question question, Tag tag) {
         questionTagRepository.deleteByQuestionAndTag(question, tag);
+    }
+
+    public void like(Question question) {
+        question.like();
+        questionRepository.save(question);
+    }
+
+    public void cancleLike(Question question){
+        question.cancleLike();
+        questionRepository.save(question);
+    }
+
+    public Boolean findLikeYn(BoardType boardType, Long postId, Member user){
+        return likeRepository.existsByBoardTypeAndPostIdAndMember(boardType, postId, user);
     }
 
 }

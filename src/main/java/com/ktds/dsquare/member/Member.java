@@ -2,8 +2,8 @@ package com.ktds.dsquare.member;
 
 import com.ktds.dsquare.board.card.Card;
 import com.ktds.dsquare.board.carrot.Carrot;
-import com.ktds.dsquare.board.like.Like;
 import com.ktds.dsquare.board.comment.Comment;
+import com.ktds.dsquare.board.like.Like;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
@@ -48,6 +48,10 @@ public class Member {
     private Team team;
 
     private String ktMail;
+
+//    @OneToOne(fetch = FetchType.LAZY)
+//    private Attachment profileImage;
+    private String profileImage;
 
     private Long activityScore;
 
@@ -104,6 +108,9 @@ public class Member {
     public void update(MemberUpdateRequest request) {
         if (request.getContact() != null)
             this.contact = request.getContact();
+    }
+    public void updateProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 
     public void changePassword(String newPassword) {

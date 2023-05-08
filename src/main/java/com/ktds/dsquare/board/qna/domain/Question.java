@@ -28,9 +28,9 @@ public class Question {
     @JoinColumn(name = "category")
     private Category category;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String title;
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false, length = 10000)
     private String content;
 
     @Column(nullable = false)
@@ -53,6 +53,8 @@ public class Question {
     @OneToMany(mappedBy = "question")
     private List<QuestionTag> questionTags;
 
+    private Long likeCnt;
+
     public static Question toEntity(QuestionRequest dto, Member writer, Category category){
         LocalDateTime now = LocalDateTime.now();
         return Question.builder()
@@ -63,6 +65,7 @@ public class Question {
                 .viewCnt(0L)
                 .deleteYn(false)
                 .category(category)
+                .likeCnt(0L)
                 .build();
     }
 
@@ -82,8 +85,10 @@ public class Question {
         this.deleteYn = true;
     }
 
-    public void increaseViewCnt() {
-        this.viewCnt += 1;
-    }
+    public void increaseViewCnt() { this.viewCnt += 1; }
+
+    public void like() { this.likeCnt += 1; }
+
+    public void cancleLike(){ this.likeCnt -= 1; }
 
 }

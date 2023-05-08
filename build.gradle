@@ -57,6 +57,11 @@ dependencies {
     // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk
     implementation group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.12.450'
 
+    // ## Firebase Cloud Messaging ##
+    // https://mvnrepository.com/artifact/com.google.firebase/firebase-admin
+//    runtimeOnly group: 'com.google.firebase', name: 'firebase-admin', version: '9.1.1'
+    implementation 'com.google.firebase:firebase-admin:9.1.1'
+
 }
 
 tasks.named('test') {

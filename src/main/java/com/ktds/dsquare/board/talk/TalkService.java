@@ -3,17 +3,19 @@ package com.ktds.dsquare.board.talk;
 import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
-import com.ktds.dsquare.board.like.LikeService;
+import com.ktds.dsquare.board.like.LikeRepository;
 import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.board.tag.TagService;
 import com.ktds.dsquare.board.tag.TalkTag;
 import com.ktds.dsquare.board.talk.dto.BriefTalkResponse;
 import com.ktds.dsquare.board.talk.dto.TalkRegisterRequest;
 import com.ktds.dsquare.board.talk.dto.TalkResponse;
+import com.ktds.dsquare.common.Paging.PagingService;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -30,9 +32,10 @@ public class TalkService {
     private final MemberRepository memberRepository;
     private final TalkRepository talkRepository;
     private final CommentRepository commentRepository;
-    private final LikeService likeService;
     private final CommentService commentService;
     private final TagService tagService;
+    private final LikeRepository likeRepository;
+    private final PagingService pagingService;
 
     // 소통해요 작성
     @Transactional
@@ -43,7 +46,9 @@ public class TalkService {
     }
 
     // 소통해요 전체조회 + 검색
-    public List<BriefTalkResponse> getTalks(Member user, String key, String value){
+    public List<BriefTalkResponse> getTalks(Member user, String key, String value, String order, Pageable pageable){
+        Pageable page = pagingService.orderPage(order, pageable);
+
         //deleteYn = false인 것만 조회
         Specification<Talk> filter = Specification.where(TalkSpecification.equalNotDeleted(false));
 
@@ -73,14 +78,13 @@ public class TalkService {
             filter = filter.and(TalkSpecification.equalTitleAndContentContaining(value));
         }
 
-        List<Talk> talkList = talkRepository.findAll(filter, Sort.by(Sort.Direction.DESC, "createDate"));
+        Page<Talk> talkList = talkRepository.findAll(filter, page);
         List<BriefTalkResponse> searchResults = new ArrayList<>();
 
         for(Talk t : talkList){
-            Long likeCnt = likeService.findLikeCnt(BoardType.TALK, t.getId());
-            Boolean likeYn = likeService.findLikeYn(BoardType.TALK, t.getId(), user);
+            Boolean likeYn = findLikeYn(BoardType.TALK, t.getId(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.TALK, t.getId());
-            searchResults.add(BriefTalkResponse.toDto(t, commentCnt, likeCnt, likeYn));
+            searchResults.add(BriefTalkResponse.toDto(t, commentCnt, t.getLikeCnt(), likeYn));
         }
 
         return searchResults;
@@ -93,11 +97,10 @@ public class TalkService {
         talk.increaseViewCnt();
         talkRepository.save(talk);
 
-        Long likeCnt = likeService.findLikeCnt(BoardType.TALK, talkId);
-        Boolean likeYn = likeService.findLikeYn(BoardType.TALK, talkId, user);
+        Boolean likeYn = findLikeYn(BoardType.TALK, talkId, user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.TALK, talkId);
 
-        return TalkResponse.toDto(talk, commentCnt, likeCnt, likeYn);
+        return TalkResponse.toDto(talk, commentCnt, talk.getLikeCnt(), likeYn);
     }
 
     // 소통해요 수정
@@ -135,6 +138,20 @@ public class TalkService {
         }
         talk.deleteTalk();
         commentService.deleteCommentCascade(BoardType.TALK, talkId);
+    }
+
+    public void like(Talk talk) {
+        talk.like();
+        talkRepository.save(talk);
+    }
+
+    public void cancleLike(Talk talk){
+        talk.cancleLike();
+        talkRepository.save(talk);
+    }
+
+    public Boolean findLikeYn(BoardType boardType, Long postId, Member user){
+        return likeRepository.existsByBoardTypeAndPostIdAndMember(boardType, postId, user);
     }
 
 

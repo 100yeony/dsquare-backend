@@ -7,13 +7,16 @@ import com.ktds.dsquare.board.card.dto.CardSelectionInfo;
 import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
-import com.ktds.dsquare.board.like.LikeService;
+import com.ktds.dsquare.board.like.LikeRepository;
+import com.ktds.dsquare.common.Paging.PagingService;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import com.ktds.dsquare.member.dto.response.TeamInfo;
 import com.ktds.dsquare.member.team.Team;
 import com.ktds.dsquare.member.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -27,9 +30,10 @@ public class CardService {
 
     private final CardRepository cardRepository;
     private final TeamRepository teamRepository;
-    private final LikeService likeService;
     private final CommentRepository commentRepository;
     private final CommentService commentService;
+    private final LikeRepository likeRepository;
+    private final PagingService pagingService;
 
     //create - 카드주세요 글 작성
     @Transactional
@@ -42,17 +46,19 @@ public class CardService {
     }
 
     //read - 카드주세요 글 전체 조회 & 검색
-    public List<BriefCardResponse> getCards(Long projTeamId, Member user){
+    public List<BriefCardResponse> getCards(Long projTeamId, Member user, String order, Pageable pageable){
+        Pageable page = pagingService.orderPage(order, pageable);
+
         List<BriefCardResponse> briefCards = new ArrayList<>();
-        List<Card> cards;
+        Page<Card> cards;
         if(projTeamId != null){
             //검색
             Team team = teamRepository.findById(projTeamId)
                     .orElseThrow(()-> new EntityNotFoundException("team not found"));
-            cards = cardRepository.findByDeleteYnAndProjTeamOrderByCreateDateDesc(false, team);
+            cards = cardRepository.findByDeleteYnAndProjTeamOrderByCreateDateDesc(false, team, page);
         }else{
             //전체조회
-            cards = cardRepository.findByDeleteYnOrderByCreateDateDesc(false);
+            cards = cardRepository.findByDeleteYnOrderByCreateDateDesc(false, page);
         }
         for(Card C : cards){
             briefCards.add(makeBriefCardRes(C, user, projTeamId));
@@ -79,10 +85,9 @@ public class CardService {
         }else{
             selectionInfo = null;
         }
-        Long likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
-        Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), user);
+        Boolean likeYn = findLikeYn(BoardType.CARD, C.getId(), user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARD, C.getId());
-        return BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, likeCnt, likeYn, commentCnt);
+        return BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(team), selectionInfo, C.getLikeCnt(), likeYn, commentCnt);
     }
 
     //read - 카드주세요 글 상세 조회
@@ -91,10 +96,9 @@ public class CardService {
         card.increaseViewCnt();
         cardRepository.save(card);
 
-        Long likeCnt = likeService.findLikeCnt(BoardType.CARD, card.getId());
-        Boolean likeYn = likeService.findLikeYn(BoardType.CARD, card.getId(), user);
+        Boolean likeYn = findLikeYn(BoardType.CARD, card.getId(), user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARD, cardId);
-        return CardResponse.toDto(card, card.getWriter(), card.getProjTeam(), card.getCardOwner(), likeCnt, likeYn, commentCnt);
+        return CardResponse.toDto(card, card.getWriter(), card.getProjTeam(), card.getCardOwner(), card.getLikeCnt(), likeYn, commentCnt);
     }
 
     //update - 카드주세요 선정
@@ -139,11 +143,24 @@ public class CardService {
             }else{
                 selectionInfo = null;
             }
-            Long likeCnt = likeService.findLikeCnt(BoardType.CARD, C.getId());
-            Boolean likeYn = likeService.findLikeYn(BoardType.CARD, C.getId(), user);
+            Boolean likeYn = findLikeYn(BoardType.CARD, C.getId(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARD, C.getId());
-            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(C.getProjTeam()), selectionInfo, likeCnt, likeYn, commentCnt));
+            briefCards.add(BriefCardResponse.toDto(C, MemberInfo.toDto(member), TeamInfo.toDto(C.getProjTeam()), selectionInfo, C.getLikeCnt(), likeYn, commentCnt));
         }
         return briefCards;
+    }
+
+    public void like(Card card) {
+        card.like();
+        cardRepository.save(card);
+    }
+
+    public void cancleLike(Card card){
+        card.cancleLike();
+        cardRepository.save(card);
+    }
+
+    public Boolean findLikeYn(BoardType boardType, Long postId, Member user){
+        return likeRepository.existsByBoardTypeAndPostIdAndMember(boardType, postId, user);
     }
 }

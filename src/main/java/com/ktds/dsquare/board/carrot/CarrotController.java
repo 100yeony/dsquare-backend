@@ -3,9 +3,10 @@ package com.ktds.dsquare.board.carrot;
 import com.ktds.dsquare.board.carrot.dto.BriefCarrotResponse;
 import com.ktds.dsquare.board.carrot.dto.CarrotRegisterRequest;
 import com.ktds.dsquare.board.carrot.dto.CarrotResponse;
-import com.ktds.dsquare.common.annotatin.AuthUser;
+import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,9 +29,10 @@ public class CarrotController {
     //read - 당근해요 글 전체 조회 & 검색
     @GetMapping("board/carrots")
     public List<BriefCarrotResponse> getCarrots(@AuthUser Member user,
-                                                                @RequestParam(required = false) String key,
-                                                                @RequestParam(required = false) String value){
-        return carrotService.getCarrots(user, key, value);
+                                                @RequestParam(required = false) String key,
+                                                @RequestParam(required = false) String value,
+                                                @RequestParam(required = false) String order, Pageable pageable){
+        return carrotService.getCarrots(user, key, value, order, pageable);
     }
 
     //read - 당근해요 글 상세 조회

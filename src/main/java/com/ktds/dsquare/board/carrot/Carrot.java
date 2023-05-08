@@ -27,10 +27,10 @@ public class Carrot {
     @JoinColumn(name = "writer")
     private Member writer;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10000)
     private String content;
 
     @Column(nullable = false)
@@ -47,6 +47,8 @@ public class Carrot {
     @OneToMany(mappedBy = "carrot")
     private List<CarrotTag> carrotTags;
 
+    private Long likeCnt;
+
 
     public static Carrot toEntity(CarrotRegisterRequest dto, Member writer){
         LocalDateTime now = LocalDateTime.now();
@@ -57,6 +59,7 @@ public class Carrot {
                 .createDate(now)
                 .viewCnt(0L)
                 .deleteYn(false)
+                .likeCnt(0L)
                 .build();
     }
 
@@ -73,4 +76,7 @@ public class Carrot {
         this.viewCnt += 1;
     }
 
+    public void like() { this.likeCnt += 1; }
+
+    public void cancleLike(){ this.likeCnt -= 1; }
 }
