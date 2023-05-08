@@ -10,14 +10,13 @@ import com.ktds.dsquare.board.like.LikeRepository;
 import com.ktds.dsquare.board.tag.CarrotTag;
 import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.board.tag.TagService;
+import com.ktds.dsquare.common.Paging.PagingService;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +36,7 @@ public class CarrotService {
     private final CommentRepository commentRepository;
     private final TagService tagService;
     private final LikeRepository likeRepository;
+    private final PagingService pagingService;
 
     //create - 당근해요 글 작성
     @Transactional
@@ -48,14 +48,7 @@ public class CarrotService {
 
     //read - 당근해요 글 전체 조회 & 검색
     public List<BriefCarrotResponse> getCarrots(Member user, String key, String value, String order, Pageable pageable){
-        Pageable page;
-        if(order.equals("create")){
-            page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
-        } else if (order.equals("like")) {
-            page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("likeCnt").descending());
-        } else {
-            throw new RuntimeException("Invalid order. Using create || like");
-        }
+        Pageable page = pagingService.orderPage(order, pageable);
 
         //deleteYn = false인 것만 조회
         Specification<Carrot> filter = Specification.where(CarrotSpecification.equalNotDeleted(false));

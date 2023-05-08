@@ -31,7 +31,7 @@ public class CarrotController {
     public List<BriefCarrotResponse> getCarrots(@AuthUser Member user,
                                                 @RequestParam(required = false) String key,
                                                 @RequestParam(required = false) String value,
-                                                String order, Pageable pageable){
+                                                @RequestParam(required = false) String order, Pageable pageable){
         return carrotService.getCarrots(user, key, value, order, pageable);
     }
 

@@ -5,6 +5,7 @@ import com.ktds.dsquare.board.comment.dto.NestedCommentRegisterDto;
 import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,8 +36,8 @@ public class CommentController {
 
     // 댓글 조회(글에 달린 댓글 전체 조회)
     @GetMapping("/board/{boardTypeName}/{postId}/comments")
-    public ResponseEntity<List<Object>> getAllComments(@PathVariable String boardTypeName, @PathVariable Long postId){
-        return new ResponseEntity<>(commentService.getAllComments(boardTypeName, postId), HttpStatus.OK);
+    public ResponseEntity<List<Object>> getAllComments(@PathVariable String boardTypeName, @PathVariable Long postId, Pageable pageable){
+        return new ResponseEntity<>(commentService.getAllComments(boardTypeName, postId, pageable), HttpStatus.OK);
     }
 
     // 댓글 삭제

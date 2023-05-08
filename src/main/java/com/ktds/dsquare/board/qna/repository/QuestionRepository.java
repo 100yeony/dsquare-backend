@@ -22,7 +22,7 @@ public interface QuestionRepository extends JpaRepository<Question,Long>, JpaSpe
     Page<Question> findAll(Specification<Question> filter, Pageable pageable);
 
     //마이페이지 관련
-    List<Question> findByDeleteYnAndWriter(Boolean deleteYn, Member writer);
+    Page<Question> findByDeleteYnAndWriter(Boolean deleteYn, Member writer, Pageable pageable);
 
     //대시보드 관련
     @Query(value = "SELECT q.writer, count(*) " +

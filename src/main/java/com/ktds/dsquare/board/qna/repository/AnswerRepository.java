@@ -3,6 +3,8 @@ package com.ktds.dsquare.board.qna.repository;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.member.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,7 +20,7 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
     Answer findByDeleteYnAndId(Boolean deleteYn, Long aid);
 
     //마이페이지 관련
-    List<Answer> findByDeleteYnAndWriter(Boolean deleteYn, Member writer);
+    Page<Answer> findByDeleteYnAndWriter(Boolean deleteYn, Member writer, Pageable pageable);
 
     //대시보드 관련
     @Query(value = "SELECT a.writer, count(*) " +

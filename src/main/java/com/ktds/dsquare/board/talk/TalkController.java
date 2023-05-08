@@ -33,7 +33,7 @@ public class TalkController {
     @ApiOperation(value="소통해요 전체조회, 검색", notes="소통해요 전체조회, 검색")
     @GetMapping("/board/talks")
     public ResponseEntity<List<BriefTalkResponse>> getTalks(@AuthUser Member user, @RequestParam(required = false) String key,
-                                                            @RequestParam(required = false) String value, String order, Pageable pageable){
+                                                            @RequestParam(required = false) String value, @RequestParam(required = false) String order, Pageable pageable){
         return new ResponseEntity<>(talkService.getTalks(user, key, value, order, pageable), HttpStatus.OK);
     }
 
