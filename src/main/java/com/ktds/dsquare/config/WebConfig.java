@@ -1,6 +1,6 @@
 package com.ktds.dsquare.config;
 
-import com.ktds.dsquare.common.annotatin.resolver.AuthUserArgumentResolver;
+import com.ktds.dsquare.common.annotation.resolver.AuthUserArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;

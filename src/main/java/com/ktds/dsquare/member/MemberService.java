@@ -3,6 +3,8 @@ package com.ktds.dsquare.member;
 import com.ktds.dsquare.common.exception.BadLoginException;
 import com.ktds.dsquare.common.exception.MemberException;
 import com.ktds.dsquare.common.exception.MemberNotFoundException;
+import com.ktds.dsquare.common.file.FileService;
+import com.ktds.dsquare.common.file.dto.FileSavedDto;
 import com.ktds.dsquare.member.dto.request.MemberUpdateRequest;
 import com.ktds.dsquare.member.dto.request.PasswordChangeRequest;
 import com.ktds.dsquare.member.dto.request.SignupRequest;
@@ -15,10 +17,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +37,9 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
+
+//    private final AttachmentService attachmentService;
+    private final FileService fileService;
 
     private final BCryptPasswordEncoder passwordEncoder;
 
@@ -83,6 +92,25 @@ public class MemberService {
         member.update(request);
         member.join(newTeam);
         return MemberInfo.toDto(memberRepository.save(member));
+    }
+    @Transactional
+    public FileSavedDto updateMember(Long id, MultipartFile image, Member user) throws IOException {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No such member with ID " + id));
+        Assert.state(member == user, "Illegal resource access");
+
+        return updateProfileImage(member, image);
+    }
+    private FileSavedDto updateProfileImage(Member member, MultipartFile image) throws IOException {
+        FileSavedDto savedProfileImage = uploadProfileImage(member, image);
+        member.updateProfileImage(savedProfileImage.getUrl());
+        return savedProfileImage;
+    }
+    private FileSavedDto uploadProfileImage(Member member, MultipartFile image) throws IOException {
+        if (!ObjectUtils.isEmpty(member.getProfileImage()))
+            log.debug("There is existing profile image.");
+//            attachmentService.deleteAttachmentByPostDeletion(); // TODO Post <> Attachment 와 묶어 함께 생각할 필요 추가
+        return fileService.uploadFile(image);
     }
 
     @Transactional

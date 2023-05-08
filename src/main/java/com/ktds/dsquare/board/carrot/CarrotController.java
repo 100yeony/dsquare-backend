@@ -3,7 +3,7 @@ package com.ktds.dsquare.board.carrot;
 import com.ktds.dsquare.board.carrot.dto.BriefCarrotResponse;
 import com.ktds.dsquare.board.carrot.dto.CarrotRegisterRequest;
 import com.ktds.dsquare.board.carrot.dto.CarrotResponse;
-import com.ktds.dsquare.common.annotatin.AuthUser;
+import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

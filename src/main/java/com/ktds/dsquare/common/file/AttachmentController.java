@@ -1,6 +1,6 @@
 package com.ktds.dsquare.common.file;
 
-import com.ktds.dsquare.common.annotatin.AuthUser;
+import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
