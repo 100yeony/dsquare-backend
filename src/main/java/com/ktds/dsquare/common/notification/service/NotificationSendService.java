@@ -15,10 +15,22 @@ public class NotificationSendService {
     private final FirebaseMessaging fcm;
 
 
+    public String notifyTopic(String topic) throws FirebaseMessagingException {
+        Message message = makeTopicMessage(topic);
+        return fcm.send(message);
+    }
+
 //    @Transactional
     public String send(String to) throws FirebaseMessagingException {
         Message message = makeMessage(to);
         return fcm.send(message);
+    }
+    public Message makeTopicMessage(String topic) {
+        return Message.builder()
+                .setTopic(topic)
+                .putData("title", "Topic Notification")
+                .putData("body", "New notification :: " + topic)
+                .build();
     }
     public Message makeMessage(String to) {
         return Message.builder()
