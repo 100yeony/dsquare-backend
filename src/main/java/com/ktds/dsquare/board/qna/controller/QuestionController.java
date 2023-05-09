@@ -51,7 +51,7 @@ public class QuestionController {
 
 
     // 질문글 수정
-    @PostMapping("/board/questions/{qid}")
+    @PatchMapping("/board/questions/{qid}")
     public ResponseEntity<Void> updateQuestion(
             @PathVariable("qid") Long qid,
             @RequestPart("question") QuestionRequest request,

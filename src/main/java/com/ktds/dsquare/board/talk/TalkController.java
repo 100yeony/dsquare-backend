@@ -49,7 +49,7 @@ public class TalkController {
 
     // 소통해요 수정
     @ApiOperation(value="소통해요 수정", notes="소통해요 수정")
-    @PostMapping("/board/talks/{talkId}")
+    @PatchMapping("/board/talks/{talkId}")
     public ResponseEntity<Void> updateTalk(
             @ApiParam(name="talkId", value="Talk Id", example = "1") @PathVariable Long talkId,
             @RequestBody TalkRegisterRequest request){

@@ -22,7 +22,7 @@ public class BriefCardResponse {
     private String title;
     private String content;
     private Integer teammateCnt;
-    private String teammate;
+    private String teammates;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createDate;
     private Long viewCnt;
@@ -40,7 +40,7 @@ public class BriefCardResponse {
                 .title(entity.getTitle())
                 .content(entity.getContent())
                 .teammateCnt(entity.getTeammateCnt())
-                .teammate(entity.getTeammate())
+                .teammates(entity.getTeammates())
                 .createDate(entity.getCreateDate())
                 .viewCnt(entity.getViewCnt())
                 .likeCnt(likeCnt)
