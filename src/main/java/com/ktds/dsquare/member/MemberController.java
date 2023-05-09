@@ -3,6 +3,7 @@ package com.ktds.dsquare.member;
 import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.common.exception.MemberException;
 import com.ktds.dsquare.common.mailing.MailService;
+import com.ktds.dsquare.member.dto.request.MemberExistenceCheckRequest;
 import com.ktds.dsquare.member.dto.request.MemberUpdateRequest;
 import com.ktds.dsquare.member.dto.request.PasswordChangeRequest;
 import com.ktds.dsquare.member.dto.request.SignupRequest;
@@ -24,6 +25,7 @@ import java.util.Map;
 @Slf4j
 public class MemberController {
 
+    private final MemberSelectService memberSelectService;
     private final MemberService memberService;
     private final MailService mailService;
 
@@ -50,6 +52,13 @@ public class MemberController {
     @GetMapping("/member/members/{id}")
     public ResponseEntity<MemberInfo> getMember(@PathVariable Long id) {
         return new ResponseEntity<>(memberService.selectMember(id), HttpStatus.OK);
+    }
+    /**
+     * 회원 존재 여부 확인 (중복 확인)
+     */
+    @PostMapping("/member/members/existings")
+    public ResponseEntity<Boolean> checkMemberExistence(@RequestBody MemberExistenceCheckRequest request) {
+        return new ResponseEntity<>(memberSelectService.checkMemberExistence(request), HttpStatus.OK);
     }
 
     /**
