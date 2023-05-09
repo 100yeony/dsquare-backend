@@ -9,11 +9,13 @@ import com.ktds.dsquare.auth.CustomUserDetails;
 import com.ktds.dsquare.auth.jwt.JwtProperties;
 import com.ktds.dsquare.member.Member;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class JwtUtil {
@@ -57,14 +59,21 @@ public class JwtUtil {
         JWTCreator.Builder builder = createAccessTokenBase();
         if (principal instanceof CustomUserDetails)
             builder.withClaim("id", ((CustomUserDetails)principal).getMember().getId());
-        builder.withClaim("username", principal.getUsername());
+        builder.withClaim("username", principal.getUsername())
+                .withClaim(
+                        "role",
+                        principal.getAuthorities().stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .collect(Collectors.toList())
+                );
 
         return sign(builder, JwtProperties.SECRET_ACCESS());
     }
     public static String generateAccessToken(Member member) {
         JWTCreator.Builder builder = createAccessTokenBase();
         builder.withClaim("id", member.getId())
-                .withClaim("username", member.getEmail());
+                .withClaim("username", member.getEmail())
+                .withClaim("role", member.getRole());
 
         return sign(builder, JwtProperties.SECRET_ACCESS());
     }
