@@ -26,6 +26,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     private ResponseEntity<?> globalRuntimeExceptionHandler(RuntimeException e) {
+        log.error("Caught RE", e);
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
