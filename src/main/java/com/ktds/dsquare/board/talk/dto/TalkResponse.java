@@ -3,7 +3,7 @@ package com.ktds.dsquare.board.talk.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.tag.TalkTag;
 import com.ktds.dsquare.board.talk.Talk;
-import com.ktds.dsquare.member.dto.response.MemberInfo;
+import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +23,7 @@ public class TalkResponse {
     @ApiModelProperty(notes="Talk ID", example = "0", required = true)
     private Long talkId;
     @ApiModelProperty(notes="작성자 정보", example = "writer", required = true)
-    private MemberInfo writerInfo;
+    private BriefMemberInfo writerInfo;
     @ApiModelProperty(notes="Talk title", example = "소통해요 제목입니다.", required = true)
     private String title;
     @ApiModelProperty(notes="Talk content", example = "소통해요 내용입니다.", required = true)
@@ -50,7 +50,7 @@ public class TalkResponse {
 
         return TalkResponse.builder()
                 .talkId(talk.getId())
-                .writerInfo(MemberInfo.toDto(talk.getWriter()))
+                .writerInfo(BriefMemberInfo.toDto(talk.getWriter()))
                 .title(talk.getTitle())
                 .content(talk.getContent())
                 .createDate(talk.getCreateDate())

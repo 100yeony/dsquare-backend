@@ -10,7 +10,7 @@ import com.ktds.dsquare.board.tag.TalkTag;
 import com.ktds.dsquare.board.talk.dto.BriefTalkResponse;
 import com.ktds.dsquare.board.talk.dto.TalkRegisterRequest;
 import com.ktds.dsquare.board.talk.dto.TalkResponse;
-import com.ktds.dsquare.common.Paging.PagingService;
+import com.ktds.dsquare.board.paging.PagingService;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -140,15 +140,19 @@ public class TalkService {
         commentService.deleteCommentCascade(BoardType.TALK, talkId);
     }
 
-    public void like(Talk talk) {
+    public void like(Long id) {
+        Talk talk = talkRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("talk not found"));
         talk.like();
-        talkRepository.save(talk);
     }
 
-    public void cancleLike(Talk talk){
+
+    public void cancleLike(Long id){
+        Talk talk = talkRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("talk not found"));
         talk.cancleLike();
-        talkRepository.save(talk);
     }
+
 
     public Boolean findLikeYn(BoardType boardType, Long postId, Member user){
         return likeRepository.existsByBoardTypeAndPostIdAndMember(boardType, postId, user);

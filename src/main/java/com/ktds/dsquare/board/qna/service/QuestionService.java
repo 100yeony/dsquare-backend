@@ -17,15 +17,13 @@ import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.board.tag.QuestionTag;
 import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.board.tag.TagService;
-import com.ktds.dsquare.board.tag.repository.QuestionTagRepository;
-import com.ktds.dsquare.board.tag.repository.TagRepository;
-import com.ktds.dsquare.common.Paging.PagingService;
+import com.ktds.dsquare.board.paging.PagingService;
 import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.common.file.AttachmentService;
 import com.ktds.dsquare.common.file.dto.AttachmentDto;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
-import com.ktds.dsquare.member.dto.response.MemberInfo;
+import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -50,12 +48,10 @@ public class QuestionService {
     private final AnswerRepository answerRepository;
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
-    private final TagRepository tagRepository;
-    private final QuestionTagRepository questionTagRepository;
     private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
 
     /*** Service ***/
-    private final CommentRepository commentRepository;
     private final CommentService commentService;
     private final AttachmentService attachmentService;
     private final TagService tagService;
@@ -155,7 +151,7 @@ public class QuestionService {
         }
         Boolean likeYn = findLikeYn(BoardType.QUESTION, q.getId(), user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, q.getId());
-        return BriefQuestionResponse.toDto(q, MemberInfo.toDto(q.getWriter()),categoryRes ,(long)answers.size(), managerAnswerYn, q.getLikeCnt(), likeYn, commentCnt);
+        return BriefQuestionResponse.toDto(q,categoryRes ,(long)answers.size(), managerAnswerYn, q.getLikeCnt(), likeYn, commentCnt);
     }
 
 
@@ -166,12 +162,12 @@ public class QuestionService {
         questionRepository.save(question);
 
         Member member = question.getWriter();
-        MemberInfo writer = MemberInfo.toDto(member);
+        BriefMemberInfo writer = BriefMemberInfo.toDto(member);
         CategoryResponse categoryRes = CategoryResponse.toDto(question.getCategory());
 
         Boolean likeYn = findLikeYn(BoardType.QUESTION, qid, user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, qid);
-        return QuestionResponse.toDto(question, writer, categoryRes, question.getLikeCnt(), likeYn, commentCnt);
+        return QuestionResponse.toDto(question, categoryRes, question.getLikeCnt(), likeYn, commentCnt);
     }
 
     // 질문글 수정
@@ -238,34 +234,17 @@ public class QuestionService {
         attachmentService.deleteAttachmentByPostDeletion(attachment);
     }
 
-    // 새 태그(키워드) 등록
-    @Transactional
-    public void insertNewTags(List<String> newTags, Question question) {
-        for (String name : newTags) {
-            Tag tag = tagRepository.findByName(name);
-            if(tag == null) {
-                tag = Tag.toEntity(name);
-                tagRepository.save(tag);
-            }
-            QuestionTag qt = QuestionTag.toEntity(question, tag);
-            questionTagRepository.save(qt);
-        }
-    }
-
-    // 태그-질문 간 연관관계 삭제
-    @Transactional
-    public void deleteQuestionTagRelation(Question question, Tag tag) {
-        questionTagRepository.deleteByPostAndTag(question, tag);
-    }
-
-    public void like(Question question) {
+    public void like(Long id) {
+        Question question = questionRepository.findById(id)
+                        .orElseThrow(()-> new EntityNotFoundException("question not found"));
         question.like();
-        questionRepository.save(question);
     }
 
-    public void cancleLike(Question question){
+
+    public void cancleLike(Long id){
+        Question question = questionRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("question not found"));
         question.cancleLike();
-        questionRepository.save(question);
     }
 
     public Boolean findLikeYn(BoardType boardType, Long postId, Member user){

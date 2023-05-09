@@ -3,8 +3,7 @@ package com.ktds.dsquare.board.carrot.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.carrot.Carrot;
 import com.ktds.dsquare.board.tag.CarrotTag;
-import com.ktds.dsquare.member.Member;
-import com.ktds.dsquare.member.dto.response.MemberInfo;
+import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +20,7 @@ import java.util.List;
 public class CarrotResponse {
 
     private Long carrotId;
-    private MemberInfo writerInfo;
+    private BriefMemberInfo writerInfo;
     private String title;
     private String content;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
@@ -34,8 +33,7 @@ public class CarrotResponse {
     private Long commentCnt;
     private List<String> tags;
 
-    public static CarrotResponse toDto(Carrot entity, Member writer, Long likeCnt, Boolean likeYn, Long commentCnt) {
-        MemberInfo writerInfo = MemberInfo.toDto(writer);
+    public static CarrotResponse toDto(Carrot entity, Long likeCnt, Boolean likeYn, Long commentCnt) {
         List<CarrotTag> carrotTags = entity.getCarrotTags();
         List<String> tags = new ArrayList<>();
         for(CarrotTag carrotTag : carrotTags)
@@ -43,7 +41,7 @@ public class CarrotResponse {
 
         return CarrotResponse.builder()
                 .carrotId(entity.getId())
-                .writerInfo(writerInfo)
+                .writerInfo(BriefMemberInfo.toDto(entity.getWriter()))
                 .title(entity.getTitle())
                 .content(entity.getContent())
                 .createDate(entity.getCreateDate())

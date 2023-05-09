@@ -2,7 +2,7 @@ package com.ktds.dsquare.board.card.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.card.Card;
-import com.ktds.dsquare.member.dto.response.MemberInfo;
+import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import com.ktds.dsquare.member.dto.response.TeamInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class BriefCardResponse {
 
     private Long cardId;
-    private MemberInfo writerInfo;
+    private BriefMemberInfo writerInfo;
     private TeamInfo projTeamInfo;
     private String title;
     private String content;
@@ -31,11 +31,11 @@ public class BriefCardResponse {
     private Long commentCnt;
     private CardSelectionInfo selectionInfo;
 
-    public static BriefCardResponse toDto(Card entity, MemberInfo writerInfo, TeamInfo teamInfo, CardSelectionInfo selectionInfo,
+    public static BriefCardResponse toDto(Card entity, TeamInfo teamInfo, CardSelectionInfo selectionInfo,
                                           Long likeCnt, Boolean likeYn, Long commentCnt) {
         return BriefCardResponse.builder()
                 .cardId(entity.getId())
-                .writerInfo(writerInfo)
+                .writerInfo(BriefMemberInfo.toDto(entity.getWriter()))
                 .projTeamInfo(teamInfo)
                 .title(entity.getTitle())
                 .content(entity.getContent())

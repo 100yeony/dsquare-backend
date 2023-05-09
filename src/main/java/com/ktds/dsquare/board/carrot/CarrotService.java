@@ -7,13 +7,12 @@ import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeRepository;
+import com.ktds.dsquare.board.paging.PagingService;
 import com.ktds.dsquare.board.tag.CarrotTag;
 import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.board.tag.TagService;
-import com.ktds.dsquare.common.Paging.PagingService;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
-import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -86,7 +85,7 @@ public class CarrotService {
         for(Carrot C: carrotList){
             Boolean likeYn = findLikeYn(BoardType.CARROT, C.getId(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARROT, C.getId());
-            searchResults.add(BriefCarrotResponse.toDto(C, MemberInfo.toDto(C.getWriter()), C.getLikeCnt(), likeYn, commentCnt));
+            searchResults.add(BriefCarrotResponse.toDto(C, C.getLikeCnt(), likeYn, commentCnt));
         }
 
         return searchResults;
@@ -100,7 +99,7 @@ public class CarrotService {
 
         Boolean likeYn = findLikeYn(BoardType.CARROT, carrot.getId(), user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARROT, carrot.getId());
-        return CarrotResponse.toDto(carrot, carrot.getWriter(), carrot.getLikeCnt(), likeYn, commentCnt);
+        return CarrotResponse.toDto(carrot, carrot.getLikeCnt(), likeYn, commentCnt);
     }
 
     //update - 당근해요 글 수정
@@ -137,14 +136,17 @@ public class CarrotService {
         commentService.deleteCommentCascade(BoardType.CARROT, carrotId);
     }
 
-    public void like(Carrot carrot) {
+    public void like(Long id) {
+        Carrot carrot = carrotRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("carrot not found"));
         carrot.like();
-        carrotRepository.save(carrot);
     }
 
-    public void cancleLike(Carrot carrot){
+
+    public void cancleLike(Long id){
+        Carrot carrot = carrotRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("carrot not found"));
         carrot.cancleLike();
-        carrotRepository.save(carrot);
     }
 
     public Boolean findLikeYn(BoardType boardType, Long postId, Member user){

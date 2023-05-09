@@ -1,14 +1,14 @@
-package com.ktds.dsquare.common.dashboard;
+package com.ktds.dsquare.board.dashboard;
 
+import com.ktds.dsquare.board.dashboard.dto.BestUserResponse;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.board.qna.service.QuestionService;
-import com.ktds.dsquare.common.dashboard.dto.BestUserResponse;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
-import com.ktds.dsquare.member.dto.response.MemberInfo;
+import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -59,7 +59,7 @@ public class DashboardService {
                 .setMaxResults(5)
                 .getResultList();
         for (Long q : resultList) {
-            Question question = questionRepository.findById((Long) q)
+            Question question = questionRepository.findById(q)
                     .orElseThrow(() -> new EntityNotFoundException());
             bestQnaList.add(questionService.makeBriefQuestionRes(question, user));
         }
@@ -80,7 +80,7 @@ public class DashboardService {
             BigInteger writerId = (BigInteger) R[0];
             BigInteger postCnt = (BigInteger) R[1];
             Optional<Member> mem = memberRepository.findById(writerId.longValue());
-            bestUsers.add(BestUserResponse.toDto(MemberInfo.toDto(mem.orElse(null)), postCnt.longValue()));
+            bestUsers.add(BestUserResponse.toDto(BriefMemberInfo.toDto(mem.orElse(null)), postCnt.longValue()));
         }
         return bestUsers;
     }
