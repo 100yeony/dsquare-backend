@@ -8,6 +8,7 @@ import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.talk.Talk;
+import com.ktds.dsquare.common.enums.RoleType;
 import com.ktds.dsquare.member.dto.request.MemberUpdateRequest;
 import com.ktds.dsquare.member.dto.request.SignupRequest;
 import com.ktds.dsquare.member.team.Team;
@@ -16,11 +17,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -28,6 +32,7 @@ import java.util.List;
 @Builder
 @Getter
 @Slf4j
+@DynamicUpdate
 public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -92,7 +97,13 @@ public class Member {
     private List<Carrot> carrotList;
 
     public List<String> getRole() {
-        return List.of(role);
+        String role_str = role.replace("[","").replace("]", "");
+        List<String> role_list = Arrays.asList(role_str.split(","));
+        List<String> result = new ArrayList<>();
+        for(String l:role_list){
+            result.add(l.trim());
+        }
+        return result;
     }
 
     public void join(Team team) {
@@ -108,6 +119,14 @@ public class Member {
     public void update(MemberUpdateRequest request) {
         if (request.getContact() != null)
             this.contact = request.getContact();
+        if (request.getRole() != null) {
+            List<String> roles = request.getRole();
+            List<RoleType> result = new ArrayList<>();
+            for (Object o : roles) {
+                result.add(RoleType.findRoleType(o.toString()));
+            }
+            this.role = result.toString();
+        }
     }
     public void updateProfileImage(String profileImage) {
         this.profileImage = profileImage;
@@ -133,7 +152,7 @@ public class Member {
                 .activityScore(0L)
                 .lastLoginDate(LocalDateTime.now())
                 .lastPwChangeDate(LocalDateTime.now())
-                .role("USER")
+                .role(RoleType.USER.toString())
                 .build();
     }
 
