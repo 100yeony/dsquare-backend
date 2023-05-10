@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CardRegisterRequest {
+public class CardUpdateRequest {
 
     private Long projTeamId;
     private String title;

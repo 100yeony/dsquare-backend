@@ -25,7 +25,7 @@ public class CardResponse {
     private String title;
     private String content;
     private Integer teammateCnt;
-    private String teammate;
+    private String teammates;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
@@ -52,7 +52,7 @@ public class CardResponse {
                 .title(entity.getTitle())
                 .content(entity.getContent())
                 .teammateCnt(entity.getTeammateCnt())
-                .teammate(entity.getTeammate())
+                .teammates(entity.getTeammates())
                 .createDate(entity.getCreateDate())
                 .lastUpdateDate(entity.getLastUpdateDate())
                 .viewCnt(entity.getViewCnt())

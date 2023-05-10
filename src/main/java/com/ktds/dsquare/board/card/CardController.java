@@ -3,6 +3,7 @@ package com.ktds.dsquare.board.card;
 import com.ktds.dsquare.board.card.dto.BriefCardResponse;
 import com.ktds.dsquare.board.card.dto.CardRegisterRequest;
 import com.ktds.dsquare.board.card.dto.CardResponse;
+import com.ktds.dsquare.board.card.dto.CardUpdateRequest;
 import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
@@ -39,17 +40,17 @@ public class CardController {
         return new ResponseEntity<>(cardService.getCardDetail(cardId, user), HttpStatus.OK);
     }
 
-    //update - 카드주세요 선정
+    //update - 카드주세요 글 수정
     @PatchMapping("board/cards/{cardId}")
-    public ResponseEntity<Void> giveCard(@PathVariable("cardId") Long cardId, @AuthUser Member user){
-        cardService.giveCard(cardId, user);
+    public ResponseEntity<CardResponse> updateCard(@PathVariable("cardId") Long cardId, @RequestBody(required = false) CardUpdateRequest request){
+            cardService.updateCard(cardId, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    //update - 카드주세요 글 수정
-    @PostMapping("board/cards/{cardId}")
-    public ResponseEntity<CardResponse> updateCard(@PathVariable("cardId") Long cardId, @RequestBody CardRegisterRequest request){
-        cardService.updateCard(cardId, request);
+    //update - 카드주세요 선정
+    @PatchMapping("board/cards/{cardId}/chosen")
+    public ResponseEntity<Void> giveCard(@PathVariable("cardId") Long cardId, @AuthUser Member user){
+        cardService.giveCard(cardId, user);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

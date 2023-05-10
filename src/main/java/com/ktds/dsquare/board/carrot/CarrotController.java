@@ -42,7 +42,7 @@ public class CarrotController {
     }
 
     //update - 당근해요 글 수정
-    @PostMapping("/board/carrots/{carrotId}")
+    @PatchMapping("/board/carrots/{carrotId}")
     public ResponseEntity<Void> updateCarrot(@PathVariable("carrotId") Long carrotId, @RequestBody CarrotRegisterRequest request){
         carrotService.updateCarrot(carrotId, request);
         return ResponseEntity.status(HttpStatus.OK).build();

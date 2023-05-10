@@ -7,6 +7,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.ObjectUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -22,11 +23,13 @@ public class FcmConfig {
 
     @Bean
     FirebaseApp firebaseApp(GoogleCredentials credentials) {
-        return FirebaseApp.initializeApp(
-                FirebaseOptions.builder()
-                        .setCredentials(credentials)
-                        .build()
-        );
+        return ObjectUtils.isEmpty(FirebaseApp.getApps())
+                ? FirebaseApp.initializeApp(
+                        FirebaseOptions.builder()
+                                .setCredentials(credentials)
+                                .build()
+                )
+                : FirebaseApp.getApps().get(0);
     }
 
     @Bean
