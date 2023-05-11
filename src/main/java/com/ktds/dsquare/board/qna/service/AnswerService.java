@@ -32,9 +32,8 @@ public class AnswerService {
     // 답변글 작성
     @Transactional
     public void createAnswer(Long qid, AnswerRequest dto, Member user) {
-        Question question = questionRepository.findByDeleteYnAndQid(false, qid);
-        if(question==null)
-            throw new PostNotFoundException("Question not found. Question ID: " + qid);
+        Question question = questionRepository.findByDeleteYnAndQid(false, qid)
+                .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + qid));
         Answer answer = Answer.toEntity(dto, user, question);
         answerRepository.save(answer);
     }
@@ -53,9 +52,8 @@ public class AnswerService {
 
     //답변글 상세 조회
     public AnswerResponse getAnswerDetail(Long aid, Member user){
-        Answer answer = answerRepository.findByDeleteYnAndId(false, aid);
-        if(answer==null)
-            throw new PostNotFoundException("Answer Not Found. Answer ID: "+aid);
+        Answer answer = answerRepository.findByDeleteYnAndId(false, aid)
+                .orElseThrow(() -> new PostNotFoundException("Answer Not Found. Answer ID: "+aid));
         Boolean likeYn = findLikeYn(BoardType.ANSWER, answer.getId(), user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.ANSWER, answer.getId());
         return AnswerResponse.toDto(answer, answer.getLikeCnt(), likeYn, commentCnt);
@@ -65,31 +63,30 @@ public class AnswerService {
     // 답변글 수정
     @Transactional
     public void updateAnswer(Long aid, AnswerRequest request) {
-        Answer answer = answerRepository.findByDeleteYnAndId(false, aid);
-        if(answer==null){
-            throw new PostNotFoundException("answer not found. aid is " + aid);
-        }
+        Answer answer = answerRepository.findByDeleteYnAndId(false, aid)
+                .orElseThrow(() -> new PostNotFoundException("Answer Not Found. Answer ID: "+aid));
         answer.updateAnswer(request.getContent(), request.getAtcId());
     }
 
     // 답변글 삭제
     @Transactional
     public void deleteAnswer(Long aid) {
-        Answer answer = answerRepository.findById(aid).orElseThrow(() -> new PostNotFoundException("answer not found. aid is " + aid));
+        Answer answer = answerRepository.findByDeleteYnAndId(false, aid)
+                .orElseThrow(() -> new PostNotFoundException("Answer Not Found. Answer ID: "+aid));
         answer.deleteAnswer();
         commentService.deleteCommentCascade(BoardType.ANSWER, aid);
     }
 
     public void like(Long id) {
-        Answer answer = answerRepository.findById(id)
-                .orElseThrow(()-> new PostNotFoundException("answer not found. aid is " + id));
+        Answer answer = answerRepository.findByDeleteYnAndId(false, id)
+                .orElseThrow(() -> new PostNotFoundException("Answer Not Found. Answer ID: "+id));
         answer.like();
     }
 
 
     public void cancleLike(Long id){
-        Answer answer = answerRepository.findById(id)
-                .orElseThrow(()-> new PostNotFoundException("answer not found. aid is " + id));
+        Answer answer = answerRepository.findByDeleteYnAndId(false, id)
+                .orElseThrow(() -> new PostNotFoundException("Answer Not Found. Answer ID: "+id));
         answer.cancleLike();
     }
 

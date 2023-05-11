@@ -94,9 +94,8 @@ public class CarrotService {
 
     //read - 당근해요 글 상세 조회
     public CarrotResponse getCarrotDetail(Long carrotId, Member user){
-        Carrot carrot = carrotRepository.findByDeleteYnAndId(false, carrotId);
-        if(carrot == null)
-            throw new PostNotFoundException("Carrot not found. Carrot ID: "+carrotId);
+        Carrot carrot = carrotRepository.findByDeleteYnAndId(false, carrotId)
+                .orElseThrow(() -> new PostNotFoundException("Carrot not found. Carrot ID: "+carrotId));
         carrot.increaseViewCnt();
         carrotRepository.save(carrot);
 
@@ -108,9 +107,8 @@ public class CarrotService {
     //update - 당근해요 글 수정
     @Transactional
     public void updateCarrot(Long carrotId, CarrotRegisterRequest request){
-        Carrot carrot = carrotRepository.findByDeleteYnAndId(false, carrotId);
-        if(carrot == null)
-            throw new PostNotFoundException("Carrot not found. Carrot ID: "+carrotId);
+        Carrot carrot = carrotRepository.findByDeleteYnAndId(false, carrotId)
+                .orElseThrow(() -> new PostNotFoundException("Carrot not found. Carrot ID: "+carrotId));
         carrot.updateCarrot(request);
 
         // 태그 수정
@@ -135,25 +133,22 @@ public class CarrotService {
     //delete - 당근해요 글 삭제
     @Transactional
     public void deleteCarrot(Long carrotId){
-        Carrot carrot = carrotRepository.findByDeleteYnAndId(false, carrotId);
-        if(carrot == null)
-            throw new PostNotFoundException("Carrot not found. Carrot ID: "+carrotId);
+        Carrot carrot = carrotRepository.findByDeleteYnAndId(false, carrotId)
+                .orElseThrow(() -> new PostNotFoundException("Carrot not found. Carrot ID: "+carrotId));
         carrot.deleteCarrot();
         commentService.deleteCommentCascade(BoardType.CARROT, carrotId);
     }
 
     public void like(Long id) {
-        Carrot carrot = carrotRepository.findByDeleteYnAndId(false, id);
-        if(carrot == null)
-            throw new PostNotFoundException("Carrot not found. Carrot ID: "+id);
+        Carrot carrot = carrotRepository.findByDeleteYnAndId(false, id)
+                .orElseThrow(() -> new PostNotFoundException("Carrot not found. Carrot ID: "+id));
         carrot.like();
     }
 
 
     public void cancleLike(Long id){
-        Carrot carrot = carrotRepository.findByDeleteYnAndId(false, id);
-        if(carrot == null)
-            throw new PostNotFoundException("Carrot not found. Carrot ID: "+id);
+        Carrot carrot = carrotRepository.findByDeleteYnAndId(false, id)
+                .orElseThrow(() -> new PostNotFoundException("Carrot not found. Carrot ID: "+id));
         carrot.cancleLike();
     }
 

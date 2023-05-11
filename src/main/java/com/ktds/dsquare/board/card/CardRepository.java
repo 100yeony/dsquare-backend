@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CardRepository extends JpaRepository<Card,Long>, JpaSpecificationExecutor<Card>{
@@ -21,7 +22,7 @@ public interface CardRepository extends JpaRepository<Card,Long>, JpaSpecificati
 
 
     //상세 조회 관련
-    Card findByDeleteYnAndId(Boolean deleteYn, Long cardId);
+    Optional<Card> findByDeleteYnAndId(Boolean deleteYn, Long cardId);
 
     //검색 관련
     Page<Card> findByDeleteYnAndSelectionYnAndProjTeamOrderByCreateDateDesc(Boolean deleteYn, Boolean selection, Team projTeamId, Pageable pageable);

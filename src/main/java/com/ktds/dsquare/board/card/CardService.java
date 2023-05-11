@@ -6,7 +6,6 @@ import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeRepository;
 import com.ktds.dsquare.board.paging.PagingService;
-import com.ktds.dsquare.common.exception.EntityNotFoundException;
 import com.ktds.dsquare.common.exception.PostNotFoundException;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
@@ -18,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -96,9 +96,8 @@ public class CardService {
 
     //read - 카드주세요 글 상세 조회
     public CardResponse getCardDetail(Long cardId, Member user) {
-        Card card = cardRepository.findByDeleteYnAndId(false, cardId);
-        if(card == null)
-            throw new PostNotFoundException("card not found. Card ID: "+cardId);
+        Card card = cardRepository.findByDeleteYnAndId(false, cardId)
+                .orElseThrow(()->new PostNotFoundException("card not found. Card ID: "+cardId));
         card.increaseViewCnt();
         cardRepository.save(card);
 
@@ -110,18 +109,16 @@ public class CardService {
     //update - 카드주세요 선정
     @Transactional
     public void giveCard(Long cardId, Member user){
-        Card card = cardRepository.findByDeleteYnAndId(false, cardId);
-        if(card == null)
-            throw new PostNotFoundException("card not found. Card ID: "+cardId);
+        Card card = cardRepository.findByDeleteYnAndId(false, cardId)
+                .orElseThrow(()->new PostNotFoundException("card not found. Card ID: "+cardId));
         card.selectCard(user, true);
     }
 
     //update - 카드주세요 글 수정
     @Transactional
     public void updateCard(Long cardId, CardUpdateRequest request){
-        Card card = cardRepository.findByDeleteYnAndId(false, cardId);
-        if(card == null)
-            throw new PostNotFoundException("card not found. Card ID: "+cardId);
+        Card card = cardRepository.findByDeleteYnAndId(false, cardId)
+                .orElseThrow(()->new PostNotFoundException("card not found. Card ID: "+cardId));
         Team projTeam = teamRepository.findById(request.getProjTeamId())
                 .orElseThrow(() -> new EntityNotFoundException("team is not found"));
 
@@ -131,9 +128,8 @@ public class CardService {
     //delete - 카드주세요 글 삭제
     @Transactional
     public void deleteCard(Long cardId){
-        Card card = cardRepository.findByDeleteYnAndId(false, cardId);
-        if(card == null)
-            throw new PostNotFoundException("card not found. Card ID: "+cardId);
+        Card card = cardRepository.findByDeleteYnAndId(false, cardId)
+                .orElseThrow(()->new PostNotFoundException("card not found. Card ID: "+cardId));
         card.deleteCard();
         commentService.deleteCommentCascade(BoardType.CARD, cardId);
     }
@@ -161,17 +157,15 @@ public class CardService {
     }
 
     public void like(Long id) {
-        Card card = cardRepository.findByDeleteYnAndId(false, id);
-        if(card == null)
-            throw new PostNotFoundException("card not found. Card ID: "+id);
+        Card card = cardRepository.findByDeleteYnAndId(false, id)
+                .orElseThrow(()->new PostNotFoundException("card not found. Card ID: "+id));
         card.like();
     }
 
 
     public void cancleLike(Long id){
-        Card card = cardRepository.findByDeleteYnAndId(false, id);
-        if(card == null)
-            throw new PostNotFoundException("card not found. Card ID: "+id);
+        Card card = cardRepository.findByDeleteYnAndId(false, id)
+                .orElseThrow(()->new PostNotFoundException("card not found. Card ID: "+id));
         card.cancleLike();
     }
 

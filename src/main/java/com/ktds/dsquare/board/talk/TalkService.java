@@ -93,8 +93,8 @@ public class TalkService {
 
     // 소통해요 상세조회
     public TalkResponse getTalkDetail(Long talkId, Member user) {
-        Talk talk = talkRepository.findByDeleteYnAndId(false, talkId);
-        if(talk == null) throw new PostNotFoundException("Talk Not Found. Talk ID :"+talkId);
+        Talk talk = talkRepository.findByDeleteYnAndId(false, talkId)
+                .orElseThrow(() -> new PostNotFoundException("Talk Not Found. Talk ID :"+talkId));
         talk.increaseViewCnt();
         talkRepository.save(talk);
 
@@ -107,8 +107,8 @@ public class TalkService {
     // 소통해요 수정
     @Transactional
     public void updateTalk(Long talkId, TalkRegisterRequest request) {
-        Talk talk = talkRepository.findByDeleteYnAndId(false, talkId);
-        if(talk == null) throw new PostNotFoundException("Talk Not Found. Talk ID :"+talkId);
+        Talk talk = talkRepository.findByDeleteYnAndId(false, talkId)
+                .orElseThrow(() -> new PostNotFoundException("Talk Not Found. Talk ID :"+talkId));
         talk.updateTalk(request.getTitle(), request.getContent());
 
         // 태그 수정
@@ -132,9 +132,8 @@ public class TalkService {
     // 소통해요 삭제
     @Transactional
     public void deleteTalk(Long talkId) {
-        Talk talk = talkRepository.findByDeleteYnAndId(false, talkId);
-        if(talk == null)
-            throw new PostNotFoundException("Talk Not Found. Talk ID :"+talkId);
+        Talk talk = talkRepository.findByDeleteYnAndId(false, talkId)
+                .orElseThrow(() -> new PostNotFoundException("Talk Not Found. Talk ID :"+talkId));
         //연관관계 삭제
         for(TalkTag oldTT : talk.getTalkTags()) {
             tagService.deleteTagRelation(talk, oldTT.getTag());
@@ -144,17 +143,15 @@ public class TalkService {
     }
 
     public void like(Long id) {
-        Talk talk = talkRepository.findByDeleteYnAndId(false, id);
-        if(talk == null)
-            throw new PostNotFoundException("Talk Not Found. Talk ID :"+id);
+        Talk talk = talkRepository.findByDeleteYnAndId(false, id)
+                .orElseThrow(() -> new PostNotFoundException("Talk Not Found. Talk ID :"+id));
         talk.like();
     }
 
 
     public void cancleLike(Long id){
-        Talk talk = talkRepository.findByDeleteYnAndId(false, id);
-        if(talk == null)
-            throw new PostNotFoundException("Talk Not Found. Talk ID :"+id);
+        Talk talk = talkRepository.findByDeleteYnAndId(false, id)
+                .orElseThrow(() -> new PostNotFoundException("Talk Not Found. Talk ID :"+id));
         talk.cancleLike();
     }
 

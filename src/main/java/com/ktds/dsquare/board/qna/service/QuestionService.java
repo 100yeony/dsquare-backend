@@ -19,7 +19,6 @@ import com.ktds.dsquare.board.tag.QuestionTag;
 import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.board.tag.TagService;
 import com.ktds.dsquare.common.exception.DeleteQuestionException;
-import com.ktds.dsquare.common.exception.EntityNotFoundException;
 import com.ktds.dsquare.common.exception.PostNotFoundException;
 import com.ktds.dsquare.common.exception.UserNotFoundException;
 import com.ktds.dsquare.common.file.Attachment;
@@ -35,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -157,9 +157,8 @@ public class QuestionService {
 
     //read - 질문글 상세 조회
     public QuestionResponse getQuestionDetail(Member user, Long qid) {
-        Question question = questionRepository.findByDeleteYnAndQid(false, qid);
-        if(question==null)
-            throw new PostNotFoundException("Question not found. Question ID: " + qid);
+        Question question = questionRepository.findByDeleteYnAndQid(false, qid)
+                .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + qid));
         question.increaseViewCnt();
         questionRepository.save(question);
 
@@ -173,9 +172,8 @@ public class QuestionService {
     // 질문글 수정
     @Transactional
     public void updateQuestion(Long qid, QuestionRequest request, MultipartFile newAttachment) {
-        Question question = questionRepository.findByDeleteYnAndQid(false, qid);
-        if(question==null)
-            throw new PostNotFoundException("Question not found. qid is " + qid);
+        Question question = questionRepository.findByDeleteYnAndQid(false, qid)
+                .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + qid));
         Category category = categoryRepository.findById(request.getCid())
                 .orElseThrow(()-> new EntityNotFoundException("category not found. category is " + request.getCid()));
         Attachment savedAttachment = updateQuestionAttachment(request.getAttachment(), newAttachment, question);
@@ -232,15 +230,15 @@ public class QuestionService {
     }
 
     public void like(Long id) {
-        Question question = questionRepository.findById(id)
-                        .orElseThrow(()-> new PostNotFoundException("question not found"));
+        Question question = questionRepository.findByDeleteYnAndQid(false, id)
+                .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + id));
         question.like();
     }
 
 
     public void cancleLike(Long id){
-        Question question = questionRepository.findById(id)
-                .orElseThrow(()-> new PostNotFoundException("question not found"));
+        Question question = questionRepository.findByDeleteYnAndQid(false, id)
+                .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + id));
         question.cancleLike();
     }
 

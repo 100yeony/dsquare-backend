@@ -11,13 +11,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
     List<Answer> findByQuestionAndDeleteYn(Question qid, Boolean deleteYn);
     List<Answer> findByQuestionAndDeleteYnOrderByCreateDateAsc(Question qid, Boolean deleteYn);
 
-    Answer findByDeleteYnAndId(Boolean deleteYn, Long aid);
+    Optional<Answer> findByDeleteYnAndId(Boolean deleteYn, Long aid);
 
     //마이페이지 관련
     Page<Answer> findByDeleteYnAndWriter(Boolean deleteYn, Member writer, Pageable pageable);
