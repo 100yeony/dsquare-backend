@@ -12,10 +12,13 @@ public enum ResponseType {
 
     /*** Client Error Response ***/
     _400_BAD_REQUEST(HttpStatus.BAD_REQUEST, "400000", "Bad request."),
+    _400_TOKEN_MISMATCH(HttpStatus.BAD_REQUEST, "400001", "It is not your token!"),
+    _400_TOKEN_STILL_VALID(HttpStatus.BAD_REQUEST, "400002", "Token has been hijacked!"),
     _401_FAILED_LOGIN(HttpStatus.UNAUTHORIZED, "401001", "Login failed."),
     _401_EXPIRED_CREDENTIALS(HttpStatus.UNAUTHORIZED, "401002", "Password is expired."),
     _403_FORBIDDEN(HttpStatus.FORBIDDEN, "403000", "Forbidden."),
     _403_LACK_OF_AUTHORITY(HttpStatus.FORBIDDEN, "403001", "You don't have an authority to access."),
+    _409_CONFLICT(HttpStatus.CONFLICT, "409000", "Conflict."),
 
     /*** Server Error Response ***/
     _500_INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500000", "Internal server error."),
