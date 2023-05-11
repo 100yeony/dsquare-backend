@@ -29,7 +29,7 @@ public class CardController {
 
     //read - 카드주세요 글 전체 목록 조회 & 검색
     @GetMapping("board/cards")
-    public ResponseEntity<List<BriefCardResponse>> getCards(@RequestParam(required = false) Boolean isSelected, @RequestParam(required = false) Long projTeamId,
+    public ResponseEntity<List<BriefCardResponse>> getCards(@RequestParam boolean isSelected, @RequestParam(required = false) Long projTeamId,
                                                             @AuthUser Member user, @RequestParam(required = false) String order, Pageable pageable){
         return new ResponseEntity<>(cardService.getCards(isSelected, projTeamId, user, order, pageable), HttpStatus.OK);
     }
