@@ -18,16 +18,11 @@ public interface CardRepository extends JpaRepository<Card,Long>, JpaSpecificati
     //전체 조회 관련
     Page<Card>  findByDeleteYnAndSelectionYnOrderByCreateDateDesc(Boolean deleteYn, Boolean selection, Pageable pageable);
 
-    Page<Card>  findByDeleteYnOrderByCreateDateDesc(Boolean deleteYn, Pageable pageable);
-
-
     //상세 조회 관련
     Optional<Card> findByDeleteYnAndId(Boolean deleteYn, Long cardId);
 
     //검색 관련
     Page<Card> findByDeleteYnAndSelectionYnAndProjTeamOrderByCreateDateDesc(Boolean deleteYn, Boolean selection, Team projTeamId, Pageable pageable);
-
-    Page<Card>  findByDeleteYnAndProjTeamOrderByCreateDateDesc(Boolean deleteYn, Team projTeamId, Pageable pageable);
 
     //이달의 카드 조회 관련
     @Query(value = "SELECT DISTINCT ON (extract(month from c.selected_date)) " +
