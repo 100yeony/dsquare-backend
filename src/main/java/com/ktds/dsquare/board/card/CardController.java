@@ -29,9 +29,9 @@ public class CardController {
 
     //read - 카드주세요 글 전체 목록 조회 & 검색
     @GetMapping("board/cards")
-    public ResponseEntity<List<BriefCardResponse>> getCards(@RequestParam(required = false) Long projTeamId,
+    public ResponseEntity<List<BriefCardResponse>> getCards(@RequestParam(required = false) Boolean selection, @RequestParam(required = false) Long projTeamId,
                                                             @AuthUser Member user, @RequestParam(required = false) String order, Pageable pageable){
-        return new ResponseEntity<>(cardService.getCards(projTeamId, user, order, pageable), HttpStatus.OK);
+        return new ResponseEntity<>(cardService.getCards(selection, projTeamId, user, order, pageable), HttpStatus.OK);
     }
 
     //read - 카드주세요 글 상세 조회
