@@ -10,11 +10,11 @@ import com.ktds.dsquare.board.qna.dto.AnswerRequest;
 import com.ktds.dsquare.board.qna.dto.AnswerResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
+import com.ktds.dsquare.common.exception.PostNotFoundException;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,9 @@ public class AnswerService {
     // 답변글 작성
     @Transactional
     public void createAnswer(Long qid, AnswerRequest dto, Member user) {
-        Question question = questionRepository.findById(qid).orElseThrow(() -> new EntityNotFoundException("Question not found"));
+        Question question = questionRepository.findByDeleteYnAndQid(false, qid);
+        if(question==null)
+            throw new PostNotFoundException("Question not found. Question ID: " + qid);
         Answer answer = Answer.toEntity(dto, user, question);
         answerRepository.save(answer);
     }
@@ -52,6 +54,8 @@ public class AnswerService {
     //답변글 상세 조회
     public AnswerResponse getAnswerDetail(Long aid, Member user){
         Answer answer = answerRepository.findByDeleteYnAndId(false, aid);
+        if(answer==null)
+            throw new PostNotFoundException("Answer Not Found. Answer ID: "+aid);
         Boolean likeYn = findLikeYn(BoardType.ANSWER, answer.getId(), user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.ANSWER, answer.getId());
         return AnswerResponse.toDto(answer, answer.getLikeCnt(), likeYn, commentCnt);
@@ -63,7 +67,7 @@ public class AnswerService {
     public void updateAnswer(Long aid, AnswerRequest request) {
         Answer answer = answerRepository.findByDeleteYnAndId(false, aid);
         if(answer==null){
-            throw new EntityNotFoundException("answer not found. aid is " + aid);
+            throw new PostNotFoundException("answer not found. aid is " + aid);
         }
         answer.updateAnswer(request.getContent(), request.getAtcId());
     }
@@ -71,21 +75,21 @@ public class AnswerService {
     // 답변글 삭제
     @Transactional
     public void deleteAnswer(Long aid) {
-        Answer answer = answerRepository.findById(aid).orElseThrow(() -> new EntityNotFoundException("Answer does not exist"));
+        Answer answer = answerRepository.findById(aid).orElseThrow(() -> new PostNotFoundException("answer not found. aid is " + aid));
         answer.deleteAnswer();
         commentService.deleteCommentCascade(BoardType.ANSWER, aid);
     }
 
     public void like(Long id) {
         Answer answer = answerRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("answer not found"));
+                .orElseThrow(()-> new PostNotFoundException("answer not found. aid is " + id));
         answer.like();
     }
 
 
     public void cancleLike(Long id){
         Answer answer = answerRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("answer not found"));
+                .orElseThrow(()-> new PostNotFoundException("answer not found. aid is " + id));
         answer.cancleLike();
     }
 

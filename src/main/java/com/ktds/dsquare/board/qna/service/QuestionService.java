@@ -4,6 +4,7 @@ import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeRepository;
+import com.ktds.dsquare.board.paging.PagingService;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
@@ -17,13 +18,15 @@ import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.board.tag.QuestionTag;
 import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.board.tag.TagService;
-import com.ktds.dsquare.board.paging.PagingService;
+import com.ktds.dsquare.common.exception.DeleteQuestionException;
+import com.ktds.dsquare.common.exception.EntityNotFoundException;
+import com.ktds.dsquare.common.exception.PostNotFoundException;
+import com.ktds.dsquare.common.exception.UserNotFoundException;
 import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.common.file.AttachmentService;
 import com.ktds.dsquare.common.file.dto.AttachmentDto;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
-import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +35,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -109,7 +111,7 @@ public class QuestionService {
                     List<Member> writerIds = new ArrayList<>();
                     for (Member M : members) {
                         Member m = memberRepository.findById(M.getId())
-                                .orElseThrow(() -> new EntityNotFoundException("Member Not Found"));
+                                .orElseThrow(() -> new UserNotFoundException("Member Not Found"));
                         writerIds.add(m);
                     }
                     filter = filter.and(QuestionSpecification.inWriter(writerIds));
@@ -156,11 +158,11 @@ public class QuestionService {
     //read - 질문글 상세 조회
     public QuestionResponse getQuestionDetail(Member user, Long qid) {
         Question question = questionRepository.findByDeleteYnAndQid(false, qid);
+        if(question==null)
+            throw new PostNotFoundException("Question not found. Question ID: " + qid);
         question.increaseViewCnt();
         questionRepository.save(question);
 
-        Member member = question.getWriter();
-        BriefMemberInfo writer = BriefMemberInfo.toDto(member);
         CategoryResponse categoryRes = CategoryResponse.toDto(question.getCategory());
 
         Boolean likeYn = findLikeYn(BoardType.QUESTION, qid, user);
@@ -172,9 +174,8 @@ public class QuestionService {
     @Transactional
     public void updateQuestion(Long qid, QuestionRequest request, MultipartFile newAttachment) {
         Question question = questionRepository.findByDeleteYnAndQid(false, qid);
-        if(question==null){
-            throw new EntityNotFoundException("Question not found. qid is " + qid);
-        }
+        if(question==null)
+            throw new PostNotFoundException("Question not found. qid is " + qid);
         Category category = categoryRepository.findById(request.getCid())
                 .orElseThrow(()-> new EntityNotFoundException("category not found. category is " + request.getCid()));
         Attachment savedAttachment = updateQuestionAttachment(request.getAttachment(), newAttachment, question);
@@ -212,11 +213,10 @@ public class QuestionService {
     @Transactional
     public void deleteQuestion(Long qid) {
         Question question = questionRepository.findById(qid)
-                .orElseThrow(() -> new EntityNotFoundException("Delete Question Fail"));
+                .orElseThrow(() -> new PostNotFoundException("Delete Question Fail"));
         List<Answer> answerList = answerRepository.findByQuestionAndDeleteYn(question, false);
 
-        // 답변글이 이미 존재할 때 => HTTP Status로 처리해줘야 함(추후 수정 필요)
-        if(!answerList.isEmpty()) throw new EntityNotFoundException("Delete Question Fail - Reply exists");
+        if(!answerList.isEmpty()) throw new DeleteQuestionException("Delete Question Fail - Reply exists");
         deleteAttachment(question.getAttachment());
         question.deleteQuestion();
         commentService.deleteCommentCascade(BoardType.QUESTION, qid);
@@ -233,14 +233,14 @@ public class QuestionService {
 
     public void like(Long id) {
         Question question = questionRepository.findById(id)
-                        .orElseThrow(()-> new EntityNotFoundException("question not found"));
+                        .orElseThrow(()-> new PostNotFoundException("question not found"));
         question.like();
     }
 
 
     public void cancleLike(Long id){
         Question question = questionRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("question not found"));
+                .orElseThrow(()-> new PostNotFoundException("question not found"));
         question.cancleLike();
     }
 
