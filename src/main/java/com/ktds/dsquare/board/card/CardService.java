@@ -20,6 +20,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,28 +44,33 @@ public class CardService {
     }
 
     //read - 카드주세요 글 전체 조회 & 검색
-    public List<BriefCardResponse> getCards(Long projTeamId, Member user, String order, Pageable pageable){
+    public List<BriefCardResponse> getCards(boolean isSelected, Long projTeamId, Member user, String order, Pageable pageable){
         Pageable page = pagingService.orderPage(order, pageable);
-
-        List<BriefCardResponse> briefCards = new ArrayList<>();
         Page<Card> cards;
+
         if(projTeamId != null){
             //검색
             Team team = teamRepository.findById(projTeamId)
                     .orElseThrow(()-> new EntityNotFoundException("team not found"));
-            cards = cardRepository.findByDeleteYnAndProjTeamOrderByCreateDateDesc(false, team, page);
+            if(isSelected){
+                cards = cardRepository.findByDeleteYnAndSelectionYnAndProjTeamOrderByCreateDateDesc(false, isSelected, team, page);
+            } else{
+                cards = cardRepository.findByDeleteYnAndProjTeamOrderByCreateDateDesc(false, team, page);
+            }
         }else{
             //전체조회
-            cards = cardRepository.findByDeleteYnOrderByCreateDateDesc(false, page);
+            if(isSelected){
+                cards = cardRepository.findByDeleteYnAndSelectionYnOrderByCreateDateDesc(false, isSelected, page);
+            } else{
+                cards = cardRepository.findByDeleteYnOrderByCreateDateDesc(false, page);
+            }
         }
-        for(Card C : cards){
-            briefCards.add(makeBriefCardRes(C, user, projTeamId));
-        }
-        return briefCards;
+        return cards.stream()
+                .map(c -> makeBriefCardRes(c, user, projTeamId))
+                .collect(Collectors.toList());
     }
 
     public BriefCardResponse makeBriefCardRes(Card C, Member user, Long projTeamId){
-        Member member = C.getWriter();
         Member owner = C.getCardOwner();
         CardSelectionInfo selectionInfo;
         Team team;
@@ -130,7 +136,6 @@ public class CardService {
         List<BriefCardResponse> briefCards = new ArrayList<>();
 
         for(Card C : cards){
-            Member member = C.getWriter();
             Member owner = C.getCardOwner();
             CardSelectionInfo selectionInfo;
 

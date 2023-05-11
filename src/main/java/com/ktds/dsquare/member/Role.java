@@ -19,7 +19,7 @@ public enum Role {
                 return role;
         }
 
-        throw new RuntimeException("Invalid role.");
+        throw new RuntimeException("Invalid role. Please using [ user || manager || owner || admin ]");
     }
 
 }
