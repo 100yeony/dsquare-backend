@@ -53,22 +53,25 @@ public class CardService {
             Team team = teamRepository.findById(projTeamId)
                     .orElseThrow(()-> new EntityNotFoundException("team not found"));
             if(isSelected){
-                cards = cardRepository.findByDeleteYnAndSelectionYnAndProjTeamOrderByCreateDateDesc(false, isSelected, team, page);
-            } else{
-                cards = cardRepository.findByDeleteYnAndProjTeamOrderByCreateDateDesc(false, team, page);
+                cards = cardRepository.findByDeleteYnAndSelectionYnAndProjTeamOrderByCreateDateDesc(false, true, team, page);
+            } else {
+                cards = cardRepository.findByDeleteYnAndSelectionYnAndProjTeamOrderByCreateDateDesc(false, false, team, page);
             }
         }else{
             //전체조회
             if(isSelected){
                 cards = cardRepository.findByDeleteYnAndSelectionYnOrderByCreateDateDesc(false, isSelected, page);
             } else{
-                cards = cardRepository.findByDeleteYnOrderByCreateDateDesc(false, page);
+                cards = cardRepository.findByDeleteYnAndSelectionYnOrderByCreateDateDesc(false, false, page);
             }
         }
         return cards.stream()
                 .map(c -> makeBriefCardRes(c, user, projTeamId))
                 .collect(Collectors.toList());
     }
+
+
+
 
     public BriefCardResponse makeBriefCardRes(Card C, Member user, Long projTeamId){
         Member owner = C.getCardOwner();
