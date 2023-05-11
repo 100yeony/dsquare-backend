@@ -9,7 +9,6 @@ import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.talk.Talk;
-import com.ktds.dsquare.common.enums.RoleType;
 import com.ktds.dsquare.member.dto.request.MemberUpdateRequest;
 import com.ktds.dsquare.member.dto.request.SignupRequest;
 import com.ktds.dsquare.member.team.Team;
@@ -25,7 +24,6 @@ import org.springframework.util.StringUtils;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -64,7 +62,7 @@ public class Member {
     private LocalDateTime lastLoginDate;
     private LocalDateTime lastPwChangeDate;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private List<Role> role;
 
@@ -103,13 +101,7 @@ public class Member {
     private List<Carrot> carrotList;
 
     public List<Role> getRole() {
-        String role_str = role.replace("[","").replace("]", "");
-        List<String> role_list = Arrays.asList(role_str.split(","));
-        List<String> result = new ArrayList<>();
-        for(String l:role_list){
-            result.add(l.trim());
-        }
-        return result;
+        return role;
     }
 
     public void join(Team team) {
@@ -127,13 +119,14 @@ public class Member {
             this.contact = request.getContact();
         if (request.getRole() != null) {
             List<String> roles = request.getRole();
-            List<RoleType> result = new ArrayList<>();
-            for (Object o : roles) {
-                result.add(RoleType.findRoleType(o.toString()));
+            List<Role> result = new ArrayList<>();
+            for (String role : roles) {
+                result.add(Role.from(role));
             }
-            this.role = result.toString();
+            this.role = result;
         }
     }
+
     public void updateProfileImage(String profileImage) {
         this.profileImage = profileImage;
     }
