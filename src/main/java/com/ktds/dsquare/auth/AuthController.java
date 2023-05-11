@@ -8,6 +8,7 @@ import com.ktds.dsquare.common.ErrorResponse;
 import com.ktds.dsquare.common.exception.AccessTokenStillValidException;
 import com.ktds.dsquare.common.exception.RefreshTokenMismatchException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,6 +52,8 @@ public class AuthController {
                             .build(),
                     HttpStatus.BAD_REQUEST
             );
+        } catch (CannotAcquireLockException e) {
+            return new ResponseEntity<>("Simultaneous request detected.", HttpStatus.CONFLICT);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
