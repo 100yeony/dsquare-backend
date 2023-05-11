@@ -44,7 +44,7 @@ public class CardService {
     }
 
     //read - 카드주세요 글 전체 조회 & 검색
-    public List<BriefCardResponse> getCards(Boolean selection, Long projTeamId, Member user, String order, Pageable pageable){
+    public List<BriefCardResponse> getCards(Boolean isSelected, Long projTeamId, Member user, String order, Pageable pageable){
         Pageable page = pagingService.orderPage(order, pageable);
         Page<Card> cards;
 
@@ -52,15 +52,15 @@ public class CardService {
             //검색
             Team team = teamRepository.findById(projTeamId)
                     .orElseThrow(()-> new EntityNotFoundException("team not found"));
-            if(selection != null){
-                cards = cardRepository.findByDeleteYnAndSelectionYnAndProjTeamOrderByCreateDateDesc(false, selection, team, page);
+            if(isSelected != null){
+                cards = cardRepository.findByDeleteYnAndSelectionYnAndProjTeamOrderByCreateDateDesc(false, isSelected, team, page);
             } else{
                 cards = cardRepository.findByDeleteYnAndProjTeamOrderByCreateDateDesc(false, team, page);
             }
         }else{
             //전체조회
-            if(selection != null){
-                cards = cardRepository.findByDeleteYnAndSelectionYnOrderByCreateDateDesc(false, selection, page);
+            if(isSelected != null){
+                cards = cardRepository.findByDeleteYnAndSelectionYnOrderByCreateDateDesc(false, isSelected, page);
             } else{
                 cards = cardRepository.findByDeleteYnOrderByCreateDateDesc(false, page);
             }
@@ -136,7 +136,6 @@ public class CardService {
         List<BriefCardResponse> briefCards = new ArrayList<>();
 
         for(Card C : cards){
-            Member member = C.getWriter();
             Member owner = C.getCardOwner();
             CardSelectionInfo selectionInfo;
 
