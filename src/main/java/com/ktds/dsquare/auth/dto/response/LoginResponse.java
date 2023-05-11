@@ -1,13 +1,15 @@
 package com.ktds.dsquare.auth.dto.response;
 
 import com.ktds.dsquare.auth.jwt.JwtProperties;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.Map;
 
-@Builder
 @Getter
+@Builder
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LoginResponse {
 
     private String accessToken;

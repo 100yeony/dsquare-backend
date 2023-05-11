@@ -33,6 +33,10 @@ dependencies {
     // ## To fix warnings 'unknown enum constant When.MAYBE' ##
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
+    // ## For @Slf4j in testing ##
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
     // ## Configuration Annotation Processor ##
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
