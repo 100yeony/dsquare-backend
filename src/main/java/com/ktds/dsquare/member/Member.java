@@ -1,5 +1,6 @@
 package com.ktds.dsquare.member;
 
+import com.ktds.dsquare.auth.AuthToken;
 import com.ktds.dsquare.board.card.Card;
 import com.ktds.dsquare.board.carrot.Carrot;
 import com.ktds.dsquare.board.comment.Comment;
@@ -63,7 +64,12 @@ public class Member {
     private LocalDateTime lastLoginDate;
     private LocalDateTime lastPwChangeDate;
 
-    private String role;
+    @ElementCollection
+    @Enumerated(EnumType.STRING)
+    private List<Role> role;
+
+    @OneToOne(cascade = CascadeType.REMOVE, mappedBy = "member", fetch = FetchType.LAZY)
+    private AuthToken authToken;
 
     @OneToMany(mappedBy = "manager")
     private List<Category> cid;
@@ -96,7 +102,7 @@ public class Member {
     @OneToMany(mappedBy = "writer")
     private List<Carrot> carrotList;
 
-    public List<String> getRole() {
+    public List<Role> getRole() {
         String role_str = role.replace("[","").replace("]", "");
         List<String> role_list = Arrays.asList(role_str.split(","));
         List<String> result = new ArrayList<>();
@@ -152,7 +158,7 @@ public class Member {
                 .activityScore(0L)
                 .lastLoginDate(LocalDateTime.now())
                 .lastPwChangeDate(LocalDateTime.now())
-                .role(RoleType.USER.toString())
+                .role(List.of(Role.USER))
                 .build();
     }
 

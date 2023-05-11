@@ -18,7 +18,7 @@ public class AuthToken {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne(fetch = FetchType.LAZY)
     private Member member;
 
     @Column(columnDefinition = "TEXT") //@Lob
