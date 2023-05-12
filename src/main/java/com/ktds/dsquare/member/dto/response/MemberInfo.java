@@ -1,12 +1,14 @@
 package com.ktds.dsquare.member.dto.response;
 
 import com.ktds.dsquare.member.Member;
+import com.ktds.dsquare.member.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 @NoArgsConstructor @AllArgsConstructor
 @Builder
@@ -21,6 +23,7 @@ public class MemberInfo {
     private String contact;
     private List<String> teamHierarchy;
     private String profileImage;
+    private Set<Role> role;
 
 
     public static MemberInfo toDto(Member entity) {
@@ -33,6 +36,7 @@ public class MemberInfo {
                 .contact(entity.getContact())
                 .teamHierarchy(entity.getTeam().getTeamHierarchy())
                 .profileImage(entity.getProfileImage())
+                .role(entity.getRole())
                 .build();
     }
 

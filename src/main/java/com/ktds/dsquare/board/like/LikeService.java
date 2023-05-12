@@ -7,6 +7,9 @@ import com.ktds.dsquare.board.like.dto.LikeRegisterRequest;
 import com.ktds.dsquare.board.qna.service.AnswerService;
 import com.ktds.dsquare.board.qna.service.QuestionService;
 import com.ktds.dsquare.board.talk.TalkService;
+import com.ktds.dsquare.common.exception.BoardTypeException;
+import com.ktds.dsquare.common.exception.DislikeException;
+import com.ktds.dsquare.common.exception.LikeException;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,7 +33,7 @@ public class LikeService {
         BoardType boardType = BoardType.findBoardType(dto.getBoardType());
         Boolean likeCheck = likeRepository.existsByBoardTypeAndPostIdAndMember(boardType, dto.getPostId(), user);
         if (likeCheck) {
-            throw new RuntimeException("like already exist");
+            throw new LikeException("Like already exist");
         } else {
             Like like = Like.toEntity(dto, boardType, user);
             likeRepository.save(like);
@@ -50,7 +53,7 @@ public class LikeService {
                     carrotService.like(dto.getPostId());
                     break;
                 default:
-                    throw new RuntimeException("Invalid board type.");
+                    throw new BoardTypeException("Invalid board type.");
             }
         }
     }
@@ -60,6 +63,8 @@ public class LikeService {
     public void cancelLike(LikeRegisterRequest dto, Member user){
         BoardType boardType = BoardType.findBoardType(dto.getBoardType());
         Like like = likeRepository.findByBoardTypeAndPostIdAndMember(boardType, dto.getPostId(), user);
+        if(like == null)
+            throw new DislikeException("There is no Like to delete.");
         likeRepository.delete(like);
         switch (boardType) {
             case QUESTION:
@@ -77,7 +82,7 @@ public class LikeService {
                 carrotService.cancleLike(dto.getPostId());
                 break;
             default:
-                throw new RuntimeException("Invalid board type.");
+                throw new BoardTypeException("Invalid board type.");
         }
     }
 

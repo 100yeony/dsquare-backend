@@ -7,6 +7,7 @@ import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.board.talk.TalkRepository;
+import com.ktds.dsquare.common.exception.*;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,8 +37,10 @@ public class CommentService {
     // 댓글 작성
     @Transactional
     public void createComment(String boardTypeName, Long postId, CommentRegisterDto request, Member user) {
+        if(request.getContent().equals(""))
+            throw new LackOfDataException("There is no content.");
         if(!checkAvailability(boardTypeName, postId))
-            throw new RuntimeException("Post Not Found");
+            throw new PostNotFoundException("Post Not Found. Board Type: "+boardTypeName+", Post ID: "+postId);
         BoardType boardType = BoardType.findBoardType(boardTypeName);
         Comment comment = Comment.toEntity(request, user, boardType, postId);
         commentRepository.save(comment);
@@ -46,9 +49,11 @@ public class CommentService {
     // 대댓글 작성
     @Transactional
     public void createNestedComment(String boardTypeName, Long postId, NestedCommentRegisterDto request, Member user) {
+        if(request.getContent().equals(""))
+            throw new LackOfDataException("There is no content.");
         if(!checkAvailability(boardTypeName, postId))
-            throw new RuntimeException("Post Not Found");
-        Member originWriter = memberRepository.findById(request.getOriginWriterId()).orElseThrow(() -> new RuntimeException("Origin Writer Not Found"));
+            throw new PostNotFoundException("Post Not Found. Board Type: "+boardTypeName+", Post ID: "+postId);
+        Member originWriter = memberRepository.findById(request.getOriginWriterId()).orElseThrow(() -> new UserNotFoundException("Origin Writer Not Found"));
         BoardType boardType = BoardType.findBoardType(boardTypeName);
         Comment comment = Comment.toNestedEntity(request, user, boardType, postId, originWriter);
         commentRepository.save(comment);
@@ -59,7 +64,7 @@ public class CommentService {
         Pageable page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate"));
 
         if(!checkAvailability(boardTypeName, postId))
-            throw new RuntimeException("Post Not Found");
+            throw new PostNotFoundException("Post Not Found. Board Type: "+boardTypeName+", Post ID: "+postId);
         BoardType boardType = BoardType.findBoardType(boardTypeName);
         Page<Comment> comments = commentRepository.findByBoardTypeAndPostId(boardType, postId, page);
         List<Object> commentDto = new ArrayList<>();
@@ -76,7 +81,7 @@ public class CommentService {
     // 댓글 삭제
     @Transactional
     public void deleteComment(Long commentId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new RuntimeException("Comment Not Found"));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new PostNotFoundException("Comment Not Found. Comment ID: "+commentId));
         commentRepository.delete(comment);
     }
 
@@ -100,7 +105,7 @@ public class CommentService {
             case "carrot":
                 return carrotRepository.findByDeleteYnAndId(false, postId) != null;
             default:
-                throw new RuntimeException("BoardTypeName Not Found");
+                throw new BoardTypeException("BoardTypeName Not Found");
         }
     }
 }

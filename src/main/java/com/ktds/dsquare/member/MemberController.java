@@ -3,9 +3,7 @@ package com.ktds.dsquare.member;
 import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.common.exception.MemberException;
 import com.ktds.dsquare.common.mailing.MailService;
-import com.ktds.dsquare.member.dto.request.MemberUpdateRequest;
-import com.ktds.dsquare.member.dto.request.PasswordChangeRequest;
-import com.ktds.dsquare.member.dto.request.SignupRequest;
+import com.ktds.dsquare.member.dto.request.*;
 import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +22,22 @@ import java.util.Map;
 @Slf4j
 public class MemberController {
 
+    private final MemberSelectService memberSelectService;
     private final MemberService memberService;
+    private final AccountService accountService;
     private final MailService mailService;
 
+
+    @PostMapping("/account/signup/authenticate")
+    public ResponseEntity<?> authenticateAccount(@RequestBody AccountAuthenticationRequest request) {
+        accountService.authenticateAccount(request);
+        return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
+    }
+    @DeleteMapping("/account/signup/authenticate")
+    public ResponseEntity<?> validateAccountAuthentication(@RequestBody AccountAuthenticationValidationRequest request) {
+        accountService.validateAccountAuthentication(request);
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
 
     /**
      * 회원 가입
@@ -51,6 +62,13 @@ public class MemberController {
     public ResponseEntity<MemberInfo> getMember(@PathVariable Long id) {
         return new ResponseEntity<>(memberService.selectMember(id), HttpStatus.OK);
     }
+    /**
+     * 회원 존재 여부 확인 (중복 확인)
+     */
+    @PostMapping("/member/members/existings")
+    public ResponseEntity<Boolean> checkMemberExistence(@RequestBody MemberExistenceCheckRequest request) {
+        return new ResponseEntity<>(memberSelectService.checkMemberExistence(request), HttpStatus.OK);
+    }
 
     /**
      * 회원 정보 수정
@@ -62,6 +80,14 @@ public class MemberController {
     @PatchMapping("/member/members/{id}/profile/image")
     public ResponseEntity<?> updateMemberProfileImage(@PathVariable Long id, @RequestPart MultipartFile image, @AuthUser Member user) throws IOException {
         return new ResponseEntity<>(memberService.updateMember(id, image, user), HttpStatus.OK);
+    }
+
+    /**
+     * 관리자용 회원 정보 수정
+     */
+    @PatchMapping("/admin/members/{id}")
+    public ResponseEntity<?> updateMemberForAdmin(@PathVariable Long id, @RequestBody MemberUpdateRequestForAdmin request) {
+        return new ResponseEntity<>(memberService.updateMemberForAdmin(id, request), HttpStatus.OK);
     }
 
     /**

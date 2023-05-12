@@ -11,8 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface TalkRepository extends JpaRepository<Talk,Long>{
-    Talk findByDeleteYnAndId(boolean deleteYn, Long talkId);
-    Optional<Talk> findById(Long id);
+    Optional<Talk> findByDeleteYnAndId(boolean deleteYn, Long talkId);
 
     //전체조회 & 검색 관련
     Page<Talk> findAll(Specification<Talk> filter, Pageable pageable);
