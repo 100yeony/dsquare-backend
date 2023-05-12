@@ -38,7 +38,7 @@ public class CommentService {
     @Transactional
     public void createComment(String boardTypeName, Long postId, CommentRegisterDto request, Member user) {
         if(request.getContent().equals(""))
-            throw new NoContentException("There is no content.");
+            throw new LackOfDataException("There is no content.");
         if(!checkAvailability(boardTypeName, postId))
             throw new PostNotFoundException("Post Not Found. Board Type: "+boardTypeName+", Post ID: "+postId);
         BoardType boardType = BoardType.findBoardType(boardTypeName);
@@ -50,7 +50,7 @@ public class CommentService {
     @Transactional
     public void createNestedComment(String boardTypeName, Long postId, NestedCommentRegisterDto request, Member user) {
         if(request.getContent().equals(""))
-            throw new NoContentException("There is no content.");
+            throw new LackOfDataException("There is no content.");
         if(!checkAvailability(boardTypeName, postId))
             throw new PostNotFoundException("Post Not Found. Board Type: "+boardTypeName+", Post ID: "+postId);
         Member originWriter = memberRepository.findById(request.getOriginWriterId()).orElseThrow(() -> new UserNotFoundException("Origin Writer Not Found"));

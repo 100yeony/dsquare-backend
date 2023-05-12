@@ -25,10 +25,10 @@ public class GlobalExceptionHandler {
         log.info(String.valueOf(e));
         return new ResponseEntity<>(ResponseType._400_BAD_REQUEST, HttpStatus.BAD_REQUEST);
     }
-    @ExceptionHandler(NoContentException.class)
-    private ResponseEntity<?> NoContentExceptionHandler(NoContentException e) {
+    @ExceptionHandler(LackOfDataException.class)
+    private ResponseEntity<?> LackOfDataExceptionHandler(LackOfDataException e) {
         log.info(String.valueOf(e));
-        return new ResponseEntity<>(ResponseType._400_NO_CONTENT, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ResponseType._400_LACK_OF_DATA, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(BoardTypeException.class)
     private ResponseEntity<?> BoardTypeExceptionHandler(BoardTypeException e) {

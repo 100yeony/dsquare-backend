@@ -12,7 +12,7 @@ public enum ResponseType {
 
     /*** Client Error Response ***/
     _400_BAD_REQUEST(HttpStatus.BAD_REQUEST, "400000", "Bad request."),
-    _400_NO_CONTENT(HttpStatus.BAD_REQUEST, "400001", "There is no content."),
+    _400_LACK_OF_DATA(HttpStatus.BAD_REQUEST, "400001", "There is no content."),
     _400_INVAlID_BOARD_TYPE(HttpStatus.BAD_REQUEST, "400002", "Invalid board type."),
     _400_DELETE_QUESTION_FAILED(HttpStatus.BAD_REQUEST, "400003", "Cannot Delete Question. The Question has Answers."),
     _401_FAILED_LOGIN(HttpStatus.UNAUTHORIZED, "401001", "Login failed."),
