@@ -7,6 +7,7 @@ import com.ktds.dsquare.common.exception.UserNotFoundException;
 import com.ktds.dsquare.common.file.FileService;
 import com.ktds.dsquare.common.file.dto.FileSavedDto;
 import com.ktds.dsquare.member.dto.request.MemberUpdateRequest;
+import com.ktds.dsquare.member.dto.request.MemberUpdateRequestForAdmin;
 import com.ktds.dsquare.member.dto.request.PasswordChangeRequest;
 import com.ktds.dsquare.member.dto.request.SignupRequest;
 import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
@@ -88,10 +89,12 @@ public class MemberService {
     public MemberInfo updateMember(Long id, MemberUpdateRequest request) {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("No such member with ID " + id));
-        Team newTeam = teamRepository.findById(request.getTid())
-                .orElseThrow(() -> new EntityNotFoundException("No such team with ID " + request.getTid()));
+        if(request.getTid() != null) {
+            Team newTeam = teamRepository.findById(request.getTid())
+                    .orElseThrow(() -> new EntityNotFoundException("No such team with ID " + request.getTid()));
+            member.join(newTeam);
+        }
         member.update(request);
-        member.join(newTeam);
         return MemberInfo.toDto(member);
     }
     @Transactional
@@ -112,6 +115,13 @@ public class MemberService {
             log.debug("There is existing profile image.");
 //            attachmentService.deleteAttachmentByPostDeletion(); // TODO Post <> Attachment 와 묶어 함께 생각할 필요 추가
         return fileService.uploadFile(image);
+    }
+    @Transactional
+    public MemberInfo updateMemberForAdmin(Long id, MemberUpdateRequestForAdmin request) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("No such member with ID " + id));
+        member.update(request.getRole());
+        return MemberInfo.toDto(member);
     }
 
     @Transactional

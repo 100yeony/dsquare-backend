@@ -83,6 +83,14 @@ public class MemberController {
     }
 
     /**
+     * 관리자용 회원 정보 수정
+     */
+    @PatchMapping("/admin/members/{id}")
+    public ResponseEntity<?> updateMemberForAdmin(@PathVariable Long id, @RequestBody MemberUpdateRequestForAdmin request) {
+        return new ResponseEntity<>(memberService.updateMemberForAdmin(id, request), HttpStatus.OK);
+    }
+
+    /**
      * 비밀번호 찾기
      */
     @PostMapping("/account/find-pw")
