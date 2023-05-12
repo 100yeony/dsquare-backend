@@ -28,6 +28,9 @@ public class Category {
     @JoinColumn(name = "member")
     private Member manager;
 
+    @Column(nullable = false)
+    private Boolean deleteYn;
+
     @OneToMany(mappedBy = "upCategory")
     private List<Category> childList;
 
@@ -35,7 +38,7 @@ public class Category {
     @ManyToOne(fetch = FetchType.LAZY)
     private Category upCategory;
 
-    public List<String> getcategoryHierarchy() {
+    public List<String> getCategoryHierarchy() {
         Deque<String> nameQueue = new ArrayDeque<>();
         for (Category category = this; category != null; category = category.getUpCategory())
             nameQueue.offerFirst(category.getName());

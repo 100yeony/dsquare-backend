@@ -4,6 +4,7 @@ import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.dto.BriefCategoryResponse;
 import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -20,7 +22,8 @@ public class CategoryService {
         List<Category> categories = categoryRepository.findByUpCategory(null);
         List<BriefCategoryResponse> briefCategoryResponses = new ArrayList<>();
         for(Category c : categories){
-            briefCategoryResponses.add(BriefCategoryResponse.toDto(c));
+            if(!c.getDeleteYn())
+                briefCategoryResponses.add(BriefCategoryResponse.toDto(c));
         }
         return briefCategoryResponses;
     }
