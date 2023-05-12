@@ -32,8 +32,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @Slf4j
 @AutoConfigureMockMvc
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = { "jasypt.encryptor.password=${jasypt_password}"})
-public class JwtUtilTest {
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        properties = { "jasypt.encryptor.password=${jasypt_password}"}
+)public class JwtUtilTest {
 
     @LocalServerPort
     private int port;
