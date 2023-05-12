@@ -90,6 +90,7 @@ public class SecurityConfig {
     private void configureRequestAuthorization(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/board/cards/{cardId}/chosen").hasRole("OWNER")
                 .anyRequest().authenticated();
     }
     private void configureLogin(HttpSecurity http) throws Exception {
