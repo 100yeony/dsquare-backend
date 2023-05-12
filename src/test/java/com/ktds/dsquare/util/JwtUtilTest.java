@@ -5,6 +5,7 @@ import com.ktds.dsquare.auth.dto.request.TokenRefreshRequest;
 import com.ktds.dsquare.auth.dto.response.LoginResponse;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
+import com.ktds.dsquare.member.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -64,20 +65,9 @@ public class JwtUtilTest {
                     .name(name)
                     .contact(contact)
                     .lastPwChangeDate(LocalDateTime.now())
-                    .role("USER")
+                    .role(Set.of(Role.USER))
                     .build();
             memberRepository.save(member);
-
-//            final String url = "http://localhost:"+port+"/account/signup";
-//            final SignupRequest request = SignupRequest.builder()
-//                            .email(email)
-//                                    .pw(pw)
-//                                            .nickname(nickname)
-//                                                    .name(name)
-//                                                            .contact(contact)
-//                                                                    .build();
-//            ResponseEntity<SignupResponse> response = restTemplate.postForEntity(url, request, SignupResponse.class);
-//            log.info("Signup response {}", response.getStatusCode());
         }
     }
 
@@ -137,7 +127,7 @@ public class JwtUtilTest {
         // then
         log.info("Result: {}", statusSet);
         assertThat(statusSet.size()).isGreaterThan(1);
-        assertThat(statusSet.contains(HttpStatus.OK)).isTrue();
+        assertThat(statusSet.contains(HttpStatus.CREATED)).isTrue();
     }
     private Thread[] generateTokenRefreshClients(final AtomicInteger nClient, final LoginResponse authToken, final Set<HttpStatus> statusSet) {
         assert Objects.nonNull(nClient) && Objects.nonNull(authToken) && Objects.nonNull(statusSet);
