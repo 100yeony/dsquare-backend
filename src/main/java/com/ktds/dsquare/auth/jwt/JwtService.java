@@ -8,6 +8,7 @@ import com.ktds.dsquare.auth.AuthTokenRepository;
 import com.ktds.dsquare.auth.dto.request.TokenRefreshRequest;
 import com.ktds.dsquare.auth.dto.response.LoginResponse;
 import com.ktds.dsquare.common.exception.AccessTokenStillValidException;
+import com.ktds.dsquare.common.exception.RefreshTokenExpiredException;
 import com.ktds.dsquare.common.exception.RefreshTokenMismatchException;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
@@ -90,7 +91,7 @@ public class JwtService {
             Map<String, String> freshTokens = generateTokens(member, authToken);
             return LoginResponse.toDto(freshTokens);
         } catch (TokenExpiredException e) {
-            throw new RuntimeException("Refresh token is expired.");
+            throw new RefreshTokenExpiredException();
         } catch (UsernameNotFoundException e) {
             throw new RuntimeException("Invalid token.");
         }

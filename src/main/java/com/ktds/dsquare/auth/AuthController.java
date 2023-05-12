@@ -6,6 +6,7 @@ import com.ktds.dsquare.auth.dto.response.LoginResponse;
 import com.ktds.dsquare.auth.jwt.JwtService;
 import com.ktds.dsquare.common.enums.ResponseType;
 import com.ktds.dsquare.common.exception.AccessTokenStillValidException;
+import com.ktds.dsquare.common.exception.RefreshTokenExpiredException;
 import com.ktds.dsquare.common.exception.RefreshTokenMismatchException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.CannotAcquireLockException;
@@ -39,6 +40,8 @@ public class AuthController {
             return new ResponseEntity<>(ResponseType._400_TOKEN_MISMATCH, HttpStatus.BAD_REQUEST);
         } catch (AccessTokenStillValidException e) {
             return new ResponseEntity<>(ResponseType._400_TOKEN_STILL_VALID, HttpStatus.BAD_REQUEST);
+        } catch (RefreshTokenExpiredException e) {
+            return new ResponseEntity<>(ResponseType._401_EXPIRED_TOKEN, HttpStatus.UNAUTHORIZED);
         } catch (CannotAcquireLockException e) {
             return new ResponseEntity<>(ResponseType._409_CONFLICT, HttpStatus.CONFLICT);
         } catch (Exception e) {
