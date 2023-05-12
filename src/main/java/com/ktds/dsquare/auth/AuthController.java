@@ -6,6 +6,7 @@ import com.ktds.dsquare.auth.dto.response.LoginResponse;
 import com.ktds.dsquare.auth.jwt.JwtService;
 import com.ktds.dsquare.common.enums.ResponseType;
 import com.ktds.dsquare.common.exception.AccessTokenStillValidException;
+import com.ktds.dsquare.common.exception.LoginRequiredException;
 import com.ktds.dsquare.common.exception.RefreshTokenExpiredException;
 import com.ktds.dsquare.common.exception.RefreshTokenMismatchException;
 import lombok.RequiredArgsConstructor;
@@ -40,12 +41,16 @@ public class AuthController {
             return new ResponseEntity<>(jwtService.refreshAccessToken(request), HttpStatus.CREATED);
         } catch (RefreshTokenMismatchException e) {
             return makeResponse(ResponseType._400_TOKEN_MISMATCH);
+        } catch (LoginRequiredException e) {
+            return makeResponse(ResponseType._400_LOGIN_REQUIRED);
         } catch (AccessTokenStillValidException e) {
             return makeResponse(ResponseType._400_TOKEN_STILL_VALID);
         } catch (RefreshTokenExpiredException e) {
             return makeResponse(ResponseType._401_EXPIRED_TOKEN);
         } catch (CannotAcquireLockException e) {
             return makeResponse(ResponseType._409_CONFLICT);
+        } catch (Exception e) {
+            return makeResponse(ResponseType._400_BAD_REQUEST);
         }
     }
 

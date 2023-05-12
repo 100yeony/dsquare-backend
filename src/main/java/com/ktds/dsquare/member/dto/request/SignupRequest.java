@@ -1,12 +1,12 @@
 package com.ktds.dsquare.member.dto.request;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Builder
 @Setter @Getter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SignupRequest {
     
     private String email;

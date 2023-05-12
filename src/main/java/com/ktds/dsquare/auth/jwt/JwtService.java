@@ -8,6 +8,7 @@ import com.ktds.dsquare.auth.AuthTokenRepository;
 import com.ktds.dsquare.auth.dto.request.TokenRefreshRequest;
 import com.ktds.dsquare.auth.dto.response.LoginResponse;
 import com.ktds.dsquare.common.exception.AccessTokenStillValidException;
+import com.ktds.dsquare.common.exception.LoginRequiredException;
 import com.ktds.dsquare.common.exception.RefreshTokenExpiredException;
 import com.ktds.dsquare.common.exception.RefreshTokenMismatchException;
 import com.ktds.dsquare.member.Member;
@@ -68,14 +69,14 @@ public class JwtService {
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public LoginResponse refreshAccessToken(TokenRefreshRequest request) throws RuntimeException {
+    public LoginResponse refreshAccessToken(TokenRefreshRequest request) throws Exception {
         String refreshToken = request.getRefreshToken();
         try {
             DecodedJWT jwt = JwtUtil.verifyRefreshToken(refreshToken);
             Member member = memberRepository.findByEmail(getClaim(jwt, "username"))
                     .orElseThrow(() -> new UsernameNotFoundException(""));
             AuthToken authToken = authTokenRepository.findByMember(member)
-                    .orElseThrow(() -> new RuntimeException("Please log in."));
+                    .orElseThrow(LoginRequiredException::new);
 
             // 올바르지 않은 토큰
             if (!authToken.getRefreshToken().equals(refreshToken)) {
