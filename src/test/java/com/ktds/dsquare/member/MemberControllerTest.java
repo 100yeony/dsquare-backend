@@ -9,10 +9,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -22,8 +24,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
-@SpringBootTest(properties = { "jasypt.encryptor.password=${jasypt_password}"})
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        properties = { "jasypt.encryptor.password=${jasypt_password}"}
+)
 public class MemberControllerTest {
+
+    @LocalServerPort
+    private int port;
 
     @Autowired
     private MockMvc mvc;
@@ -57,11 +65,20 @@ public class MemberControllerTest {
         }
     }
 
+    public String makeRequestUri(String uri) {
+        if (!StringUtils.hasText(uri))
+            throw new IllegalArgumentException();
+        if (!uri.startsWith("/"))
+            uri = "/" + uri;
+
+        return "http://localhost:" + port + uri;
+    }
+
     @Test
     @DisplayName("로그인 - 성공")
     public void login_And_Succeed() throws Exception {
         // given
-        final String url = "http://localhost:8090/login";
+        final String url = makeRequestUri("/login");
 
         final String email = "tester0@gmail.com";
         final String pw = "1234";
