@@ -9,7 +9,6 @@ import com.ktds.dsquare.auth.CustomUserDetails;
 import com.ktds.dsquare.auth.jwt.JwtProperties;
 import com.ktds.dsquare.member.Member;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 
@@ -63,7 +62,7 @@ public class JwtUtil {
                 .withClaim(
                         "role",
                         principal.getAuthorities().stream()
-                                .map(GrantedAuthority::getAuthority)
+                                .map(role -> role.getAuthority().replace("ROLE_", ""))
                                 .collect(Collectors.toList())
                 );
 
