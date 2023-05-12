@@ -15,6 +15,7 @@ public enum ResponseType {
     _400_BAD_REQUEST(HttpStatus.BAD_REQUEST, "400000", "Bad request."),
     _400_TOKEN_MISMATCH(HttpStatus.BAD_REQUEST, "400001", "It is not your token!"),
     _400_TOKEN_STILL_VALID(HttpStatus.BAD_REQUEST, "400002", "Token has been hijacked!"),
+    _400_LOGIN_REQUIRED(HttpStatus.BAD_REQUEST, "400003", "Pleas log in."),
     _400_LACK_OF_DATA(HttpStatus.BAD_REQUEST, "400010", "There is no content."),
     _400_INVAlID_BOARD_TYPE(HttpStatus.BAD_REQUEST, "400011", "Invalid board type."),
     _400_DELETE_QUESTION_FAILED(HttpStatus.BAD_REQUEST, "400012", "Cannot Delete Question. The Question has Answers."),
