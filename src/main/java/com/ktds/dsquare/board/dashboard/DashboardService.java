@@ -6,6 +6,7 @@ import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.board.qna.service.QuestionService;
+import com.ktds.dsquare.common.exception.PostNotFoundException;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
@@ -13,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -60,7 +60,7 @@ public class DashboardService {
                 .getResultList();
         for (Long q : resultList) {
             Question question = questionRepository.findById(q)
-                    .orElseThrow(() -> new EntityNotFoundException());
+                    .orElseThrow(() -> new PostNotFoundException());
             bestQnaList.add(questionService.makeBriefQuestionRes(question, user));
         }
         return bestQnaList;

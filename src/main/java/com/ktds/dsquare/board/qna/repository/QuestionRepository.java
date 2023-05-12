@@ -12,11 +12,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question,Long>, JpaSpecificationExecutor<Question> {
 
-    Question findByDeleteYnAndId(Boolean deleteYn, Long qid);
+    Optional<Question> findByDeleteYnAndQid(Boolean deleteYn, Long qid);
 
     //전체조회 & 검색 관련
     Page<Question> findAll(Specification<Question> filter, Pageable pageable);

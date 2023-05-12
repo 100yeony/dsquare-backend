@@ -1,9 +1,11 @@
 package com.ktds.dsquare.auth.dto.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Setter @Getter
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TokenRefreshRequest {
 
     private String refreshToken;

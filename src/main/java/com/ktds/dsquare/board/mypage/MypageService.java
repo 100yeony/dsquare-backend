@@ -98,7 +98,6 @@ public class MypageService {
         List<BriefCarrotResponse> searchResults = new ArrayList<>();
 
         for(Carrot C: carrotList){
-            Member member = C.getWriter();
             Boolean likeYn = findLikeYn(BoardType.CARROT, C.getId(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.CARROT, C.getId());
             searchResults.add(BriefCarrotResponse.toDto(C, C.getLikeCnt(), likeYn, commentCnt));
@@ -114,7 +113,6 @@ public class MypageService {
         List<AnswerResponse> searchResults = new ArrayList<>();
 
         for(Answer A: answerList){
-            Member member = A.getWriter();
             Boolean likeYn = findLikeYn(BoardType.ANSWER, A.getId(), user);
             Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.ANSWER, A.getId());
             searchResults.add(AnswerResponse.toDto(A, A.getLikeCnt(), likeYn, commentCnt));

@@ -8,6 +8,7 @@ import com.ktds.dsquare.auth.AuthTokenRepository;
 import com.ktds.dsquare.auth.dto.request.TokenRefreshRequest;
 import com.ktds.dsquare.auth.dto.response.LoginResponse;
 import com.ktds.dsquare.common.exception.AccessTokenStillValidException;
+import com.ktds.dsquare.common.exception.RefreshTokenExpiredException;
 import com.ktds.dsquare.common.exception.RefreshTokenMismatchException;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
@@ -17,9 +18,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import javax.transaction.Transactional;
 import java.util.Map;
 
 @Service
@@ -65,8 +67,8 @@ public class JwtService {
         return JwtUtil.getClaim(jwt, claim);
     }
 
-    @Transactional
-    public LoginResponse refreshAccessToken(TokenRefreshRequest request) throws Exception {
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public LoginResponse refreshAccessToken(TokenRefreshRequest request) throws RuntimeException {
         String refreshToken = request.getRefreshToken();
         try {
             DecodedJWT jwt = JwtUtil.verifyRefreshToken(refreshToken);
@@ -76,16 +78,20 @@ public class JwtService {
                     .orElseThrow(() -> new RuntimeException("Please log in."));
 
             // 올바르지 않은 토큰
-            if (!authToken.getRefreshToken().equals(refreshToken))
+            if (!authToken.getRefreshToken().equals(refreshToken)) {
+                log.warn("Illegal request received. Refresh token mismatched.");
                 throw new RefreshTokenMismatchException();
+            }
             // Access token이 아직 만료되지 않음 (비정상 Refresh 요청)
-            if (!isAccessTokenExpired(authToken.getAccessToken()))
+            if (!isAccessTokenExpired(authToken.getAccessToken())) {
+                log.warn("Illegal request received. Probably refresh token has hijacked.");
                 throw new AccessTokenStillValidException();
+            }
 
             Map<String, String> freshTokens = generateTokens(member, authToken);
             return LoginResponse.toDto(freshTokens);
         } catch (TokenExpiredException e) {
-            throw new RuntimeException("Refresh token is expired.");
+            throw new RefreshTokenExpiredException();
         } catch (UsernameNotFoundException e) {
             throw new RuntimeException("Invalid token.");
         }

@@ -4,13 +4,15 @@ import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeRepository;
+import com.ktds.dsquare.board.paging.PagingService;
 import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.board.tag.TagService;
 import com.ktds.dsquare.board.tag.TalkTag;
 import com.ktds.dsquare.board.talk.dto.BriefTalkResponse;
 import com.ktds.dsquare.board.talk.dto.TalkRegisterRequest;
 import com.ktds.dsquare.board.talk.dto.TalkResponse;
-import com.ktds.dsquare.board.paging.PagingService;
+import com.ktds.dsquare.common.exception.PostNotFoundException;
+import com.ktds.dsquare.common.exception.UserNotFoundException;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,7 +61,7 @@ public class TalkService {
                     List<Member> writerIds = new ArrayList<>();
                     for (Member M : members) {
                         Member m = memberRepository.findById(M.getId())
-                                .orElseThrow(() -> new EntityNotFoundException("Member Not Found"));
+                                .orElseThrow(() -> new UserNotFoundException("Member Not Found"));
                         writerIds.add(m);
                     }
                     filter = filter.and(TalkSpecification.inWriter(writerIds));
@@ -92,8 +93,8 @@ public class TalkService {
 
     // 소통해요 상세조회
     public TalkResponse getTalkDetail(Long talkId, Member user) {
-        Talk talk = talkRepository.findByDeleteYnAndId(false, talkId);
-        if(talk == null) throw new EntityNotFoundException("Talk Not Found. Talk ID :"+talkId);
+        Talk talk = talkRepository.findByDeleteYnAndId(false, talkId)
+                .orElseThrow(() -> new PostNotFoundException("Talk Not Found. Talk ID :"+talkId));
         talk.increaseViewCnt();
         talkRepository.save(talk);
 
@@ -106,8 +107,8 @@ public class TalkService {
     // 소통해요 수정
     @Transactional
     public void updateTalk(Long talkId, TalkRegisterRequest request) {
-        Talk talk = talkRepository.findByDeleteYnAndId(false, talkId);
-        if(talk == null) throw new EntityNotFoundException("Talk Not Found. Talk ID :"+talkId);
+        Talk talk = talkRepository.findByDeleteYnAndId(false, talkId)
+                .orElseThrow(() -> new PostNotFoundException("Talk Not Found. Talk ID :"+talkId));
         talk.updateTalk(request.getTitle(), request.getContent());
 
         // 태그 수정
@@ -131,7 +132,8 @@ public class TalkService {
     // 소통해요 삭제
     @Transactional
     public void deleteTalk(Long talkId) {
-        Talk talk = talkRepository.findByDeleteYnAndId(false, talkId);
+        Talk talk = talkRepository.findByDeleteYnAndId(false, talkId)
+                .orElseThrow(() -> new PostNotFoundException("Talk Not Found. Talk ID :"+talkId));
         //연관관계 삭제
         for(TalkTag oldTT : talk.getTalkTags()) {
             tagService.deleteTagRelation(talk, oldTT.getTag());
@@ -141,15 +143,15 @@ public class TalkService {
     }
 
     public void like(Long id) {
-        Talk talk = talkRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("talk not found"));
+        Talk talk = talkRepository.findByDeleteYnAndId(false, id)
+                .orElseThrow(() -> new PostNotFoundException("Talk Not Found. Talk ID :"+id));
         talk.like();
     }
 
 
     public void cancleLike(Long id){
-        Talk talk = talkRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("talk not found"));
+        Talk talk = talkRepository.findByDeleteYnAndId(false, id)
+                .orElseThrow(() -> new PostNotFoundException("Talk Not Found. Talk ID :"+id));
         talk.cancleLike();
     }
 

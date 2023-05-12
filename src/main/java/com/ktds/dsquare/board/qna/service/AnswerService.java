@@ -13,12 +13,12 @@ import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.common.file.AttachmentService;
 import com.ktds.dsquare.common.file.dto.AttachmentDto;
+import com.ktds.dsquare.common.exception.PostNotFoundException;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,8 @@ public class AnswerService {
     // 답변글 작성
     @Transactional
     public void createAnswer(Long qid, AnswerRequest dto, MultipartFile attachment, Member user) {
-        Question question = questionRepository.findById(qid).orElseThrow(() -> new EntityNotFoundException("Question not found"));
+        Question question = questionRepository.findByDeleteYnAndQid(false, qid)
+                .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + qid));
         Answer answer = Answer.toEntity(dto, user, question);
         saveAttachment(attachment, answer);
         answerRepository.save(answer);
@@ -66,7 +67,8 @@ public class AnswerService {
 
     //답변글 상세 조회
     public AnswerResponse getAnswerDetail(Long aid, Member user){
-        Answer answer = answerRepository.findByDeleteYnAndId(false, aid);
+        Answer answer = answerRepository.findByDeleteYnAndId(false, aid)
+                .orElseThrow(() -> new PostNotFoundException("Answer Not Found. Answer ID: "+aid));
         Boolean likeYn = findLikeYn(BoardType.ANSWER, answer.getId(), user);
         Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.ANSWER, answer.getId());
         return AnswerResponse.toDto(answer, answer.getLikeCnt(), likeYn, commentCnt);
@@ -77,7 +79,8 @@ public class AnswerService {
     @Transactional
     public void updateAnswer(Long qid, Long aid, AnswerRequest request, MultipartFile newAttachment) {
         // TODO validate qid <> aid.qid
-        Answer answer = answerRepository.findByDeleteYnAndId(false, aid);
+        Answer answer = answerRepository.findByDeleteYnAndId(false, aid)
+                .orElseThrow(() -> new PostNotFoundException("Answer Not Found. Answer ID: "+aid));
         if(answer==null){
             throw new EntityNotFoundException("answer not found. aid is " + aid);
         }
@@ -93,21 +96,22 @@ public class AnswerService {
     // 답변글 삭제
     @Transactional
     public void deleteAnswer(Long aid) {
-        Answer answer = answerRepository.findById(aid).orElseThrow(() -> new EntityNotFoundException("Answer does not exist"));
+        Answer answer = answerRepository.findByDeleteYnAndId(false, aid)
+                .orElseThrow(() -> new PostNotFoundException("Answer Not Found. Answer ID: "+aid));
         answer.deleteAnswer();
         commentService.deleteCommentCascade(BoardType.ANSWER, aid);
     }
 
     public void like(Long id) {
-        Answer answer = answerRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("answer not found"));
+        Answer answer = answerRepository.findByDeleteYnAndId(false, id)
+                .orElseThrow(() -> new PostNotFoundException("Answer Not Found. Answer ID: "+id));
         answer.like();
     }
 
 
     public void cancleLike(Long id){
-        Answer answer = answerRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("answer not found"));
+        Answer answer = answerRepository.findByDeleteYnAndId(false, id)
+                .orElseThrow(() -> new PostNotFoundException("Answer Not Found. Answer ID: "+id));
         answer.cancleLike();
     }
 

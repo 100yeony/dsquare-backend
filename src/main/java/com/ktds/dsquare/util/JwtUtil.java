@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -73,7 +74,7 @@ public class JwtUtil {
         JWTCreator.Builder builder = createAccessTokenBase();
         builder.withClaim("id", member.getId())
                 .withClaim("username", member.getEmail())
-                .withClaim("role", member.getRole());
+                .withClaim("role", List.copyOf(member.getRole()));
 
         return sign(builder, JwtProperties.SECRET_ACCESS());
     }

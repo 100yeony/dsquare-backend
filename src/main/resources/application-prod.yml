@@ -7,7 +7,7 @@ spring:
   ### Datasource ###
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ENC(wj25XJb7zLAy16UdFdzo98x2Sf3GGstaWlSP2e3Mv6L5cIo3DmzlfNLgmeG3C23qP19RxOXhs1E=)
+    url: ENC(jhgEOjHFuO/GAtoGbOfmGut4kP9n4ePZCoNY/0a7WQ8UpGUVS5nufIMB/kDMNdR/0nJneuz3600=)
     username: ENC(PU3Qll0ypMDtLlbPTSk6eA==)
     password: ENC(Bso4+im3uyF56XDNQslggQ==)
 

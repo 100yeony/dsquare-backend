@@ -132,7 +132,9 @@ public class SecurityConfig {
         return web -> {
             // Service ignore
             web.ignoring().antMatchers(
-                    "/account/signup", "/account/find-pw", "/account/change-pw", "account/reset-pw",
+                    "/account/signup/**",
+                    "/account/find-pw", "/account/change-pw", "account/reset-pw",
+                    "/member/members/existings",
                     "/auth/refresh"
             );
             // Swagger ignore

@@ -1,5 +1,6 @@
 package com.ktds.dsquare.member;
 
+import com.ktds.dsquare.auth.AuthToken;
 import com.ktds.dsquare.board.card.Card;
 import com.ktds.dsquare.board.carrot.Carrot;
 import com.ktds.dsquare.board.comment.Comment;
@@ -16,18 +17,21 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 @Getter
 @Slf4j
+@DynamicUpdate
 public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,7 +62,12 @@ public class Member {
     private LocalDateTime lastLoginDate;
     private LocalDateTime lastPwChangeDate;
 
-    private String role;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    private Set<Role> role;
+
+    @OneToOne(cascade = CascadeType.REMOVE, mappedBy = "member", fetch = FetchType.LAZY)
+    private AuthToken authToken;
 
     @OneToMany(mappedBy = "manager")
     private List<Category> cid;
@@ -91,8 +100,8 @@ public class Member {
     @OneToMany(mappedBy = "writer")
     private List<Carrot> carrotList;
 
-    public List<String> getRole() {
-        return List.of(role);
+    public Set<Role> getRole() {
+        return role;
     }
 
     public void join(Team team) {
@@ -109,6 +118,10 @@ public class Member {
         if (request.getContact() != null)
             this.contact = request.getContact();
     }
+    public void update(Set<Role> newRoles) {
+        this.role = newRoles;
+    }
+
     public void updateProfileImage(String profileImage) {
         this.profileImage = profileImage;
     }
@@ -133,7 +146,7 @@ public class Member {
                 .activityScore(0L)
                 .lastLoginDate(LocalDateTime.now())
                 .lastPwChangeDate(LocalDateTime.now())
-                .role("USER")
+                .role(Set.of(Role.USER))
                 .build();
     }
 
