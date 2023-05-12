@@ -13,13 +13,11 @@ public enum Role {
 
     @JsonCreator
     public static Role from(String name) {
-        name = name.toUpperCase();
-        for (Role role : Role.values()) {
-            if (role.toString().equals(name))
-                return role;
+        try {
+            return Role.valueOf(name.strip().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return Role.USER;
         }
-
-        throw new RuntimeException("Invalid role. Please using [ user || manager || owner || admin ]");
     }
 
 }

@@ -25,6 +25,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor @AllArgsConstructor
@@ -64,7 +65,7 @@ public class Member {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
-    private List<Role> role;
+    private Set<Role> role;
 
     @OneToOne(cascade = CascadeType.REMOVE, mappedBy = "member", fetch = FetchType.LAZY)
     private AuthToken authToken;
@@ -100,7 +101,7 @@ public class Member {
     @OneToMany(mappedBy = "writer")
     private List<Carrot> carrotList;
 
-    public List<Role> getRole() {
+    public Set<Role> getRole() {
         return role;
     }
 
@@ -151,7 +152,7 @@ public class Member {
                 .activityScore(0L)
                 .lastLoginDate(LocalDateTime.now())
                 .lastPwChangeDate(LocalDateTime.now())
-                .role(List.of(Role.USER))
+                .role(Set.of(Role.USER))
                 .build();
     }
 
