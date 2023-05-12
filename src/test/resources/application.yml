@@ -9,3 +9,12 @@ spring:
     # Config for Swagger
     pathmatch:
       matching-strategy: ant_path_matcher
+
+#jasypt:
+#  encryptor:
+#    password: ${jasypt_password}
+
+jwt:
+  expiration-millisecond:
+    # 1min = 60_000 / 1hour = 3600_000 / 1day = 86_400_000 / 1month = 2_592_000_000
+    access: 0
