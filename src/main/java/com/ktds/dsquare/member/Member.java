@@ -17,11 +17,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -30,6 +32,7 @@ import java.util.Set;
 @Builder
 @Getter
 @Slf4j
+@DynamicUpdate
 public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,7 +63,7 @@ public class Member {
     private LocalDateTime lastLoginDate;
     private LocalDateTime lastPwChangeDate;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private Set<Role> role;
 
@@ -115,7 +118,16 @@ public class Member {
     public void update(MemberUpdateRequest request) {
         if (request.getContact() != null)
             this.contact = request.getContact();
+        if (request.getRole() != null) {
+            List<String> roles = request.getRole();
+            List<Role> result = new ArrayList<>();
+            for (String role : roles) {
+                result.add(Role.from(role));
+            }
+            this.role = result;
+        }
     }
+
     public void updateProfileImage(String profileImage) {
         this.profileImage = profileImage;
     }

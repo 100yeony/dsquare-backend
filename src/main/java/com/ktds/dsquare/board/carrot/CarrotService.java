@@ -11,6 +11,8 @@ import com.ktds.dsquare.board.paging.PagingService;
 import com.ktds.dsquare.board.tag.CarrotTag;
 import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.board.tag.TagService;
+import com.ktds.dsquare.common.exception.PostNotFoundException;
+import com.ktds.dsquare.common.exception.UserNotFoundException;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,7 +61,7 @@ public class CarrotService {
                     List<Member> writerIds = new ArrayList<>();
                     for (Member M : members) {
                         Member m = memberRepository.findById(M.getId())
-                                .orElseThrow(() -> new EntityNotFoundException("Member Not Found"));
+                                .orElseThrow(() -> new UserNotFoundException("Member Not Found"));
                         writerIds.add(m);
                     }
                     filter = filter.and(CarrotSpecification.inWriter(writerIds));
@@ -93,7 +94,8 @@ public class CarrotService {
 
     //read - 당근해요 글 상세 조회
     public CarrotResponse getCarrotDetail(Long carrotId, Member user){
-        Carrot carrot = carrotRepository.findByDeleteYnAndId(false, carrotId);
+        Carrot carrot = carrotRepository.findByDeleteYnAndId(false, carrotId)
+                .orElseThrow(() -> new PostNotFoundException("Carrot not found. Carrot ID: "+carrotId));
         carrot.increaseViewCnt();
         carrotRepository.save(carrot);
 
@@ -105,7 +107,8 @@ public class CarrotService {
     //update - 당근해요 글 수정
     @Transactional
     public void updateCarrot(Long carrotId, CarrotRegisterRequest request){
-        Carrot carrot = carrotRepository.findByDeleteYnAndId(false, carrotId);
+        Carrot carrot = carrotRepository.findByDeleteYnAndId(false, carrotId)
+                .orElseThrow(() -> new PostNotFoundException("Carrot not found. Carrot ID: "+carrotId));
         carrot.updateCarrot(request);
 
         // 태그 수정
@@ -130,22 +133,22 @@ public class CarrotService {
     //delete - 당근해요 글 삭제
     @Transactional
     public void deleteCarrot(Long carrotId){
-        Carrot carrot = carrotRepository.findById(carrotId)
-                .orElseThrow(()-> new EntityNotFoundException("carrot is not found"));
+        Carrot carrot = carrotRepository.findByDeleteYnAndId(false, carrotId)
+                .orElseThrow(() -> new PostNotFoundException("Carrot not found. Carrot ID: "+carrotId));
         carrot.deleteCarrot();
         commentService.deleteCommentCascade(BoardType.CARROT, carrotId);
     }
 
     public void like(Long id) {
-        Carrot carrot = carrotRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("carrot not found"));
+        Carrot carrot = carrotRepository.findByDeleteYnAndId(false, id)
+                .orElseThrow(() -> new PostNotFoundException("Carrot not found. Carrot ID: "+id));
         carrot.like();
     }
 
 
     public void cancleLike(Long id){
-        Carrot carrot = carrotRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("carrot not found"));
+        Carrot carrot = carrotRepository.findByDeleteYnAndId(false, id)
+                .orElseThrow(() -> new PostNotFoundException("Carrot not found. Carrot ID: "+id));
         carrot.cancleLike();
     }
 

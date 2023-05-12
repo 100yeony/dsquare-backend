@@ -3,6 +3,7 @@ package com.ktds.dsquare.member;
 import com.ktds.dsquare.common.exception.BadLoginException;
 import com.ktds.dsquare.common.exception.MemberException;
 import com.ktds.dsquare.common.exception.MemberNotFoundException;
+import com.ktds.dsquare.common.exception.UserNotFoundException;
 import com.ktds.dsquare.common.file.FileService;
 import com.ktds.dsquare.common.file.dto.FileSavedDto;
 import com.ktds.dsquare.member.dto.request.MemberUpdateRequest;
@@ -77,26 +78,26 @@ public class MemberService {
 
     public MemberInfo selectMember(Long id) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("No such member with ID " + id));
+                .orElseThrow(() -> new UserNotFoundException("No such member with ID " + id));
         return MemberInfo.toDto(member);
     }
 
     // TODO add missing annotations
     // TODO consider another fit exception
+    @Transactional
     public MemberInfo updateMember(Long id, MemberUpdateRequest request) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("No such member with ID " + id));
+                .orElseThrow(() -> new UserNotFoundException("No such member with ID " + id));
         Team newTeam = teamRepository.findById(request.getTid())
                 .orElseThrow(() -> new EntityNotFoundException("No such team with ID " + request.getTid()));
-
         member.update(request);
         member.join(newTeam);
-        return MemberInfo.toDto(memberRepository.save(member));
+        return MemberInfo.toDto(member);
     }
     @Transactional
     public FileSavedDto updateMember(Long id, MultipartFile image, Member user) throws IOException {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("No such member with ID " + id));
+                .orElseThrow(() -> new UserNotFoundException("No such member with ID " + id));
         Assert.state(member == user, "Illegal resource access");
 
         return updateProfileImage(member, image);
