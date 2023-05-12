@@ -89,10 +89,12 @@ public class MemberService {
     public MemberInfo updateMember(Long id, MemberUpdateRequest request) {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("No such member with ID " + id));
-        Team newTeam = teamRepository.findById(request.getTid())
-                .orElseThrow(() -> new EntityNotFoundException("No such team with ID " + request.getTid()));
+        if(request.getTid() != null) {
+            Team newTeam = teamRepository.findById(request.getTid())
+                    .orElseThrow(() -> new EntityNotFoundException("No such team with ID " + request.getTid()));
+            member.join(newTeam);
+        }
         member.update(request);
-        member.join(newTeam);
         return MemberInfo.toDto(member);
     }
     @Transactional
