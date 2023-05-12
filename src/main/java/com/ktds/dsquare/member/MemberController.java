@@ -4,6 +4,7 @@ import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.common.exception.MemberException;
 import com.ktds.dsquare.common.mailing.MailService;
 import com.ktds.dsquare.member.dto.request.MemberUpdateRequest;
+import com.ktds.dsquare.member.dto.request.MemberUpdateRequestForAdmin;
 import com.ktds.dsquare.member.dto.request.PasswordChangeRequest;
 import com.ktds.dsquare.member.dto.request.SignupRequest;
 import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
@@ -62,6 +63,14 @@ public class MemberController {
     @PatchMapping("/member/members/{id}/profile/image")
     public ResponseEntity<?> updateMemberProfileImage(@PathVariable Long id, @RequestPart MultipartFile image, @AuthUser Member user) throws IOException {
         return new ResponseEntity<>(memberService.updateMember(id, image, user), HttpStatus.OK);
+    }
+
+    /**
+     * 관리자용 회원 정보 수정
+     */
+    @PatchMapping("/admin/members/{id}")
+    public ResponseEntity<?> updateMemberForAdmin(@PathVariable Long id, @RequestBody MemberUpdateRequestForAdmin request) {
+        return new ResponseEntity<>(memberService.updateMemberForAdmin(id, request), HttpStatus.OK);
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.ktds.dsquare.member.dto.request;
 
+import com.ktds.dsquare.member.Role;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,6 @@ public class MemberUpdateRequest {
     private String contact;
     private Long tid;
 //    private String ktmail;
-    private List role;
+    private List<Role> role;
 
 }

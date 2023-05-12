@@ -23,7 +23,6 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -118,14 +117,9 @@ public class Member {
     public void update(MemberUpdateRequest request) {
         if (request.getContact() != null)
             this.contact = request.getContact();
-        if (request.getRole() != null) {
-            List<String> roles = request.getRole();
-            List<Role> result = new ArrayList<>();
-            for (String role : roles) {
-                result.add(Role.from(role));
-            }
-            this.role = result;
-        }
+    }
+    public void update(Set<Role> newRoles) {
+        this.role = newRoles;
     }
 
     public void updateProfileImage(String profileImage) {
