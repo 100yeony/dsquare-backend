@@ -68,7 +68,7 @@ public class JwtService {
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public LoginResponse refreshAccessToken(TokenRefreshRequest request) throws Exception {
+    public LoginResponse refreshAccessToken(TokenRefreshRequest request) throws RuntimeException {
         String refreshToken = request.getRefreshToken();
         try {
             DecodedJWT jwt = JwtUtil.verifyRefreshToken(refreshToken);

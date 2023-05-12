@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
+import static com.ktds.dsquare.util.ResponseUtil.makeResponse;
+
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
@@ -37,15 +39,13 @@ public class AuthController {
         try {
             return new ResponseEntity<>(jwtService.refreshAccessToken(request), HttpStatus.CREATED);
         } catch (RefreshTokenMismatchException e) {
-            return new ResponseEntity<>(ResponseType._400_TOKEN_MISMATCH, HttpStatus.BAD_REQUEST);
+            return makeResponse(ResponseType._400_TOKEN_MISMATCH);
         } catch (AccessTokenStillValidException e) {
-            return new ResponseEntity<>(ResponseType._400_TOKEN_STILL_VALID, HttpStatus.BAD_REQUEST);
+            return makeResponse(ResponseType._400_TOKEN_STILL_VALID);
         } catch (RefreshTokenExpiredException e) {
-            return new ResponseEntity<>(ResponseType._401_EXPIRED_TOKEN, HttpStatus.UNAUTHORIZED);
+            return makeResponse(ResponseType._401_EXPIRED_TOKEN);
         } catch (CannotAcquireLockException e) {
-            return new ResponseEntity<>(ResponseType._409_CONFLICT, HttpStatus.CONFLICT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return makeResponse(ResponseType._409_CONFLICT);
         }
     }
 

@@ -3,6 +3,7 @@ package com.ktds.dsquare.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ktds.dsquare.common.enums.ResponseType;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -29,6 +30,10 @@ public class ResponseUtil {
     private static void makeJsonResponse(HttpServletResponse response) {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+    }
+
+    public static ResponseEntity<ResponseType> makeResponse(ResponseType from) {
+        return new ResponseEntity<>(from, from.status);
     }
 
 }
