@@ -51,9 +51,9 @@ public class QuestionService {
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
     private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
 
     /*** Service ***/
-    private final CommentRepository commentRepository;
     private final CommentService commentService;
     private final AttachmentService attachmentService;
     private final TagService tagService;
@@ -65,14 +65,16 @@ public class QuestionService {
         Category category = categoryRepository.findById(dto.getCid()).orElseThrow(() -> new EntityNotFoundException("Category does not exist"));
         Question question = Question.toEntity(dto, writer, category);
 
-        Attachment savedAttachment = saveAttachment(writer, attachment, question);
-        question.registerAttachment(savedAttachment);
+        saveAttachment(attachment, question);
 
         questionRepository.save(question);
         tagService.insertNewTags(dto.getTags(), question);
     }
-    private Attachment saveAttachment(Member user, MultipartFile attachment, Question question) throws RuntimeException {
-        return attachmentService.saveAttachment(user, attachment, question);
+    @Transactional
+    public void saveAttachment(MultipartFile attachment, Question question) throws RuntimeException {
+        Attachment savedAttachment = attachmentService.saveAttachment(question.getWriter(), attachment, question);
+        if (savedAttachment != null)
+            savedAttachment.linkPost(question);
     }
 
     //read - 질문글 전체 조회 & 검색
@@ -149,14 +151,15 @@ public class QuestionService {
                 break;
             }
         }
-        Boolean likeYn = findLikeYn(BoardType.QUESTION, q.getQid(), user);
-        Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, q.getQid());
+        Boolean likeYn = findLikeYn(BoardType.QUESTION, q.getId(), user);
+        Long commentCnt = commentRepository.countByBoardTypeAndPostId(BoardType.QUESTION, q.getId());
         return BriefQuestionResponse.toDto(q,categoryRes ,(long)answers.size(), managerAnswerYn, q.getLikeCnt(), likeYn, commentCnt);
     }
 
 
     //read - 질문글 상세 조회
     public QuestionResponse getQuestionDetail(Member user, Long qid) {
+        Question  = questionRepository.findByDeleteYnAndId(false, qid);
         Question question = questionRepository.findByDeleteYnAndQid(false, qid)
                 .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + qid));
         question.increaseViewCnt();
@@ -176,8 +179,8 @@ public class QuestionService {
                 .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + qid));
         Category category = categoryRepository.findById(request.getCid())
                 .orElseThrow(()-> new EntityNotFoundException("category not found. category is " + request.getCid()));
-        Attachment savedAttachment = updateQuestionAttachment(request.getAttachment(), newAttachment, question);
-        question.updateQuestion(request.getTitle(), request.getContent(), category);
+
+        updateQuestionAttachment(request.getAttachment(), newAttachment, question);
 
         // 태그 수정
         List<QuestionTag> oldQTs = question.getQuestionTags();
@@ -196,7 +199,8 @@ public class QuestionService {
         }
         tagService.insertNewTags(newTags, question);
     }
-    private Attachment updateQuestionAttachment(
+    @Transactional
+    public void updateQuestionAttachment(
             AttachmentDto attachment,
             MultipartFile newAttachment,
             Question question
@@ -204,7 +208,7 @@ public class QuestionService {
         // 1. Handle changes in existing attachment
         attachmentService.updateAttachment(attachment, question.getAttachment());
         // 2. Handle attachment newly getting in
-        return attachmentService.saveAttachment(question.getWriter(), newAttachment, question);
+        saveAttachment(newAttachment, question);
     }
 
     // 질문글 삭제

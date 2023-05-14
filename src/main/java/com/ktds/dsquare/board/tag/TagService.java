@@ -52,7 +52,7 @@ public class TagService {
     @Transactional
     public void deleteTagRelation(Object obj, Tag tag) {
         if(obj instanceof Question){
-            questionTagRepository.deleteByQuestionAndTag((Question) obj, tag);
+            questionTagRepository.deleteByPostAndTag((Question) obj, tag);
         } else if (obj instanceof Talk) {
             talkTagRepository.deleteByTalkAndTag((Talk) obj, tag);
         } else if (obj instanceof Carrot) {
