@@ -159,7 +159,7 @@ public class QuestionService {
 
     //read - 질문글 상세 조회
     public QuestionResponse getQuestionDetail(Member user, Long qid) {
-        Question question = questionRepository.findByDeleteYnAndQid(false, qid)
+        Question question = questionRepository.findByDeleteYnAndId(false, qid)
                 .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + qid));
         question.increaseViewCnt();
         questionRepository.save(question);
@@ -174,7 +174,7 @@ public class QuestionService {
     // 질문글 수정
     @Transactional
     public void updateQuestion(Long qid, QuestionRequest request, MultipartFile newAttachment) {
-        Question question = questionRepository.findByDeleteYnAndQid(false, qid)
+        Question question = questionRepository.findByDeleteYnAndId(false, qid)
                 .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + qid));
         Category category = categoryRepository.findById(request.getCid())
                 .orElseThrow(()-> new EntityNotFoundException("category not found. category is " + request.getCid()));
@@ -233,14 +233,14 @@ public class QuestionService {
     }
 
     public void like(Long id) {
-        Question question = questionRepository.findByDeleteYnAndQid(false, id)
+        Question question = questionRepository.findByDeleteYnAndId(false, id)
                 .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + id));
         question.like();
     }
 
 
     public void cancleLike(Long id){
-        Question question = questionRepository.findByDeleteYnAndQid(false, id)
+        Question question = questionRepository.findByDeleteYnAndId(false, id)
                 .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + id));
         question.cancleLike();
     }
