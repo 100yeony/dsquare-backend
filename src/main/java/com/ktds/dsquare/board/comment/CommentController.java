@@ -1,6 +1,7 @@
 package com.ktds.dsquare.board.comment;
 
 import com.ktds.dsquare.board.comment.dto.CommentRegisterDto;
+import com.ktds.dsquare.board.comment.dto.CommentRegisterResponse;
 import com.ktds.dsquare.board.comment.dto.NestedCommentRegisterDto;
 import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.member.Member;
@@ -20,10 +21,9 @@ public class CommentController {
 
     // 댓글 작성
     @PostMapping("/board/{boardTypeName}/{postId}/comments")
-    public ResponseEntity<Void> createComment(@PathVariable String boardTypeName, @PathVariable Long postId,
-                                              @RequestBody CommentRegisterDto request, @AuthUser Member user){
-        commentService.createComment(boardTypeName, postId, request, user);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<CommentRegisterResponse> createComment(@PathVariable String boardTypeName, @PathVariable Long postId,
+                                                                 @RequestBody CommentRegisterDto request, @AuthUser Member user){
+        return new ResponseEntity<>(commentService.createComment(boardTypeName, postId, request, user), HttpStatus.CREATED);
     }
 
     // 대댓글 작성

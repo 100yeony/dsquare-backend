@@ -6,6 +6,7 @@ import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeRepository;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.board.qna.dto.AnswerRegisterResponse;
 import com.ktds.dsquare.board.qna.dto.AnswerRequest;
 import com.ktds.dsquare.board.qna.dto.AnswerResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
@@ -31,11 +32,11 @@ public class AnswerService {
 
     // 답변글 작성
     @Transactional
-    public void createAnswer(Long qid, AnswerRequest dto, Member user) {
+    public AnswerRegisterResponse createAnswer(Long qid, AnswerRequest dto, Member user) {
         Question question = questionRepository.findByDeleteYnAndQid(false, qid)
                 .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + qid));
         Answer answer = Answer.toEntity(dto, user, question);
-        answerRepository.save(answer);
+        return AnswerRegisterResponse.toDto(answerRepository.save(answer));
     }
 
     // 답변글 전체 조회(질문 번호로 조회)

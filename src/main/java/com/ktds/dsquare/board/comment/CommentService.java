@@ -7,7 +7,10 @@ import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.board.talk.TalkRepository;
-import com.ktds.dsquare.common.exception.*;
+import com.ktds.dsquare.common.exception.BoardTypeException;
+import com.ktds.dsquare.common.exception.LackOfDataException;
+import com.ktds.dsquare.common.exception.PostNotFoundException;
+import com.ktds.dsquare.common.exception.UserNotFoundException;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,14 +39,14 @@ public class CommentService {
 
     // 댓글 작성
     @Transactional
-    public void createComment(String boardTypeName, Long postId, CommentRegisterDto request, Member user) {
+    public CommentRegisterResponse createComment(String boardTypeName, Long postId, CommentRegisterDto request, Member user) {
         if(request.getContent().equals(""))
             throw new LackOfDataException("There is no content.");
         if(!checkAvailability(boardTypeName, postId))
             throw new PostNotFoundException("Post Not Found. Board Type: "+boardTypeName+", Post ID: "+postId);
         BoardType boardType = BoardType.findBoardType(boardTypeName);
         Comment comment = Comment.toEntity(request, user, boardType, postId);
-        commentRepository.save(comment);
+        return CommentRegisterResponse.toDto(commentRepository.save(comment));
     }
 
     // 대댓글 작성
