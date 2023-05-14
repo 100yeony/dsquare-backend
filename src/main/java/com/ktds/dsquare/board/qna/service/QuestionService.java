@@ -159,7 +159,6 @@ public class QuestionService {
 
     //read - 질문글 상세 조회
     public QuestionResponse getQuestionDetail(Member user, Long qid) {
-        Question  = questionRepository.findByDeleteYnAndId(false, qid);
         Question question = questionRepository.findByDeleteYnAndQid(false, qid)
                 .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + qid));
         question.increaseViewCnt();
