@@ -11,6 +11,8 @@ import com.ktds.dsquare.board.qna.dto.AnswerRequest;
 import com.ktds.dsquare.board.qna.dto.AnswerResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
+import com.ktds.dsquare.common.annotation.Notify;
+import com.ktds.dsquare.common.enums.NotifType;
 import com.ktds.dsquare.common.exception.PostNotFoundException;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ public class AnswerService {
 
     // 답변글 작성
     @Transactional
+    @Notify(NotifType.ANSWER_REGISTRATION)
     public AnswerRegisterResponse createAnswer(Long qid, AnswerRequest dto, Member user) {
         Question question = questionRepository.findByDeleteYnAndQid(false, qid)
                 .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + qid));

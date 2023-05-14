@@ -7,10 +7,9 @@ import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.board.talk.TalkRepository;
-import com.ktds.dsquare.common.exception.BoardTypeException;
-import com.ktds.dsquare.common.exception.LackOfDataException;
-import com.ktds.dsquare.common.exception.PostNotFoundException;
-import com.ktds.dsquare.common.exception.UserNotFoundException;
+import com.ktds.dsquare.common.annotation.Notify;
+import com.ktds.dsquare.common.enums.NotifType;
+import com.ktds.dsquare.common.exception.*;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +38,7 @@ public class CommentService {
 
     // 댓글 작성
     @Transactional
+    @Notify(NotifType.COMMENT_REGISTRATION)
     public CommentRegisterResponse createComment(String boardTypeName, Long postId, CommentRegisterDto request, Member user) {
         if(request.getContent().equals(""))
             throw new LackOfDataException("There is no content.");
