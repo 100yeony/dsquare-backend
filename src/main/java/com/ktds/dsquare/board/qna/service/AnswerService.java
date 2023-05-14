@@ -41,7 +41,7 @@ public class AnswerService {
     // 답변글 작성
     @Transactional
     public void createAnswer(Long qid, AnswerRequest dto, MultipartFile attachment, Member user) {
-        Question question = questionRepository.findByDeleteYnAndQid(false, qid)
+        Question question = questionRepository.findByDeleteYnAndId(false, qid)
                 .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + qid));
         Answer answer = Answer.toEntity(dto, user, question);
         saveAttachment(attachment, answer);

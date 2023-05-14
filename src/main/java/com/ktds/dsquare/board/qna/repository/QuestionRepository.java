@@ -17,7 +17,7 @@ import java.util.Optional;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question,Long>, JpaSpecificationExecutor<Question> {
 
-    Optional<Question> findByDeleteYnAndQid(Boolean deleteYn, Long qid);
+    Optional<Question> findByDeleteYnAndId(Boolean deleteYn, Long id);
 
     //전체조회 & 검색 관련
     Page<Question> findAll(Specification<Question> filter, Pageable pageable);
