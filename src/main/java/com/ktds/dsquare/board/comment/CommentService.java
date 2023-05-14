@@ -95,7 +95,7 @@ public class CommentService {
     public boolean checkAvailability(String boardTypeName, Long postId) {
         switch(boardTypeName) {
             case "question":
-                return questionRepository.findByDeleteYnAndId(false, postId) != null; // 찾는 post 있으면 true
+                return questionRepository.findByDeleteYnAndQid(false, postId) != null; // 찾는 post 있으면 true
             case "answer":
                 return answerRepository.findByDeleteYnAndId(false, postId) != null;
             case "card":
