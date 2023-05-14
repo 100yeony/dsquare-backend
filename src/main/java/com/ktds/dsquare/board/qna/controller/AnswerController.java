@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -23,7 +24,12 @@ public class AnswerController {
 
     //create - 답변글 작성
     @PostMapping("/board/questions/{qid}/answers")
-    public ResponseEntity<AnswerRegisterResponse> createAnswer(@PathVariable("qid") Long qid, @RequestBody AnswerRequest request, @AuthUser Member user){
+    public ResponseEntity<AnswerRegisterResponse> createAnswer(
+            @PathVariable("qid") Long qid,
+            @RequestPart(name = "answer") AnswerRequest request,
+            @RequestPart(required = false) MultipartFile attachment,
+            @AuthUser Member user
+    ) {
         return new ResponseEntity<>(answerService.createAnswer(qid, request, user), HttpStatus.CREATED);
     }
 
@@ -40,10 +46,14 @@ public class AnswerController {
     }
 
     // 답변글 수정
-    @PatchMapping("/board/questions/{qid}/answers/{aid}")
-    public ResponseEntity<Void> updateAnswer(@PathVariable Long qid, @PathVariable Long aid,
-                                             @RequestBody AnswerRequest request) {
-        answerService.updateAnswer(aid, request);
+    @PostMapping("/board/questions/{qid}/answers/{aid}")
+    public ResponseEntity<Void> updateAnswer(
+            @PathVariable Long qid,
+            @PathVariable Long aid,
+            @RequestPart(name = "answer") AnswerRequest request,
+            @RequestPart(name = "attachment", required = false) MultipartFile newAttachment
+    ) {
+        answerService.updateAnswer(qid, aid, request, newAttachment);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 

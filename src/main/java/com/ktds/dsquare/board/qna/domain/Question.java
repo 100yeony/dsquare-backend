@@ -1,11 +1,12 @@
 package com.ktds.dsquare.board.qna.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.ktds.dsquare.board.Post;
+import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.qna.dto.QuestionRequest;
-import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.board.tag.QuestionTag;
+import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.member.Member;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,14 +18,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@DiscriminatorValue(BoardType.Constant.QUESTION)
 @Getter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 @DynamicUpdate
-public class Question {
-
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long qid;
+public class Question extends Post {
 
     @ManyToOne
     @JoinColumn(name = "category")
@@ -52,13 +51,14 @@ public class Question {
     @JoinColumn(name = "writer")
     private Member writer;
 
-    @OneToMany(mappedBy = "question")
+    @OneToMany(mappedBy = "post")
     private List<QuestionTag> questionTags;
 
     private Long likeCnt;
 
     public static Question toEntity(QuestionRequest dto, Member writer, Category category){
         LocalDateTime now = LocalDateTime.now();
+        String name = BoardType.QUESTION.name;
         return Question.builder()
                 .writer(writer)
                 .title(dto.getTitle())
@@ -69,10 +69,6 @@ public class Question {
                 .category(category)
                 .likeCnt(0L)
                 .build();
-    }
-
-    public void registerAttachment(Attachment attachment) {
-        this.attachment = attachment;
     }
 
     public void updateQuestion(String title, String content, Category category){

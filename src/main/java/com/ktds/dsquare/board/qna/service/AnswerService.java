@@ -14,10 +14,15 @@ import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.common.annotation.Notify;
 import com.ktds.dsquare.common.enums.NotifType;
 import com.ktds.dsquare.common.exception.PostNotFoundException;
+import com.ktds.dsquare.common.file.Attachment;
+import com.ktds.dsquare.common.file.AttachmentService;
+import com.ktds.dsquare.common.file.dto.AttachmentDto;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,20 +31,31 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AnswerService {
 
+    /*** Service ***/
+    private final CommentService commentService;
+    private final AttachmentService attachmentService;
+
+    /*** Repository ***/
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
     private final CommentRepository commentRepository;
-    private final CommentService commentService;
     private final LikeRepository likeRepository;
 
     // 답변글 작성
     @Transactional
     @Notify(NotifType.ANSWER_REGISTRATION)
-    public AnswerRegisterResponse createAnswer(Long qid, AnswerRequest dto, Member user) {
-        Question question = questionRepository.findByDeleteYnAndQid(false, qid)
+    public AnswerRegisterResponse createAnswer(Long qid, AnswerRequest dto, MultipartFile attachment, Member user) {
+        Question question = questionRepository.findByDeleteYnAndId(false, qid)
                 .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + qid));
         Answer answer = Answer.toEntity(dto, user, question);
+        saveAttachment(attachment, answer);
         return AnswerRegisterResponse.toDto(answerRepository.save(answer));
+    }
+    @Transactional // TODO code duplication
+    public void saveAttachment(MultipartFile attachment, Answer answer) {
+        Attachment savedAttachment = attachmentService.saveAttachment(answer.getWriter(), attachment, answer);
+        if (savedAttachment != null)
+            savedAttachment.linkPost(answer);
     }
 
     // 답변글 전체 조회(질문 번호로 조회)
@@ -66,10 +82,20 @@ public class AnswerService {
 
     // 답변글 수정
     @Transactional
-    public void updateAnswer(Long aid, AnswerRequest request) {
+    public void updateAnswer(Long qid, Long aid, AnswerRequest request, MultipartFile newAttachment) {
+        // TODO validate qid <> aid.qid
         Answer answer = answerRepository.findByDeleteYnAndId(false, aid)
                 .orElseThrow(() -> new PostNotFoundException("Answer Not Found. Answer ID: "+aid));
-        answer.updateAnswer(request.getContent(), request.getAtcId());
+        if(answer==null){
+            throw new EntityNotFoundException("answer not found. aid is " + aid);
+        }
+        answer.updateAnswer(request.getContent());
+        updateAttachment(request.getAttachment(), newAttachment, answer);
+    }
+    @Transactional
+    public void updateAttachment(AttachmentDto attachment, MultipartFile newAttachment, Answer answer) {
+        attachmentService.updateAttachment(attachment, answer.getAttachment());
+        saveAttachment(newAttachment, answer);
     }
 
     // 답변글 삭제

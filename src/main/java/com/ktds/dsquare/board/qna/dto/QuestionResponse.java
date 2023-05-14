@@ -44,7 +44,7 @@ public class QuestionResponse {
             tags.add(questionTag.getTag().getName());
 
         return QuestionResponse.builder()
-                .qid(question.getQid())
+                .qid(question.getId())
                 .writerInfo(BriefMemberInfo.toDto(question.getWriter()))
                 .category(category)
                 .title(question.getTitle())

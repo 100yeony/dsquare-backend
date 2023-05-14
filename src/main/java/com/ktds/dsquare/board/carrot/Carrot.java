@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.carrot;
 
+import com.ktds.dsquare.board.Post;
 import com.ktds.dsquare.board.carrot.dto.CarrotRegisterRequest;
 import com.ktds.dsquare.board.tag.CarrotTag;
 import com.ktds.dsquare.member.Member;
@@ -20,10 +21,7 @@ import java.util.List;
 @Builder
 @DynamicUpdate
 @Table(name = "COMM_CARROT")
-public class Carrot {
-
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Carrot extends Post {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer")

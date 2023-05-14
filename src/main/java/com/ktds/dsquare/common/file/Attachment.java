@@ -1,6 +1,6 @@
 package com.ktds.dsquare.common.file;
 
-import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.board.Post;
 import com.ktds.dsquare.common.file.dto.FileSavedDto;
 import com.ktds.dsquare.member.Member;
 import lombok.*;
@@ -44,10 +44,10 @@ public class Attachment {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
-    private Question post; // TODO Grand-refactoring
+    private Post post; // TODO Grand-refactoring
 
 
-    public void linkPost(Question post) {
+    public void linkPost(Post post) {
         this.post = post;
     }
     public void delinkPost() {
