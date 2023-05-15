@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.tag;
 
+import com.ktds.dsquare.board.Post;
 import com.ktds.dsquare.board.qna.domain.Question;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,8 +23,8 @@ public class QuestionTag {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "question_id")
-    private Question question;
+//    @JoinColumn(name = "question_id")
+    private Post post;
 
     @ManyToOne
     @JoinColumn(name = "tag_id")
@@ -33,7 +34,7 @@ public class QuestionTag {
 
     public static QuestionTag toEntity(Question question, Tag tag) {
         return QuestionTag.builder()
-                .question(question)
+                .post(question)
                 .tag(tag)
                 .createDate(LocalDateTime.now())
                 .build();

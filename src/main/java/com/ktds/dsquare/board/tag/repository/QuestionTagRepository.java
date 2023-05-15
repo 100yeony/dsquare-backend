@@ -14,7 +14,7 @@ import java.util.List;
 
 @Repository
 public interface QuestionTagRepository extends JpaRepository<QuestionTag,Long> {
-    void deleteByQuestionAndTag(Question question, Tag tag);
+    void deleteByPostAndTag(Question question, Tag tag);
     @Query("SELECT NEW com.ktds.dsquare.board.tag.WeeklyTagDTO(qt.tag.id, COUNT(qt.tag.id), MAX(qt.createDate)) FROM QuestionTag qt WHERE qt.createDate >= :weekAgo GROUP BY qt.tag")
     List<WeeklyTagDTO> findTagsWithinLastWeek(@Param("weekAgo") LocalDateTime weekAgo);
 

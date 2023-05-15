@@ -1,8 +1,10 @@
 package com.ktds.dsquare.board.qna.domain;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.ktds.dsquare.board.Post;
+import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.qna.dto.AnswerRequest;
+import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.member.Member;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
@@ -11,14 +13,12 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@DiscriminatorValue(BoardType.Constant.ANSWER)
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 @DynamicUpdate
-public class Answer {
-
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Answer extends Post {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer")
@@ -31,11 +31,12 @@ public class Answer {
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
 
-    private Long atcId;
+    @OneToOne(mappedBy = "post", fetch = FetchType.LAZY)
+    private Attachment attachment;
+
     @Column(nullable = false)
     private boolean deleteYn;
 
-    @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question")
     private Question question;
@@ -48,18 +49,16 @@ public class Answer {
                 .writer(writer)
                 .content(dto.getContent())
                 .createDate(now)
-                .atcId(dto.getAtcId())
                 .deleteYn(false)
                 .question(question)
                 .likeCnt(0L)
                 .build();
     }
 
-    public void updateAnswer(String content, Long atcId){
+    public void updateAnswer(String content){
         LocalDateTime now = LocalDateTime.now();
         this.content = content;
         this.lastUpdateDate = now;
-        this.atcId = atcId;
     }
 
     public void deleteAnswer(){

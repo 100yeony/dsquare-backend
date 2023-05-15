@@ -40,7 +40,7 @@ public class Tag {
     public List<Question> getQuestions() {
         List<Question> questions = new ArrayList<>();
         for (QuestionTag questionTag : this.questionTags) {
-            questions.add(questionTag.getQuestion());
+            questions.add((Question)questionTag.getPost());
         }
         return questions;
     }

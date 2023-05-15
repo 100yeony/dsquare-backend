@@ -24,7 +24,7 @@ public class CategoryResponse {
                 .cid(category.getCid())
                 .name(category.getName())
                 .managerId(category.getManagerId())
-                .categoryHierarchy(category.getcategoryHierarchy())
+                .categoryHierarchy(category.getCategoryHierarchy())
                 .build();
     }
 }
