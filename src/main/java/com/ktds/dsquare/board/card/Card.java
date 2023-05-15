@@ -80,6 +80,7 @@ public class Card extends Post {
                 .viewCnt(0L)
                 .deleteYn(false)
                 .likeCnt(0L)
+                .selectionYn(false)
                 .build();
     }
 
