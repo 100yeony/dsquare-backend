@@ -1,14 +1,15 @@
 package com.ktds.dsquare.board.tag;
 
+import com.ktds.dsquare.board.Post;
 import com.ktds.dsquare.board.carrot.Carrot;
+import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.board.tag.repository.CarrotTagRepository;
-import com.ktds.dsquare.board.tag.repository.QuestionTagRepository;
-import com.ktds.dsquare.board.tag.repository.TagRepository;
-import com.ktds.dsquare.board.tag.repository.TalkTagRepository;
+import com.ktds.dsquare.board.tag.repository.*;
 import com.ktds.dsquare.board.talk.Talk;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -16,11 +17,13 @@ import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Service
+@Slf4j
 @RequiredArgsConstructor
+@Service
 public class TagService {
 
     private final TagRepository tagRepository;
+    private final PostTagRepository postTagRepository;
     private final QuestionTagRepository questionTagRepository;
     private final TalkTagRepository talkTagRepository;
     private final CarrotTagRepository carrotTagRepository;
@@ -46,6 +49,51 @@ public class TagService {
                 carrotTagRepository.save(ct);
             }
         }
+    }
+    @Transactional
+    public List<Tag> registerTags(List<String> tags) {
+        if (ObjectUtils.isEmpty(tags))
+            return List.of();
+
+        Set<Tag> existingTagList = trimExistings(tags);
+
+        List<Tag> tagList = Tag.toEntityList(tags);
+        List<Tag> savedTags = tagRepository.saveAll(tagList);
+
+        savedTags.addAll(existingTagList);
+        return savedTags;
+    }
+    public Set<Tag> trimExistings(List<String> tags) {
+        Set<Tag> existings = new HashSet<>();
+        for (String tag : tags) {
+            Optional.ofNullable(tagRepository.findByName(tag))
+                            .ifPresent(existings::add);
+        }
+        tags.removeAll(existings.stream()
+                .map(Tag::getName)
+                .collect(Collectors.toList()));
+        return existings;
+    }
+    @Transactional
+    public List<PostTag> registerTags(List<String> tags, Post post) {
+        if (ObjectUtils.isEmpty(tags) || post == null) {
+            return null;
+        }
+
+        Set<Tag> existings = trimExistings(tags);
+        List<Tag> tagList = Tag.toEntityList(tags);
+        tagList.addAll(existings);
+        return linkPost(tagList, post);
+    }
+    @Transactional
+    public List<PostTag> linkPost(List<Tag> tags, Post post) {
+        if (ObjectUtils.isEmpty(tags) || post == null)
+            return null;
+
+        List<PostTag> relations = tags.stream()
+                .map(tag -> PostTag.toEntity(post, tag))
+                .collect(Collectors.toList());
+        return postTagRepository.saveAll(relations);
     }
 
     // 태그-질문 간 연관관계 삭제

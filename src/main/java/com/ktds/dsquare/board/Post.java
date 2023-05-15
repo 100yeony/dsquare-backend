@@ -20,7 +20,7 @@ public class Post extends BaseTimeEntity {
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    private Member writer;
 
-    private String dtype;
+    @Column(name = "dtype")
+    private String type;
 
 }
-

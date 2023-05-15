@@ -78,8 +78,11 @@ public class AttachmentService {
         deleteAttachment(deletedAttachment);
     }
     private List<Attachment> filterDeletedAttachment(AttachmentDto updatedAttachment, Attachment existingAttachment) { // TODO remove when Attachment become List
-        if (updatedAttachment == null)
+        if (updatedAttachment == null) // TODO awkward
             return null;
+        if (existingAttachment == null)
+            return List.of();
+
         return filterDeletedAttachment(List.of(updatedAttachment), List.of(existingAttachment));
     }
     private List<Attachment> filterDeletedAttachment(List<AttachmentDto> updatedAttachment, List<Attachment> existingAttachment) {

@@ -7,6 +7,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -34,6 +35,14 @@ public class Tag {
         return Tag.builder()
                 .name(name)
                 .build();
+    }
+    public static List<Tag> toEntityList(List<String> names) {
+        if (names == null)
+            return List.of();
+
+        return names.stream()
+                .map(Tag::toEntity)
+                .collect(Collectors.toList());
     }
 
     //궁금해요

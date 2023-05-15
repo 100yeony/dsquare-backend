@@ -1,7 +1,9 @@
 package com.ktds.dsquare.board.qna.controller;
 
+import com.ktds.dsquare.board.qna.dto.request.QuestionRegisterRequest;
 import com.ktds.dsquare.board.qna.dto.response.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.dto.request.QuestionRequest;
+import com.ktds.dsquare.board.qna.dto.response.QuestionRegisterResponse;
 import com.ktds.dsquare.board.qna.dto.response.QuestionResponse;
 import com.ktds.dsquare.board.qna.service.QuestionService;
 import com.ktds.dsquare.common.annotation.AuthUser;
@@ -24,15 +26,14 @@ public class QuestionController {
 
     //create - 질문글 작성
     @PostMapping(value = "/board/questions")//, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<Void> createQuestion(
+    public ResponseEntity<QuestionRegisterResponse> createQuestion(
 //            @Parameter @ApiParam(name = "Question 게시글 내용")
-            @RequestPart("question") QuestionRequest request,
+            @RequestPart("question") QuestionRegisterRequest request,
 //            @ApiParam(name = "Question 게시글 첨부파일")
             @RequestPart(required = false) MultipartFile attachment,
             @ApiIgnore @AuthUser Member writer
     ) throws RuntimeException {
-        questionService.createQuestion(request, attachment, writer);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(questionService.createQuestion(request, attachment, writer), HttpStatus.CREATED);
     }
 
     //read - 질문글 전체 목록 조회 & 검색

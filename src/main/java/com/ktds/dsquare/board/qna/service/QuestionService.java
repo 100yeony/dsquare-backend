@@ -8,14 +8,17 @@ import com.ktds.dsquare.board.paging.PagingService;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.board.qna.dto.request.QuestionRegisterRequest;
 import com.ktds.dsquare.board.qna.dto.response.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.dto.response.CategoryResponse;
 import com.ktds.dsquare.board.qna.dto.request.QuestionRequest;
+import com.ktds.dsquare.board.qna.dto.response.QuestionRegisterResponse;
 import com.ktds.dsquare.board.qna.dto.response.QuestionResponse;
 import com.ktds.dsquare.board.qna.dto.*;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
+import com.ktds.dsquare.board.tag.PostTag;
 import com.ktds.dsquare.board.tag.QuestionTag;
 import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.board.tag.TagService;
@@ -40,9 +43,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 
 @Service
@@ -64,24 +65,30 @@ public class QuestionService {
     private final TagService tagService;
     private final PagingService pagingService;
 
+
     //create - 질문글 작성
     @Transactional
     @Notify(value = NotifType.SPECIALITY_QUESTION_REGISTRATION, type = QuestionRegisterResponse.class)
-    public QuestionRegisterResponse createQuestion(QuestionRequest dto, MultipartFile attachment, Member writer) throws RuntimeException {
-        Category category = categoryRepository.findById(dto.getCid()).orElseThrow(() -> new EntityNotFoundException("Category does not exist"));
-        Question question = Question.toEntity(dto, writer, category);
+    public QuestionRegisterResponse createQuestion(
+            QuestionRegisterRequest request,
+            MultipartFile attachment,
+            Member writer
+    ) throws RuntimeException {
+        Category category = categoryRepository.findById(request.getCid())
+                .orElseThrow(() -> new EntityNotFoundException("Category does not exist"));
+        Question question = Question.createQuestion(request, category, writer);
+        question = questionRepository.save(question);
 
-        saveAttachment(attachment, question);
+        // Tagging
+        List<PostTag> tagRelations = tagService.registerTags(request.getTags(), question);
+        // Handle attachment
+        Attachment savedAttachment = saveAttachment(attachment, question);
 
-        questionRepository.save(question);
-        tagService.insertNewTags(dto.getTags(), question);
-        return QuestionRegisterResponse.toDto(question);
+        return QuestionRegisterResponse.toDto(question, tagRelations, savedAttachment);
     }
     @Transactional
-    public void saveAttachment(MultipartFile attachment, Question question) throws RuntimeException {
-        Attachment savedAttachment = attachmentService.saveAttachment(question.getWriter(), attachment, question);
-        if (savedAttachment != null)
-            savedAttachment.linkPost(question);
+    public Attachment saveAttachment(MultipartFile attachment, Question question) throws RuntimeException {
+        return attachmentService.saveAttachment(question.getWriter(), attachment, question);
     }
 
     //read - 질문글 전체 조회 & 검색
