@@ -78,6 +78,7 @@ public class Card {
                 .viewCnt(0L)
                 .deleteYn(false)
                 .likeCnt(0L)
+                .selectionYn(false)
                 .build();
     }
 
