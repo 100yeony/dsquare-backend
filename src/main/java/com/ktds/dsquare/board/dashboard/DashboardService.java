@@ -45,13 +45,13 @@ public class DashboardService {
             throw new IllegalArgumentException("Invalid key value");
         }
 
-        String jpql = "SELECT q.qid " +
+        String jpql = "SELECT q.id " +
                 "FROM Question q " +
                 "JOIN Category c on q.category = c.cid " +
-                "JOIN Answer a on q.qid = a.question " +
+                "JOIN Answer a on q.id = a.question " +
                 "WHERE a.writer = c.manager " +
                 "AND q.createDate >= :key " +
-                "GROUP BY q.qid " +
+                "GROUP BY q.id " +
                 "ORDER BY sum(a.likeCnt + q.likeCnt) desc";
 
         List<Long> resultList = em.createQuery(jpql)
