@@ -1,7 +1,7 @@
 package com.ktds.dsquare.board.qna.service;
 
 import com.ktds.dsquare.board.qna.domain.Category;
-import com.ktds.dsquare.board.qna.dto.BriefCategoryResponse;
+import com.ktds.dsquare.board.qna.dto.response.BriefCategoryResponse;
 import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

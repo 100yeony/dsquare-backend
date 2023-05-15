@@ -3,7 +3,7 @@ package com.ktds.dsquare.board.qna.domain;
 
 import com.ktds.dsquare.board.Post;
 import com.ktds.dsquare.board.enums.BoardType;
-import com.ktds.dsquare.board.qna.dto.AnswerRequest;
+import com.ktds.dsquare.board.qna.dto.request.AnswerRequest;
 import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.member.Member;
 import lombok.*;

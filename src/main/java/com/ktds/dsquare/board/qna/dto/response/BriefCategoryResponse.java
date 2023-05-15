@@ -1,4 +1,4 @@
-package com.ktds.dsquare.board.qna.dto;
+package com.ktds.dsquare.board.qna.dto.response;
 
 import com.ktds.dsquare.board.qna.domain.Category;
 import lombok.AllArgsConstructor;

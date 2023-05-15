@@ -1,4 +1,4 @@
-package com.ktds.dsquare.board.qna.dto;
+package com.ktds.dsquare.board.qna.dto.request;
 
 import com.ktds.dsquare.common.file.dto.AttachmentDto;
 import lombok.AllArgsConstructor;

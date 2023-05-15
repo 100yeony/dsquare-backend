@@ -1,8 +1,8 @@
 package com.ktds.dsquare.board.qna.controller;
 
-import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
-import com.ktds.dsquare.board.qna.dto.QuestionRequest;
-import com.ktds.dsquare.board.qna.dto.QuestionResponse;
+import com.ktds.dsquare.board.qna.dto.response.BriefQuestionResponse;
+import com.ktds.dsquare.board.qna.dto.request.QuestionRequest;
+import com.ktds.dsquare.board.qna.dto.response.QuestionResponse;
 import com.ktds.dsquare.board.qna.service.QuestionService;
 import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.member.Member;

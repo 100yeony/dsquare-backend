@@ -2,7 +2,6 @@ package com.ktds.dsquare.board.qna.controller;
 
 
 import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.board.qna.dto.AnswerRegisterResponse;
 import com.ktds.dsquare.board.qna.dto.AnswerRequest;
 import com.ktds.dsquare.board.qna.dto.AnswerResponse;
 import com.ktds.dsquare.board.qna.service.AnswerService;

@@ -6,6 +6,8 @@ import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeRepository;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.board.qna.dto.request.AnswerRequest;
+import com.ktds.dsquare.board.qna.dto.response.AnswerResponse;
 import com.ktds.dsquare.board.qna.dto.AnswerRegisterResponse;
 import com.ktds.dsquare.board.qna.dto.AnswerRequest;
 import com.ktds.dsquare.board.qna.dto.AnswerResponse;

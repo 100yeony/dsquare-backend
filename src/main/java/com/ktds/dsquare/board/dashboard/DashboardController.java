@@ -1,6 +1,6 @@
 package com.ktds.dsquare.board.dashboard;
 
-import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
+import com.ktds.dsquare.board.qna.dto.response.BriefQuestionResponse;
 import com.ktds.dsquare.board.tag.TagService;
 import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.board.dashboard.dto.BestUserResponse;

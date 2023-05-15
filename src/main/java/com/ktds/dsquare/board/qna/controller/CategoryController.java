@@ -1,6 +1,6 @@
 package com.ktds.dsquare.board.qna.controller;
 
-import com.ktds.dsquare.board.qna.dto.BriefCategoryResponse;
+import com.ktds.dsquare.board.qna.dto.response.BriefCategoryResponse;
 import com.ktds.dsquare.board.qna.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

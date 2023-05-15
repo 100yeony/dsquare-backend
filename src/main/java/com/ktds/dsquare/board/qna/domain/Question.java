@@ -3,7 +3,7 @@ package com.ktds.dsquare.board.qna.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ktds.dsquare.board.Post;
 import com.ktds.dsquare.board.enums.BoardType;
-import com.ktds.dsquare.board.qna.dto.QuestionRequest;
+import com.ktds.dsquare.board.qna.dto.request.QuestionRequest;
 import com.ktds.dsquare.board.tag.QuestionTag;
 import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.member.Member;

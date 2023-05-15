@@ -2,7 +2,7 @@ package com.ktds.dsquare.board.dashboard;
 
 import com.ktds.dsquare.board.dashboard.dto.BestUserResponse;
 import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
+import com.ktds.dsquare.board.qna.dto.response.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.board.qna.service.QuestionService;
