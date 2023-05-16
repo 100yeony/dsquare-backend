@@ -21,6 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
@@ -30,6 +31,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -94,9 +96,19 @@ public class MemberService {
                     .orElseThrow(() -> new EntityNotFoundException("No such team with ID " + request.getTid()));
             member.join(newTeam);
         }
+
+        if (!isAvailableNickname(request, member))
+            throw new RuntimeException("Please check nickname.");
+
         member.update(request);
         return MemberInfo.toDto(member);
     }
+    private boolean isAvailableNickname(MemberUpdateRequest request, Member member) {
+        return StringUtils.hasText(request.getNickname()) &&
+                (Objects.equals(member.getNickname(), request.getNickname())
+                || !memberRepository.existsByNickname(request.getNickname()));
+    }
+
     @Transactional
     public FileSavedDto updateMember(Long id, MultipartFile image, Member user) throws IOException {
         Member member = memberRepository.findById(id)
