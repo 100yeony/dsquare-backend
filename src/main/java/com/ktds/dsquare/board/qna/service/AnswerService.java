@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,7 +86,7 @@ public class AnswerService {
         Answer answer = answerRepository.findByDeleteYnAndId(false, aid)
                 .orElseThrow(() -> new PostNotFoundException("Answer Not Found. Answer ID: "+aid));
         if(answer==null){
-            throw new EntityNotFoundException("answer not found. aid is " + aid);
+            throw new PostNotFoundException("answer not found. aid is " + aid);
         }
         answer.updateAnswer(request.getContent());
         updateAttachment(request.getAttachment(), newAttachment, answer);

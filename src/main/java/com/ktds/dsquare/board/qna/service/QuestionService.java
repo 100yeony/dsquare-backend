@@ -179,6 +179,7 @@ public class QuestionService {
         Category category = categoryRepository.findById(request.getCid())
                 .orElseThrow(()-> new EntityNotFoundException("category not found. category is " + request.getCid()));
 
+        question.updateQuestion(request.getTitle(), request.getContent(), category);
         updateQuestionAttachment(request.getAttachment(), newAttachment, question);
 
         // 태그 수정
