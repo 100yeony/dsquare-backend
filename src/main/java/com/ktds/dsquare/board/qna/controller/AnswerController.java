@@ -30,7 +30,7 @@ public class AnswerController {
             @RequestPart(required = false) MultipartFile attachment,
             @AuthUser Member user
     ) {
-        return new ResponseEntity<>(answerService.createAnswer(qid, request, user), HttpStatus.CREATED);
+        return new ResponseEntity<>(answerService.createAnswer(qid, request, attachment, user), HttpStatus.CREATED);
     }
 
     //qid와 연결된 답변 모두 조회
