@@ -4,8 +4,6 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.MulticastMessage;
-import com.ktds.dsquare.board.comment.Comment;
-import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
@@ -15,11 +13,8 @@ import com.ktds.dsquare.common.exception.PostNotFoundException;
 import com.ktds.dsquare.common.notification.RegistrationToken;
 import com.ktds.dsquare.common.notification.repository.RegistrationTokenRepository;
 import com.ktds.dsquare.member.Member;
-import com.ktds.dsquare.member.MemberRepository;
-import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -110,10 +105,15 @@ public class NotificationSendService {
         List<String> receivers = registrationTokens.stream()
                 .map(RegistrationToken::getValue)
                 .collect(Collectors.toList());
+
         MulticastMessage multicastMessage = makeMulticastMessage(data, receivers);
-        fcm.sendMulticast(multicastMessage);
+        if (multicastMessage != null) // TODO review logic
+            fcm.sendMulticast(multicastMessage);
     }
     private MulticastMessage makeMulticastMessage(Map<String, String> data, List<String> registrationTokens) {
+        if (ObjectUtils.isEmpty(registrationTokens))
+            return null;
+
         return MulticastMessage.builder()
                 .putAllData(data)
                 .addAllTokens(registrationTokens)
