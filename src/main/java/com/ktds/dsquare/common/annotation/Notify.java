@@ -11,6 +11,16 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Notify {
 
+    /**
+     * Specify notification Type
+     * @return NotifType[] (List of notification types)
+     */
     NotifType[] value();
+
+    /**
+     * Specify the type of return value of annotated method
+     * @return Class<?> of return value
+     */
+    Class<?> type() default Object.class;
 
 }

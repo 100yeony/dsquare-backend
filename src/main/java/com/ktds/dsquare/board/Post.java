@@ -1,10 +1,13 @@
 package com.ktds.dsquare.board;
 
 import lombok.Getter;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 
 @Getter
+@DynamicInsert @DynamicUpdate
 @DiscriminatorColumn // (name = "DTYPE") // use default value
 @Inheritance(strategy = InheritanceType.JOINED)
 @Entity
@@ -16,6 +19,8 @@ public class Post extends BaseTimeEntity {
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    private Member writer;
+
+    private String dtype;
 
 }
 

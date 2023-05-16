@@ -18,6 +18,8 @@ import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.board.tag.QuestionTag;
 import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.board.tag.TagService;
+import com.ktds.dsquare.common.annotation.Notify;
+import com.ktds.dsquare.common.enums.NotifType;
 import com.ktds.dsquare.common.exception.DeleteQuestionException;
 import com.ktds.dsquare.common.exception.PostNotFoundException;
 import com.ktds.dsquare.common.exception.UserNotFoundException;
@@ -61,7 +63,8 @@ public class QuestionService {
 
     //create - 질문글 작성
     @Transactional
-    public void createQuestion(QuestionRequest dto, MultipartFile attachment, Member writer) throws RuntimeException {
+    @Notify(value = NotifType.SPECIALITY_QUESTION_REGISTRATION, type = CategoryResponse.class)
+    public CategoryResponse createQuestion(QuestionRequest dto, MultipartFile attachment, Member writer) throws RuntimeException {
         Category category = categoryRepository.findById(dto.getCid()).orElseThrow(() -> new EntityNotFoundException("Category does not exist"));
         Question question = Question.toEntity(dto, writer, category);
 
@@ -69,6 +72,7 @@ public class QuestionService {
 
         questionRepository.save(question);
         tagService.insertNewTags(dto.getTags(), question);
+        return CategoryResponse.toDto(category);
     }
     @Transactional
     public void saveAttachment(MultipartFile attachment, Question question) throws RuntimeException {
