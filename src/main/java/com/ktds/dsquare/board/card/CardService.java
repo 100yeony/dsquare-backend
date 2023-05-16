@@ -17,7 +17,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@PersistenceContext
 public class CardService {
 
     private final CardRepository cardRepository;
@@ -33,6 +36,7 @@ public class CardService {
     private final CommentService commentService;
     private final LikeRepository likeRepository;
     private final PagingService pagingService;
+    private final EntityManager em;
 
     //create - 카드주세요 글 작성
     @Transactional
@@ -139,10 +143,20 @@ public class CardService {
 
     //read - 이달의 카드 전체 조회
     public List<BriefCardResponse> selectedCardList(Member user){
-        List<Card> cards = cardRepository.findSelectedCard();
         List<BriefCardResponse> briefCards = new ArrayList<>();
 
-        for(Card C : cards){
+        String jpql = "SELECT c FROM Card c " +
+                "WHERE c.id IN (" +
+                "SELECT DISTINCT MIN(c2.id) " +
+                "FROM Card c2 " +
+                "WHERE c2.selectionYn = true AND c2.deleteYn = false " +
+                "GROUP BY extract(month from c2.selectedDate)) " +
+                "ORDER BY extract(month from c.selectedDate), c.likeCnt desc";
+        List<Card> resultList = em.createQuery(jpql)
+                .setMaxResults(12)
+                .getResultList();
+
+        for(Card C : resultList){
             Member owner = C.getCardOwner();
             CardSelectionInfo selectionInfo;
 
