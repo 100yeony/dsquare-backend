@@ -2,6 +2,7 @@ package com.ktds.dsquare.common.notification.controller;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.ktds.dsquare.common.notification.dto.TopicSubscribeRequest;
+import com.ktds.dsquare.common.notification.dto.request.RegistrationTokenRegisterRequest;
 import com.ktds.dsquare.common.notification.service.NotificationSendService;
 import com.ktds.dsquare.common.notification.service.NotificationTopicService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,15 @@ public class NotificationController {
     private final NotificationTopicService notificationTopicService;
     private final NotificationSendService notificationSendService;
 
+
+    @PostMapping("/registration-tokens")
+    public ResponseEntity<?> addRegistrationToken(@RequestBody RegistrationTokenRegisterRequest request) {
+        try {
+            return new ResponseEntity<>(notificationTopicService.addRegistrationToken(request), HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>("Already registered token.", HttpStatus.OK);
+        }
+    }
 
     @PostMapping("/topics/{topic}/subscribers")
     public ResponseEntity<?> subscribeTopic(@PathVariable String topic, @RequestBody TopicSubscribeRequest request) throws FirebaseMessagingException {

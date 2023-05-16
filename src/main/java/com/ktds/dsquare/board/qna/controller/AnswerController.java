@@ -2,6 +2,7 @@ package com.ktds.dsquare.board.qna.controller;
 
 
 import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.board.qna.dto.AnswerRegisterResponse;
 import com.ktds.dsquare.board.qna.dto.AnswerRequest;
 import com.ktds.dsquare.board.qna.dto.AnswerResponse;
 import com.ktds.dsquare.board.qna.service.AnswerService;
@@ -23,13 +24,13 @@ public class AnswerController {
 
     //create - 답변글 작성
     @PostMapping("/board/questions/{qid}/answers")
-    public ResponseEntity<Void> createAnswer(
+    public ResponseEntity<AnswerRegisterResponse> createAnswer(
             @PathVariable("qid") Long qid,
             @RequestPart(name = "answer") AnswerRequest request,
             @RequestPart(required = false) MultipartFile attachment,
-            @AuthUser Member user){
-        answerService.createAnswer(qid, request, attachment, user);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+            @AuthUser Member user
+    ) {
+        return new ResponseEntity<>(answerService.createAnswer(qid, request, user), HttpStatus.CREATED);
     }
 
     //qid와 연결된 답변 모두 조회

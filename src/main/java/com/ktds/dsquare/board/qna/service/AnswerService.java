@@ -6,10 +6,13 @@ import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeRepository;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.board.qna.dto.AnswerRegisterResponse;
 import com.ktds.dsquare.board.qna.dto.AnswerRequest;
 import com.ktds.dsquare.board.qna.dto.AnswerResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
+import com.ktds.dsquare.common.annotation.Notify;
+import com.ktds.dsquare.common.enums.NotifType;
 import com.ktds.dsquare.common.exception.PostNotFoundException;
 import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.common.file.AttachmentService;
@@ -40,12 +43,13 @@ public class AnswerService {
 
     // 답변글 작성
     @Transactional
-    public void createAnswer(Long qid, AnswerRequest dto, MultipartFile attachment, Member user) {
+    @Notify(NotifType.ANSWER_REGISTRATION)
+    public AnswerRegisterResponse createAnswer(Long qid, AnswerRequest dto, MultipartFile attachment, Member user) {
         Question question = questionRepository.findByDeleteYnAndId(false, qid)
                 .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + qid));
         Answer answer = Answer.toEntity(dto, user, question);
         saveAttachment(attachment, answer);
-        answerRepository.save(answer);
+        return AnswerRegisterResponse.toDto(answerRepository.save(answer));
     }
     @Transactional // TODO code duplication
     public void saveAttachment(MultipartFile attachment, Answer answer) {
