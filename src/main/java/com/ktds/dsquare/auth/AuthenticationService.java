@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -24,10 +27,16 @@ public class AuthenticationService {
         return authCodeRepository.save(AuthCode.toEntity(account, code));
     }
     private String generateUniqueCode() {
-        String code = "";
-        for (int i = 0; i < 10 && authCodeRepository.existsByCode(code); ++i) {
+        List<AuthCode> entireAuthCode = authCodeRepository.findAll();
+        Set<String> codeSet = entireAuthCode.stream()
+                .map(AuthCode::getCode)
+                .collect(Collectors.toSet());
+
+        String code;
+        int limit = 10;
+        do {
             code = RandomUtil.generateRandomNumber(6);
-        }
+        } while (limit-- > 0 && codeSet.contains(code));
 
         return code;
     }
