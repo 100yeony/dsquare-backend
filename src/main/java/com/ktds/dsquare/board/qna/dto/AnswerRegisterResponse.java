@@ -2,7 +2,6 @@ package com.ktds.dsquare.board.qna.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.qna.domain.Answer;
-import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import lombok.*;
 
@@ -26,7 +25,7 @@ public class AnswerRegisterResponse {
     public static AnswerRegisterResponse toDto(Answer entity){
         return AnswerRegisterResponse.builder()
                 .aid(entity.getId())
-                .qid(entity.getQuestion().getQid())
+                .qid(entity.getQuestion().getId())
                 .writerInfo(BriefMemberInfo.toDto(entity.getWriter()))
                 .content(entity.getContent())
                 .createDate(entity.getCreateDate())
