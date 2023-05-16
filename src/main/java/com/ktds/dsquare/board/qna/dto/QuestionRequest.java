@@ -1,5 +1,6 @@
 package com.ktds.dsquare.board.qna.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.common.file.dto.AttachmentDto;
 import lombok.*;
 
@@ -15,7 +16,9 @@ public class QuestionRequest {
     private Integer cid;
     private String title;
     private String content;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime lastUpdateDate;
     private Long viewCnt;
     private AttachmentDto attachment;
