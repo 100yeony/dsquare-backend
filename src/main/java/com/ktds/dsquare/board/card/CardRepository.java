@@ -6,10 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -23,17 +21,6 @@ public interface CardRepository extends JpaRepository<Card,Long>, JpaSpecificati
 
     //검색 관련
     Page<Card> findByDeleteYnAndSelectionYnAndProjTeamOrderByCreateDateDesc(Boolean deleteYn, Boolean selection, Team projTeamId, Pageable pageable);
-
-    //이달의 카드 조회 관련
-    @Query(value = "SELECT DISTINCT ON (extract(month from c.selected_date)) " +
-            "c.* " +
-            "FROM comm_card c " +
-            "WHERE c.selection_yn IS true " +
-            "AND c.delete_yn IS false " +
-            "GROUP BY c.id, " +
-            "extract(month from c.selected_date) " +
-            "ORDER BY extract(month from c.selected_date), like_cnt DESC", nativeQuery = true)
-    List<Card> findSelectedCard();
 
     //마이페이지 관련
     Page<Card> findByDeleteYnAndWriter(Boolean deleteYn, Member writer, Pageable pageable);
