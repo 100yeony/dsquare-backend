@@ -65,7 +65,7 @@ public class CardService {
         }else{
             //전체조회
             if(isSelected){
-                cards = cardRepository.findByDeleteYnAndSelectionYnOrderByCreateDateDesc(false, isSelected, page);
+                cards = cardRepository.findByDeleteYnAndSelectionYnOrderBySelectedDateDesc(false, isSelected, page);
             } else{
                 cards = cardRepository.findByDeleteYnAndSelectionYnOrderByCreateDateDesc(false, false, page);
             }
@@ -74,8 +74,6 @@ public class CardService {
                 .map(c -> makeBriefCardRes(c, user, projTeamId))
                 .collect(Collectors.toList());
     }
-
-
 
 
     public BriefCardResponse makeBriefCardRes(Card C, Member user, Long projTeamId){
