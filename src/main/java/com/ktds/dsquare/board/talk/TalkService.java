@@ -55,7 +55,7 @@ public class TalkService {
 
         //사용자 이름 검색(2글자로도 포함된 사람 검색 & 다른 조건과 모두 AND)
         if (key != null && key.equals("member") && value != null) {
-            List<Member> members = memberRepository.findByNameContaining(value);
+            List<Member> members = memberRepository.findByNicknameContaining(value);
             try {
                 if (members.size() > 0) {
                     List<Member> writerIds = new ArrayList<>();
