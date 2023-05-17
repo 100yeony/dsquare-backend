@@ -38,7 +38,7 @@ public class CommentService {
 
     // 댓글 작성
     @Transactional
-    @Notify(NotifType.COMMENT_REGISTRATION)
+    @Notify(value = NotifType.COMMENT_REGISTRATION, type = CommentRegisterResponse.class)
     public CommentRegisterResponse createComment(String boardTypeName, Long postId, CommentRegisterDto request, Member user) {
         if(request.getContent().equals(""))
             throw new LackOfDataException("There is no content.");

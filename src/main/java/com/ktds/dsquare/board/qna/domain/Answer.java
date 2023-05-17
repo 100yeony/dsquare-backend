@@ -7,6 +7,7 @@ import com.ktds.dsquare.board.qna.dto.AnswerRequest;
 import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.member.Member;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
-@DynamicUpdate
+@DynamicInsert @DynamicUpdate
 public class Answer extends Post {
 
     @ManyToOne(fetch = FetchType.LAZY)

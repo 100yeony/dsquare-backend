@@ -12,6 +12,6 @@ public interface RegistrationTokenRepository extends JpaRepository<RegistrationT
 
     List<RegistrationToken> findByOwner(Member owner);
 
-    boolean existsByValue(String value);
+    boolean existsByOwnerAndValue(Member owner, String value);
 
 }

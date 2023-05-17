@@ -42,7 +42,7 @@ public class AnswerService {
 
     // 답변글 작성
     @Transactional
-    @Notify(NotifType.ANSWER_REGISTRATION)
+    @Notify(value = NotifType.ANSWER_REGISTRATION, type = AnswerRegisterResponse.class)
     public AnswerRegisterResponse createAnswer(Long qid, AnswerRequest dto, MultipartFile attachment, Member user) {
         Question question = questionRepository.findByDeleteYnAndId(false, qid)
                 .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + qid));

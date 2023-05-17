@@ -48,6 +48,7 @@ public class NotificationAspect {
     public void notifyAnnotationAdvice(final JoinPoint joinPoint, final Object rtnVal, Notify notify) throws Exception {
         if (rtnVal.getClass() != notify.type())
             throw new IllegalArgumentException("Class mismatch.");
+        // TODO or try to cast rtnVal.getClass().cast()
 
         for (NotifType value : notify.value()) {
             sendNotification(notify.type().cast(rtnVal), value);

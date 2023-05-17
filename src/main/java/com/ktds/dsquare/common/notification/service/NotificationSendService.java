@@ -8,6 +8,7 @@ import com.ktds.dsquare.common.enums.NotifType;
 import com.ktds.dsquare.common.notification.Notification;
 import com.ktds.dsquare.common.notification.RegistrationToken;
 import com.ktds.dsquare.common.notification.SentNotification;
+import com.ktds.dsquare.common.notification.repository.NotificationRepository;
 import com.ktds.dsquare.common.notification.repository.RegistrationTokenRepository;
 import com.ktds.dsquare.common.notification.repository.SentNotificationRepository;
 import com.ktds.dsquare.member.Member;
@@ -32,6 +33,7 @@ public class NotificationSendService {
     private final FirebaseMessaging fcm;
 
     private final RegistrationTokenRepository tokenRepository;
+    private final NotificationRepository notificationRepository;
     private final SentNotificationRepository sentRepository;
     private final MemberSelectService memberSelectService;
 
@@ -78,7 +80,7 @@ public class NotificationSendService {
         }
 
         // Send notification
-        List<SentNotification> sentNotifications = saveNotification(data, registrationTokens);
+        List<SentNotification> sentNotifications = saveNotification(type, data, registrationTokens);
         log.info("The number of sent notifications : {}", sentNotifications.size());
         fcm.sendMulticast(multicastMessage);
     }
@@ -112,11 +114,11 @@ public class NotificationSendService {
     }
 
     @Transactional
-    public List<SentNotification> saveNotification(Map<String, String> data, List<RegistrationToken> registrationTokens) {
+    public List<SentNotification> saveNotification(NotifType type, Map<String, String> data, List<RegistrationToken> registrationTokens) {
         if (registrationTokens == null)
             throw new IllegalArgumentException();
 
-        Notification notification = Notification.toEntity(data);
+        Notification notification = notificationRepository.save(Notification.toEntity(type, data));
         List<SentNotification> sentNotifications = registrationTokens.stream()
                 .map(token -> SentNotification.toEntity(notification, token))
                 .collect(Collectors.toList());
@@ -125,6 +127,8 @@ public class NotificationSendService {
     }
 
 
+
+    // TODO consider the use below and erase
 
     public String notifyTopic(String topic) throws FirebaseMessagingException {
         Message message = makeTopicMessage(topic);
