@@ -14,6 +14,7 @@ import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import com.ktds.dsquare.member.team.Team;
 import com.ktds.dsquare.member.team.TeamRepository;
+import com.ktds.dsquare.util.RandomUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
@@ -30,6 +31,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -126,6 +128,35 @@ public class MemberService {
     }
 
     @Transactional
+    public void withdrawMember(Long id, Member user) {
+        Member member = memberRepository.findById(id)
+            .orElseThrow(() -> new UserNotFoundException("No such member with ID " + id));
+//        권한 체크
+        if(! (user.getRole().contains(Role.ADMIN) || user.getId() == id) ) {
+            throw new RuntimeException("Not Authorized.");
+        }
+//        대체할 닉네임 생성 및 기존 정보 수정
+        String nickname = createNewNickname();
+        member.withdraw(nickname);
+//        id를 회원탈퇴 테이블에 삽입
+        DelMember delMember = DelMember.toEntity(id);
+        delMemberRepository.save(delMember);
+    }
+
+    public String createNewNickname() {
+        String code;
+        Set<String> nicknameSet = memberRepository.findAll().stream()
+                .map(Member::getNickname)
+                .collect(Collectors.toSet());
+        int limit = 10;
+        do {
+            code = RandomUtil.generateRandomNumber(8);
+            System.out.println(code);
+        } while (limit-- > 0 && nicknameSet.contains("탈퇴한 회원_"+code));
+        return "탈퇴한 회원_"+code;
+    }
+
+    @Transactional
     public void findPassword(String email, String tempPassword) {
         try {
             Member member = memberRepository.findByEmail(email).orElse(null);
@@ -152,17 +183,5 @@ public class MemberService {
         member.changePassword(passwordChangeRequest.getChangedPassword());
     }
 
-    public void deleteAccount(Long id){
-
-        DelMember delMember = DelMember.toEntity(id);
-
-        //update
-
-        //insert
-        delMemberRepository.save(delMember);
-
-
-
-    }
 
 }
