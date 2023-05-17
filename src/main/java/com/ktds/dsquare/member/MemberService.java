@@ -143,6 +143,8 @@ public class MemberService {
     public void withdrawMember(Long id, Member user) {
         Member member = memberRepository.findById(id)
             .orElseThrow(() -> new UserNotFoundException("No such member with ID " + id));
+        if(member.getWithdrawDate() != null)
+            throw new UserNotFoundException("Users who have already withdrawn.");
 //        권한 체크
         if(! (user.getRole().contains(Role.ADMIN) || user.getId() == id) ) {
             throw new RuntimeException("Not Authorized.");
@@ -151,8 +153,8 @@ public class MemberService {
         String nickname = createNewNickname();
         member.withdraw(nickname);
 //        id를 회원탈퇴 테이블에 삽입
-        DelMember delMember = DelMember.toEntity(id);
-        delMemberRepository.save(delMember);
+        WithdrawnMember withdrawnMember = WithdrawnMember.toEntity(id);
+        delMemberRepository.save(withdrawnMember);
     }
 
     public String createNewNickname() {

@@ -14,16 +14,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Getter
-public class DelMember {
+public class WithdrawnMember {
 
     @Id
     private Long id;
-    private LocalDateTime deleteAccountDate;
 
-    public static DelMember toEntity(Long id) {
-        return DelMember.builder()
+    public static WithdrawnMember toEntity(Long id) {
+        return WithdrawnMember.builder()
                 .id(id)
-                .deleteAccountDate(LocalDateTime.now())
                 .build();
     }
 

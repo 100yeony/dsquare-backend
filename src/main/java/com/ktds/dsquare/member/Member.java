@@ -61,6 +61,7 @@ public class Member {
 
     private LocalDateTime lastLoginDate;
     private LocalDateTime lastPwChangeDate;
+    private LocalDateTime withdrawDate;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
@@ -152,6 +153,7 @@ public class Member {
         this.lastLoginDate = null;
         this.lastPwChangeDate = null;
         this.role = null;
+        this.withdrawDate = LocalDateTime.now();
     }
 
     public static Member toEntity(SignupRequest dto) {
