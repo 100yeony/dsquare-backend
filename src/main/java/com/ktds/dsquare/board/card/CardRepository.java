@@ -13,8 +13,11 @@ import java.util.Optional;
 @Repository
 public interface CardRepository extends JpaRepository<Card,Long>, JpaSpecificationExecutor<Card>{
 
-    //전체 조회 관련
+    //전체 조회 관련(최신순 조회)
     Page<Card>  findByDeleteYnAndSelectionYnOrderByCreateDateDesc(Boolean deleteYn, Boolean selection, Pageable pageable);
+
+    //전체 조회 관련(선정된 카드 조회)
+    Page<Card> findByDeleteYnAndSelectionYnOrderBySelectedDateDesc(Boolean deleteYn, Boolean selection, Pageable pageable);
 
     //상세 조회 관련
     Optional<Card> findByDeleteYnAndId(Boolean deleteYn, Long cardId);
