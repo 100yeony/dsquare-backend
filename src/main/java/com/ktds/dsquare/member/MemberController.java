@@ -108,4 +108,13 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /*
+    * 회원 탈퇴
+    * */
+    @PatchMapping("/account/delete-account/{id}")
+    public ResponseEntity<Void> deleteAccount(@PathVariable Long id){
+        memberService.deleteAccount(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }

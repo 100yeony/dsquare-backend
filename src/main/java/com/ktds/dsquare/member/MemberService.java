@@ -44,6 +44,7 @@ public class MemberService {
     private final FileService fileService;
 
     private final BCryptPasswordEncoder passwordEncoder;
+    private final DelMemberRepository delMemberRepository;
 
 
     @Transactional
@@ -149,6 +150,19 @@ public class MemberService {
             throw new BadLoginException();
 
         member.changePassword(passwordChangeRequest.getChangedPassword());
+    }
+
+    public void deleteAccount(Long id){
+
+        DelMember delMember = DelMember.toEntity(id);
+
+        //update
+
+        //insert
+        delMemberRepository.save(delMember);
+
+
+
     }
 
 }
