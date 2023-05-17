@@ -108,4 +108,13 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /*
+    * 회원 탈퇴
+    * */
+    @PatchMapping("/account/members/{id}")
+    public ResponseEntity<?> withdrawMember(@PathVariable Long id, @AuthUser Member user) throws IOException {
+        memberService.withdrawMember(id, user);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }
