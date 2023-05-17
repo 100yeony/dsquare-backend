@@ -4,11 +4,12 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.MulticastMessage;
-import com.ktds.dsquare.board.qna.repository.AnswerRepository;
-import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.common.enums.NotifType;
+import com.ktds.dsquare.common.notification.Notification;
 import com.ktds.dsquare.common.notification.RegistrationToken;
+import com.ktds.dsquare.common.notification.SentNotification;
 import com.ktds.dsquare.common.notification.repository.RegistrationTokenRepository;
+import com.ktds.dsquare.common.notification.repository.SentNotificationRepository;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberSelectService;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +31,9 @@ public class NotificationSendService {
 
     private final FirebaseMessaging fcm;
 
-    private final RegistrationTokenRepository rtRepository;
+    private final RegistrationTokenRepository tokenRepository;
+    private final SentNotificationRepository sentRepository;
     private final MemberSelectService memberSelectService;
-    private final QuestionRepository questionRepository;
-    private final AnswerRepository answerRepository;
 
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -52,15 +52,19 @@ public class NotificationSendService {
         List<RegistrationToken> registrationTokens = new ArrayList<>();
         for (long receiverId : receiverList) {
             Member member = memberSelectService.selectWithId(receiverId); // TODO consider efficiency...
-            registrationTokens.addAll(rtRepository.findByOwner(member));
+            registrationTokens.addAll(tokenRepository.findByOwner(member));
         }
         return registrationTokens;
     }
-    private void sendNotification(NotifType type, List<RegistrationToken> registrationTokens) throws FirebaseMessagingException {
+
+    @Transactional
+    public void sendNotification(NotifType type, List<RegistrationToken> registrationTokens) throws FirebaseMessagingException {
         // Build notification data
         Map<String, String> data = makeNotificationData(type);
-        if (data == null)
+        if (data == null) {
+            log.debug("Notification data is null.");
             return;
+        }
         // List up receivers
         List<String> receivers = registrationTokens.stream()
                 .map(RegistrationToken::getValue)
@@ -68,9 +72,15 @@ public class NotificationSendService {
 
         // Make message
         MulticastMessage multicastMessage = makeMulticastMessage(data, receivers);
+        if (multicastMessage == null) {
+            log.debug("Multicast message is null.");
+            return;
+        }
+
         // Send notification
-        if (multicastMessage != null) // TODO review logic
-            fcm.sendMulticast(multicastMessage);
+        List<SentNotification> sentNotifications = saveNotification(data, registrationTokens);
+        log.info("The number of sent notifications : {}", sentNotifications.size());
+        fcm.sendMulticast(multicastMessage);
     }
     private Map<String, String> makeNotificationData(NotifType type) {
         Map<String, String> data = null;
@@ -100,6 +110,20 @@ public class NotificationSendService {
                 .addAllTokens(registrationTokens)
                 .build();
     }
+
+    @Transactional
+    public List<SentNotification> saveNotification(Map<String, String> data, List<RegistrationToken> registrationTokens) {
+        if (registrationTokens == null)
+            throw new IllegalArgumentException();
+
+        Notification notification = Notification.toEntity(data);
+        List<SentNotification> sentNotifications = registrationTokens.stream()
+                .map(token -> SentNotification.toEntity(notification, token))
+                .collect(Collectors.toList());
+
+        return sentRepository.saveAll(sentNotifications);
+    }
+
 
 
     public String notifyTopic(String topic) throws FirebaseMessagingException {
