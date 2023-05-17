@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
@@ -17,12 +18,12 @@ public class DelMember {
 
     @Id
     private Long id;
-//    private LocalDateTime deleteAccountDate;
+    private LocalDateTime deleteAccountDate;
 
     public static DelMember toEntity(Long id) {
         return DelMember.builder()
                 .id(id)
-//                .deleteAccountDate(LocalDateTime.now())
+                .deleteAccountDate(LocalDateTime.now())
                 .build();
     }
 
