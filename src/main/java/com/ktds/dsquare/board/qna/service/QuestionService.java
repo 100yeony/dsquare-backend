@@ -27,6 +27,7 @@ import com.ktds.dsquare.common.file.dto.AttachmentDto;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -43,6 +44,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class QuestionService {
 
     /*** Repository ***/
@@ -86,24 +88,40 @@ public class QuestionService {
      * */
     public List<BriefQuestionResponse> getQuestions(Boolean workYn, Member user, Integer cid, String key, String value, String order, Pageable pageable){
         Pageable page = pagingService.orderPage(order, pageable);
-
         //deleteYn = false인 것만 조회
         Specification<Question> filter = Specification.where(QuestionSpecification.equalNotDeleted(false));
         //업무 구분
-        if(workYn){
-            //업무 - cid=2를 제외한 나머지
-            if(cid == null) {
-                filter = filter.and(QuestionSpecification.notEqualNotWork(2));
-            }
-            //카테고리 검색 - cid 필터링
-            if(cid != null){
-                filter = filter.and(QuestionSpecification.equalCategory(cid));
-            }
-        } else{
-            //비업무 - cid=2
-            filter = filter.and(QuestionSpecification.equalCategory(2));
-        }
 
+        try{
+            if(workYn){
+                //업무 - cid=2를 제외한 나머지
+                if(cid == null) {
+                    filter = filter.and(QuestionSpecification.notEqualNotWork(2));
+                }
+                //카테고리 검색 - cid 필터링
+                if(cid != null){
+                    filter = filter.and(QuestionSpecification.equalCategory(cid));
+                }
+            } else if(workYn == false){
+                //비업무 - cid=2
+                filter = filter.and(QuestionSpecification.equalCategory(2));
+
+            } else if(workYn == null){
+                //대시보드 - 최신글 조회(업무&비업무)
+                filter = filter.and(QuestionSpecification.equalNotDeleted(false));
+                Page<Question> questionList = questionRepository.findAll(filter, page);
+                List<BriefQuestionResponse> searchResults = new ArrayList<>();
+
+                //BriefQuestionResponse 객체로 만들어줌
+                for(Question q: questionList){
+                    searchResults.add(makeBriefQuestionRes(q, user));
+                }
+                return searchResults;
+            }
+        }
+        catch (RuntimeException e){
+            log.debug("error:", e);
+        }
 
         //사용자 이름 검색(2글자로도 포함된 사람 검색 & 다른 조건과 모두 AND)
         if (key != null && key.equals("member") && value != null) {

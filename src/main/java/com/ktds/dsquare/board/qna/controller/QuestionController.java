@@ -37,7 +37,7 @@ public class QuestionController {
 
     //read - 질문글 전체 목록 조회 & 검색
     @GetMapping("/board/questions")
-    public List<BriefQuestionResponse> getQuestions(@RequestParam Boolean workYn, @ApiIgnore @AuthUser Member user, @RequestParam(required = false) Integer cid,
+    public List<BriefQuestionResponse> getQuestions(@RequestParam(required = false) Boolean workYn, @ApiIgnore @AuthUser Member user, @RequestParam(required = false) Integer cid,
                                                     @RequestParam(required = false) String key, @RequestParam(required = false) String value,
                                                     @RequestParam(required = false) String order, Pageable pageable) {
         return questionService.getQuestions(workYn, user, cid, key, value, order, pageable);
