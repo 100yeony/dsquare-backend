@@ -48,7 +48,7 @@ public class MemberService {
     private final FileService fileService;
 
     private final BCryptPasswordEncoder passwordEncoder;
-    private final DelMemberRepository delMemberRepository;
+    private final WithdrawnMemberRepository withdrawnMemberRepository;
 
 
     @Transactional
@@ -154,7 +154,7 @@ public class MemberService {
         member.withdraw(nickname);
 //        id를 회원탈퇴 테이블에 삽입
         WithdrawnMember withdrawnMember = WithdrawnMember.toEntity(id);
-        delMemberRepository.save(withdrawnMember);
+        withdrawnMemberRepository.save(withdrawnMember);
     }
 
     public String createNewNickname() {

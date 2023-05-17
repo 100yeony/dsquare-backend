@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DelMemberRepository extends JpaRepository<WithdrawnMember, Long> {
+public interface WithdrawnMemberRepository extends JpaRepository<WithdrawnMember, Long> {
 
 }
