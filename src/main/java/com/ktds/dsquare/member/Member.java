@@ -117,6 +117,10 @@ public class Member {
     public void update(MemberUpdateRequest request) {
         if (request.getContact() != null)
             this.contact = request.getContact();
+        if (request.getNickname() != null)
+            this.nickname = request.getNickname();
+        if (request.getKtMail() != null)
+            this.ktMail = request.getKtMail();
     }
     public void update(Set<Role> newRoles) {
         this.role = newRoles;
