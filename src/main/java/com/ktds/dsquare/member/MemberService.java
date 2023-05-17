@@ -14,6 +14,7 @@ import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import com.ktds.dsquare.member.team.Team;
 import com.ktds.dsquare.member.team.TeamRepository;
+import com.ktds.dsquare.util.RandomUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
@@ -21,6 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
@@ -30,6 +32,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,7 +48,7 @@ public class MemberService {
     private final FileService fileService;
 
     private final BCryptPasswordEncoder passwordEncoder;
-    private final DelMemberRepository delMemberRepository;
+    private final WithdrawnMemberRepository withdrawnMemberRepository;
 
 
     @Transactional
@@ -95,9 +99,19 @@ public class MemberService {
                     .orElseThrow(() -> new EntityNotFoundException("No such team with ID " + request.getTid()));
             member.join(newTeam);
         }
+
+        if (!isAvailableNickname(request, member))
+            throw new RuntimeException("Please check nickname.");
+
         member.update(request);
         return MemberInfo.toDto(member);
     }
+    private boolean isAvailableNickname(MemberUpdateRequest request, Member member) {
+        return StringUtils.hasText(request.getNickname()) &&
+                (Objects.equals(member.getNickname(), request.getNickname())
+                || !memberRepository.existsByNickname(request.getNickname()));
+    }
+
     @Transactional
     public FileSavedDto updateMember(Long id, MultipartFile image, Member user) throws IOException {
         Member member = memberRepository.findById(id)
@@ -123,6 +137,37 @@ public class MemberService {
                 .orElseThrow(() -> new UserNotFoundException("No such member with ID " + id));
         member.update(request.getRole());
         return MemberInfo.toDto(member);
+    }
+
+    @Transactional
+    public void withdrawMember(Long id, Member user) {
+        Member member = memberRepository.findById(id)
+            .orElseThrow(() -> new UserNotFoundException("No such member with ID " + id));
+        if(member.getWithdrawDate() != null)
+            throw new UserNotFoundException("Users who have already withdrawn.");
+//        권한 체크
+        if(! (user.getRole().contains(Role.ADMIN) || user.getId() == id) ) {
+            throw new RuntimeException("Not Authorized.");
+        }
+//        대체할 닉네임 생성 및 기존 정보 수정
+        String nickname = createNewNickname();
+        member.withdraw(nickname);
+//        id를 회원탈퇴 테이블에 삽입
+        WithdrawnMember withdrawnMember = WithdrawnMember.toEntity(id);
+        withdrawnMemberRepository.save(withdrawnMember);
+    }
+
+    public String createNewNickname() {
+        String code;
+        Set<String> nicknameSet = memberRepository.findAll().stream()
+                .map(Member::getNickname)
+                .collect(Collectors.toSet());
+        int limit = 10;
+        do {
+            code = RandomUtil.generateRandomNumber(8);
+            System.out.println(code);
+        } while (limit-- > 0 && nicknameSet.contains("탈퇴한 회원_"+code));
+        return "탈퇴한 회원_"+code;
     }
 
     @Transactional
@@ -152,17 +197,5 @@ public class MemberService {
         member.changePassword(passwordChangeRequest.getChangedPassword());
     }
 
-    public void deleteAccount(Long id){
-
-        DelMember delMember = DelMember.toEntity(id);
-
-        //update
-
-        //insert
-        delMemberRepository.save(delMember);
-
-
-
-    }
 
 }

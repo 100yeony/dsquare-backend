@@ -20,4 +20,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, JpaSpecif
      //소통해요 사용자 검색 관련
     List<Member> findByNicknameContaining(String nickname);
 
+     boolean existsByNickname(String nickname);
+
 }

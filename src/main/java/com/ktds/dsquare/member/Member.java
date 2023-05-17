@@ -61,6 +61,7 @@ public class Member {
 
     private LocalDateTime lastLoginDate;
     private LocalDateTime lastPwChangeDate;
+    private LocalDateTime withdrawDate;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
@@ -117,6 +118,10 @@ public class Member {
     public void update(MemberUpdateRequest request) {
         if (request.getContact() != null)
             this.contact = request.getContact();
+        if (request.getNickname() != null)
+            this.nickname = request.getNickname();
+        if (request.getKtMail() != null)
+            this.ktMail = request.getKtMail();
     }
     public void update(Set<Role> newRoles) {
         this.role = newRoles;
@@ -133,6 +138,22 @@ public class Member {
 
         this.pw = newPassword;
         this.lastPwChangeDate = LocalDateTime.now();
+    }
+
+    public void withdraw(String nickname) {
+        this.email = "a@a.com";
+        this.pw = "$2a$12$RwmP7HwqFEogwA.9tR2imO6HbHN/Wf7MKL2in3FW60CdbwAiT17hm";
+        this.nickname = nickname;
+        this.name = "정보없음";
+        this.contact = "00000000000";
+        this.team = null;
+        this.ktMail = null;
+        this.profileImage = null;
+        this.activityScore = null;
+        this.lastLoginDate = null;
+        this.lastPwChangeDate = null;
+        this.role = null;
+        this.withdrawDate = LocalDateTime.now();
     }
 
     public static Member toEntity(SignupRequest dto) {
