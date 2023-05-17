@@ -11,7 +11,8 @@ public class MemberUpdateRequest {
 
     private String contact;
     private Long tid;
-//    private String ktmail;
+    private String nickname;
+    private String ktMail;
     private List<Role> role;
 
 }
