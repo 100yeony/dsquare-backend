@@ -29,7 +29,7 @@ public class TalkResponse {
     @ApiModelProperty(notes="Talk content", example = "소통해요 내용입니다.", required = true)
     private String content;
     @ApiModelProperty(notes="작성일 정보", example = "2023-04-26", required = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+9")
     private LocalDateTime createDate;
     @ApiModelProperty(notes="Talk view count", example = "31", required = true)
     private Long viewCnt;

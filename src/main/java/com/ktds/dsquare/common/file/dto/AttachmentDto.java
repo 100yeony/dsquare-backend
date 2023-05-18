@@ -24,7 +24,7 @@ public class AttachmentDto {
     private String url;
     private String extension;
     private Long size;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+9")
     private LocalDateTime createDate;
 
     private BriefMemberInfo owner;
