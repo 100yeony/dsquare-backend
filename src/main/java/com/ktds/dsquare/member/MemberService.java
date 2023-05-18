@@ -152,6 +152,8 @@ public class MemberService {
 //        대체할 닉네임 생성 및 기존 정보 수정
         String nickname = createNewNickname();
         member.withdraw(nickname);
+        // role 삭제
+
 //        id를 회원탈퇴 테이블에 삽입
         WithdrawnMember withdrawnMember = WithdrawnMember.toEntity(id);
         withdrawnMemberRepository.save(withdrawnMember);

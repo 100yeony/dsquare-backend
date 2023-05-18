@@ -23,7 +23,7 @@ public class BriefCardResponse {
     private String content;
     private Integer teammateCnt;
     private String teammates;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+9")
     private LocalDateTime createDate;
     private Long viewCnt;
     private Long likeCnt;

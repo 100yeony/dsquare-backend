@@ -18,7 +18,7 @@ public class WeeklyTagDTO {
     @ApiModelProperty(notes="count", example = "3", required = true)
     private Long tagCount;
     @ApiModelProperty(notes="작성일 정보", example = "2023-04-26 09:30:00", required = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+9")
     private LocalDateTime createDate;
 
     public WeeklyTagDTO(Long tagId, Long tagCount, LocalDateTime createDate) {

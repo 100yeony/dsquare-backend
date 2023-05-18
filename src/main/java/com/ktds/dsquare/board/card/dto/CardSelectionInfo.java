@@ -18,7 +18,7 @@ public class CardSelectionInfo {
 
     private Boolean selectionYn;
     private BriefMemberInfo cardOwner;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+9")
     private LocalDateTime selectedDate;
 
     public static CardSelectionInfo toDto(Card entity, BriefMemberInfo cardOwner){
