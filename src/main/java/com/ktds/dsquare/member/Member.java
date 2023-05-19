@@ -143,7 +143,7 @@ public class Member {
 
     public void withdraw(String nickname) {
         LocalDateTime now = LocalDateTime.now();
-        this.email = "a@a.com";
+        this.email = nickname+"@a.com";
         this.pw = "$2a$12$RwmP7HwqFEogwA.9tR2imO6HbHN/Wf7MKL2in3FW60CdbwAiT17hm";
         this.nickname = nickname;
         this.name = "정보없음";

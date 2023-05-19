@@ -14,7 +14,6 @@ import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
 import com.ktds.dsquare.member.team.Team;
 import com.ktds.dsquare.member.team.TeamRepository;
-import com.ktds.dsquare.util.RandomUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
@@ -29,11 +28,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -166,8 +161,7 @@ public class MemberService {
                 .collect(Collectors.toSet());
         int limit = 10;
         do {
-            code = RandomUtil.generateRandomNumber(8);
-            System.out.println(code);
+            code = UUID.randomUUID().toString().substring(0,8);
         } while (limit-- > 0 && nicknameSet.contains("탈퇴한 회원_"+code));
         return "탈퇴한 회원_"+code;
     }

@@ -13,7 +13,7 @@ public class PagingService {
         if(order == null || order.equals("create")){
             page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
         } else if (order.equals("like")) {
-            page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("likeCnt").descending());
+            page = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("likeCnt", "createDate").descending());
         } else {
             throw new RuntimeException("Invalid order. Using create || like");
         }
