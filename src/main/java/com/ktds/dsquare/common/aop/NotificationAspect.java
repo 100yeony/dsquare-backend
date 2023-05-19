@@ -7,7 +7,7 @@ import com.ktds.dsquare.board.comment.dto.CommentRegisterResponse;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.AnswerRegisterResponse;
-import com.ktds.dsquare.board.qna.dto.CategoryResponse;
+import com.ktds.dsquare.board.qna.dto.QuestionRegisterResponse;
 import com.ktds.dsquare.board.qna.service.AnswerSelectService;
 import com.ktds.dsquare.board.qna.service.QuestionSelectService;
 import com.ktds.dsquare.common.annotation.Notify;
@@ -21,6 +21,10 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.ktds.dsquare.board.enums.BoardType.Constant.*;
 
@@ -62,7 +66,8 @@ public class NotificationAspect {
                 return;
             }
 
-            notificationSendService.sendNotification(receiverList, type);
+            Map<String, String> data = makeNotificationData(obj, type);
+            notificationSendService.sendNotification(receiverList, type, data);
         } catch (ClassCastException e) {
             log.error("Impossible class casting!", e);
             throw new IllegalArgumentException();
@@ -81,7 +86,7 @@ public class NotificationAspect {
                 break;
             case NESTED_COMMENT_REGISTRATION:
             case SPECIALITY_QUESTION_REGISTRATION:
-                receiverList = collectReceiverKey((CategoryResponse)obj);
+                receiverList = collectReceiverKey((QuestionRegisterResponse)obj);
             case REQUEST_CHOICE:
             default:
                 log.error("Not supported notification type.");
@@ -113,11 +118,70 @@ public class NotificationAspect {
         }
         return receiverList;
     }
-    private long[] collectReceiverKey(CategoryResponse source) {
+    private long[] collectReceiverKey(QuestionRegisterResponse source) {
         long[] receiverList = null;
         // ...
-        receiverList = new long[] { source.getManagerId() };
+        receiverList = new long[] { source.getCategory().getManagerId() };
         return receiverList;
+    }
+
+    private Map<String, String> makeNotificationData(Object information, NotifType type) {
+        Map<String, String> data = null;
+        switch (type) {
+            case ANSWER_REGISTRATION:
+                data = extractData((AnswerRegisterResponse)information);
+                break;
+            case COMMENT_REGISTRATION:
+                data = extractData((CommentRegisterResponse)information);
+                break;
+            case SPECIALITY_QUESTION_REGISTRATION:
+                data = extractData((QuestionRegisterResponse)information);
+                break;
+            case NESTED_COMMENT_REGISTRATION:
+            case REQUEST_CHOICE:
+            default:
+                log.warn("Not supported notification. Type: [{}]", type);
+        }
+        return data;
+    }
+    private Map<String, String> extractData(AnswerRegisterResponse information) {
+        Map<String, String> data = new HashMap<>();
+        data.put("title", "답변 등록 알림");
+        data.put("body", "회원님의 질문에 새로운 답변이 등록되었습니다.");
+
+        data.put("questionId", String.valueOf(information.getQid()));
+        data.put("writerId", String.valueOf(information.getWriterInfo().getId()));
+        data.put("thumbnail",
+                StringUtils.hasText(information.getWriterInfo().getProfileImage())
+                ? information.getWriterInfo().getProfileImage() : ""
+        ); // TODO seems to update DB also
+        return data;
+    }
+    private Map<String, String> extractData(CommentRegisterResponse information) {
+        Map<String, String> data = new HashMap<>();
+        data.put("title", "댓글 등록 알림");
+        data.put("body", "회원님의 게시글에 새로운 댓글이 등록되었습니다.");
+
+        data.put("postId", String.valueOf(information.getPostId()));
+        data.put("writerId", String.valueOf(information.getWriterInfo().getId()));
+        data.put("thumbnail",
+                StringUtils.hasText(information.getWriterInfo().getProfileImage())
+                        ? information.getWriterInfo().getProfileImage() : ""
+        ); // TODO seems to update DB also
+        return data;
+    }
+    private Map<String, String> extractData(QuestionRegisterResponse information) {
+        Map<String, String> data = new HashMap<>();
+        data.put("title", "담당 분야 질문 등록 알림");
+        data.put("body", "담당 분야에 새로운 질문이 등록되었습니다.");
+
+        data.put("postId", String.valueOf(information.getId()));
+        data.put("writerId", String.valueOf(information.getWriterInfo().getId()));
+        data.put("thumbnail",
+                StringUtils.hasText(information.getWriterInfo().getProfileImage())
+                        ? information.getWriterInfo().getProfileImage() : ""
+        ); // TODO seems to update DB also
+        return data;
     }
 
 }

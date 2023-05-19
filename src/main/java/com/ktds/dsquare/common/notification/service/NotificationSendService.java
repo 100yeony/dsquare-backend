@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,8 +39,10 @@ public class NotificationSendService {
     private final MemberSelectService memberSelectService;
 
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendNotification(long[] receiverList, NotifType type) throws FirebaseMessagingException {
+        sendNotification(receiverList, type, Collections.emptyMap());
+    }
+    public void sendNotification(long[] receiverList, NotifType type, Map<String, String> data) throws FirebaseMessagingException {
         if (receiverList == null) {
             throw new IllegalArgumentException("Receiver list cannot be null. (Empty at least)");
         }
@@ -48,7 +51,7 @@ public class NotificationSendService {
         }
 
         List<RegistrationToken> registrationTokens = collectRegistrationToken(receiverList);
-        sendNotification(type, registrationTokens);
+        sendNotification(type, registrationTokens, data);
     }
     private List<RegistrationToken> collectRegistrationToken(long[] receiverList) {
         List<RegistrationToken> registrationTokens = new ArrayList<>();
@@ -59,10 +62,9 @@ public class NotificationSendService {
         return registrationTokens;
     }
 
-    @Transactional
-    public void sendNotification(NotifType type, List<RegistrationToken> registrationTokens) throws FirebaseMessagingException {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void sendNotification(NotifType type, List<RegistrationToken> registrationTokens, Map<String, String> data) throws FirebaseMessagingException {
         // Build notification data
-        Map<String, String> data = makeNotificationData(type);
         if (data == null) {
             log.debug("Notification data is null.");
             return;
@@ -83,25 +85,6 @@ public class NotificationSendService {
         List<SentNotification> sentNotifications = saveNotification(type, data, registrationTokens);
         log.info("The number of sent notifications : {}", sentNotifications.size());
         fcm.sendMulticast(multicastMessage);
-    }
-    private Map<String, String> makeNotificationData(NotifType type) {
-        Map<String, String> data = null;
-        switch (type) {
-            case ANSWER_REGISTRATION:
-                data = Map.of("title", "답변 등록 알림", "body", "회원님의 질문에 새로운 답변이 등록되었습니다.");
-                break;
-            case COMMENT_REGISTRATION:
-                data = Map.of("title", "댓글 등록 알림", "body", "회원님의 게시글에 새로운 댓글이 등록되었습니다.");
-                break;
-            case SPECIALITY_QUESTION_REGISTRATION:
-                data = Map.of("title", "담당 분야 질문 등록 알림", "body", "담당 분야에 새로운 질문이 등록되었습니다.");
-                break;
-            case NESTED_COMMENT_REGISTRATION:
-            case REQUEST_CHOICE:
-            default:
-                log.warn("Not supported notification. Type: [{}]", type);
-        }
-        return data;
     }
     private MulticastMessage makeMulticastMessage(Map<String, String> data, List<String> registrationTokens) {
         if (ObjectUtils.isEmpty(registrationTokens))
