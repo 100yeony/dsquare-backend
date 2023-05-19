@@ -56,6 +56,7 @@ public class Attachment {
 
 
     public static Attachment toEntity(Member owner, MultipartFile file, FileSavedDto savedInfo) {
+        LocalDateTime now = LocalDateTime.now();
         return Attachment.builder()
                 .filename(savedInfo.getFilename())
                 .originalFilename(file.getOriginalFilename())
@@ -63,7 +64,7 @@ public class Attachment {
                 .url(savedInfo.getUrl())
                 .extension(savedInfo.getExtension())
                 .size(file.getSize())
-                .createDate(LocalDateTime.now())
+                .createDate(now.plusHours(9))
                 .writer(owner)
                 .build();
     }

@@ -48,11 +48,12 @@ public class Talk extends Post {
     private Long likeCnt;
 
     public static Talk toEntity(TalkRegisterRequest request, Member writer) {
+        LocalDateTime now = LocalDateTime.now();
         return Talk.builder()
                 .writer(writer)
                 .title(request.getTitle())
                 .content(request.getContent())
-                .createDate(LocalDateTime.now())
+                .createDate(now.plusHours(9))
                 .viewCnt(0L)
                 .deleteYn(false)
                 .likeCnt(0L)
@@ -64,9 +65,10 @@ public class Talk extends Post {
     }
 
     public void updateTalk(String title, String content) {
+        LocalDateTime now = LocalDateTime.now();
         this.title = title;
         this.content = content;
-        this.lastUpdateDate = LocalDateTime.now();
+        this.lastUpdateDate = now.plusHours(9);
     }
 
     public void deleteTalk(){

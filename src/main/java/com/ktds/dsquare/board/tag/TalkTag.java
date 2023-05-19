@@ -31,10 +31,11 @@ public class TalkTag {
     private LocalDateTime createDate;
 
     public static TalkTag toEntity(Talk talk, Tag tag) {
+        LocalDateTime now = LocalDateTime.now();
         return TalkTag.builder()
                 .talk(talk)
                 .tag(tag)
-                .createDate(LocalDateTime.now())
+                .createDate(now.plusHours(9))
                 .build();
     }
 

@@ -33,10 +33,11 @@ public class QuestionTag {
     private LocalDateTime createDate;
 
     public static QuestionTag toEntity(Question question, Tag tag) {
+        LocalDateTime now = LocalDateTime.now();
         return QuestionTag.builder()
                 .post(question)
                 .tag(tag)
-                .createDate(LocalDateTime.now())
+                .createDate(now.plusHours(9))
                 .build();
     }
 

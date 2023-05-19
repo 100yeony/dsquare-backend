@@ -42,7 +42,7 @@ public class Like {
                 .boardType(boardType)
                 .postId(dto.getPostId())
                 .member(user)
-                .createDate(now)
+                .createDate(now.plusHours(9))
                 .build();
     }
 

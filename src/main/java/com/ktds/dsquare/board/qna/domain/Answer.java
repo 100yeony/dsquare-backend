@@ -48,7 +48,7 @@ public class Answer extends Post {
         return Answer.builder()
                 .writer(writer)
                 .content(dto.getContent())
-                .createDate(now)
+                .createDate(now.plusHours(9))
                 .deleteYn(false)
                 .question(question)
                 .likeCnt(0L)
@@ -58,7 +58,7 @@ public class Answer extends Post {
     public void updateAnswer(String content){
         LocalDateTime now = LocalDateTime.now();
         this.content = content;
-        this.lastUpdateDate = now;
+        this.lastUpdateDate = now.plusHours(9);
     }
 
     public void deleteAnswer(){

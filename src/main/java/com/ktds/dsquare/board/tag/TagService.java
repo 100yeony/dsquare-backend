@@ -62,7 +62,8 @@ public class TagService {
 
     // 대시보드 - 핫토픽 키워드 조회
     public List<String> selectTop7Tags() {
-        LocalDateTime weekAgo = LocalDateTime.now().minusDays(7);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime weekAgo = now.plusHours(9).minusDays(7);
 
         List<WeeklyTagDTO> weeklyTags = new ArrayList<>();
         weeklyTags.addAll(carrotTagRepository.findTagsWithinLastWeek(weekAgo));

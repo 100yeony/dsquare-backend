@@ -56,7 +56,7 @@ public class Carrot extends Post {
                 .writer(writer)
                 .title(dto.getTitle())
                 .content(dto.getContent())
-                .createDate(now)
+                .createDate(now.plusHours(9))
                 .viewCnt(0L)
                 .deleteYn(false)
                 .likeCnt(0L)
@@ -67,7 +67,7 @@ public class Carrot extends Post {
         LocalDateTime now = LocalDateTime.now();
         this.title = dto.getTitle();
         this.content = dto.getContent();
-        this.lastUpdateDate = now;
+        this.lastUpdateDate = now.plusHours(9);
     }
 
     public void deleteCarrot(){ this.deleteYn = true; }
