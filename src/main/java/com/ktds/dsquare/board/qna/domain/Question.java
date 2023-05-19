@@ -63,7 +63,7 @@ public class Question extends Post {
                 .writer(writer)
                 .title(dto.getTitle())
                 .content(dto.getContent())
-                .createDate(now)
+                .createDate(now.plusHours(9))
                 .viewCnt(0L)
                 .deleteYn(false)
                 .category(category)
@@ -75,7 +75,7 @@ public class Question extends Post {
         LocalDateTime now = LocalDateTime.now();
         this.title = title;
         this.content = content;
-        this.lastUpdateDate = now;
+        this.lastUpdateDate = now.plusHours(9);
         this.category = category;
     }
 

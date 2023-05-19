@@ -36,11 +36,12 @@ public class DashboardService {
     public List<BriefQuestionResponse> getHallOfFame(String key, Member user) {
         List<BriefQuestionResponse> bestQnaList = new ArrayList<>();
         LocalDateTime period;
+        LocalDateTime now = LocalDateTime.now();
 
         if(key.equals("week")){
-            period = LocalDateTime.now().minusDays(7);
+            period = now.plusHours(9).minusDays(7);
         } else if (key.equals("month")) {
-            period = LocalDateTime.now().minusMonths(1);
+            period = now.plusHours(9).minusMonths(1);
         } else {
             throw new IllegalArgumentException("Invalid key value");
         }

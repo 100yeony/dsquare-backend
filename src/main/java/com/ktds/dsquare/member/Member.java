@@ -132,15 +132,17 @@ public class Member {
     }
 
     public void changePassword(String newPassword) {
+        LocalDateTime now = LocalDateTime.now();
         if (!StringUtils.hasText(newPassword)) { // TODO 빈 문자열 걸러지지 않음
             throw new IllegalArgumentException("New password must exist.");
         }
 
         this.pw = newPassword;
-        this.lastPwChangeDate = LocalDateTime.now();
+        this.lastPwChangeDate = now.plusHours(9);
     }
 
     public void withdraw(String nickname) {
+        LocalDateTime now = LocalDateTime.now();
         this.email = "a@a.com";
         this.pw = "$2a$12$RwmP7HwqFEogwA.9tR2imO6HbHN/Wf7MKL2in3FW60CdbwAiT17hm";
         this.nickname = nickname;
@@ -153,10 +155,11 @@ public class Member {
         this.lastLoginDate = null;
         this.lastPwChangeDate = null;
         this.role = null;
-        this.withdrawDate = LocalDateTime.now();
+        this.withdrawDate = now.plusHours(9);
     }
 
     public static Member toEntity(SignupRequest dto) {
+        LocalDateTime now = LocalDateTime.now();
         return Member.builder()
                 .email(dto.getEmail())
                 .pw(dto.getPw())
@@ -165,8 +168,8 @@ public class Member {
                 .contact(dto.getContact())
                 .ktMail(dto.getKtMail())
                 .activityScore(0L)
-                .lastLoginDate(LocalDateTime.now())
-                .lastPwChangeDate(LocalDateTime.now())
+                .lastLoginDate(now.plusHours(9))
+                .lastPwChangeDate(now.plusHours(9))
                 .role(Set.of(Role.USER))
                 .build();
     }

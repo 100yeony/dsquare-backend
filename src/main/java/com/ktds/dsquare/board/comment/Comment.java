@@ -42,23 +42,25 @@ public class Comment {
     private Member originWriter;
 
     public static Comment toEntity(CommentRegisterDto request, Member writer, BoardType boardType, Long postId) {
+        LocalDateTime now = LocalDateTime.now();
         return Comment.builder()
                 .writer(writer)
                 .content(request.getContent())
                 .boardType(boardType)
                 .postId(postId)
-                .createDate(LocalDateTime.now())
+                .createDate(now.plusHours(9))
                 .originWriter(null)
                 .build();
     }
 
     public static Comment toNestedEntity(NestedCommentRegisterDto request, Member writer, BoardType boardType, Long postId, Member originWriter) {
+        LocalDateTime now = LocalDateTime.now();
         return Comment.builder()
                 .writer(writer)
                 .content(request.getContent())
                 .boardType(boardType)
                 .postId(postId)
-                .createDate(LocalDateTime.now())
+                .createDate(now.plusHours(9))
                 .originWriter(originWriter)
                 .build();
     }

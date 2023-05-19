@@ -32,10 +32,11 @@ public class CarrotTag {
     private LocalDateTime createDate;
 
     public static CarrotTag toEntity(Carrot carrot, Tag tag) {
+        LocalDateTime now = LocalDateTime.now();
         return CarrotTag.builder()
                 .carrot(carrot)
                 .tag(tag)
-                .createDate(LocalDateTime.now())
+                .createDate(now.plusHours(9))
                 .build();
     }
 

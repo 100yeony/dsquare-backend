@@ -10,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -76,7 +75,7 @@ public class Card extends Post {
                 .content(dto.getContent())
                 .teammateCnt(dto.getTeammateCnt())
                 .teammates(teammates)
-                .createDate(now)
+                .createDate(now.plusHours(9))
                 .viewCnt(0L)
                 .deleteYn(false)
                 .likeCnt(0L)
@@ -88,7 +87,7 @@ public class Card extends Post {
         LocalDateTime now = LocalDateTime.now();
         this.cardOwner = cardOwner;
         this.selectionYn = selectionYn;
-        this.selectedDate = now;
+        this.selectedDate = now.plusHours(9);
     }
 
     public void updateCard(Team projTeam, CardUpdateRequest dto){
@@ -99,7 +98,7 @@ public class Card extends Post {
         this.content = dto.getContent();
         this.teammateCnt = dto.getTeammateCnt();
         this.teammates = teammates;
-        this.lastUpdateDate = now;
+        this.lastUpdateDate = now.plusHours(9);
     }
 
     public void deleteCard(){
