@@ -20,4 +20,7 @@ public interface CommentRepository extends JpaRepository<Comment,Long>{
 
     //마이페이지 관련
     Page<Comment> findByWriter(Member writer, Pageable pageable);
+
+    long countByPostId(long id);
+
 }

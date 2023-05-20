@@ -9,9 +9,9 @@ import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.request.QuestionRegisterRequest;
+import com.ktds.dsquare.board.qna.dto.request.QuestionRequest;
 import com.ktds.dsquare.board.qna.dto.response.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.dto.response.CategoryResponse;
-import com.ktds.dsquare.board.qna.dto.request.QuestionRequest;
 import com.ktds.dsquare.board.qna.dto.response.QuestionRegisterResponse;
 import com.ktds.dsquare.board.qna.dto.response.QuestionResponse;
 import com.ktds.dsquare.board.qna.dto.*;
@@ -43,7 +43,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 @Service

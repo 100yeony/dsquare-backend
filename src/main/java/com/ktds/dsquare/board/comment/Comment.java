@@ -30,7 +30,7 @@ public class Comment {
 
     @Enumerated(EnumType.STRING)
     private BoardType boardType; // TODO probably be deleted
-
+    // TODO change object-oriented-ly
     @Column(nullable = false)
     private Long postId; // TODO shouldn't be <Post> ?
 

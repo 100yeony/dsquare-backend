@@ -25,7 +25,7 @@ public class Like {
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     private BoardType boardType;
-
+    // TODO change object-oriented-ly
     @Column(nullable = false)
     private Long postId;
 

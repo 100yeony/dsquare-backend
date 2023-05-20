@@ -1,10 +1,10 @@
 package com.ktds.dsquare.board.qna.controller;
 
 import com.ktds.dsquare.board.qna.dto.request.QuestionRegisterRequest;
-import com.ktds.dsquare.board.qna.dto.response.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.dto.request.QuestionRequest;
 import com.ktds.dsquare.board.qna.dto.response.QuestionRegisterResponse;
 import com.ktds.dsquare.board.qna.dto.response.QuestionResponse;
+import com.ktds.dsquare.board.qna.service.QuestionSelectService;
 import com.ktds.dsquare.board.qna.service.QuestionService;
 import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.member.Member;
@@ -16,12 +16,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
-import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
 public class QuestionController {
 
+    private final QuestionSelectService questionSelectService;
     private final QuestionService questionService;
 
     //create - 질문글 작성
@@ -38,10 +39,17 @@ public class QuestionController {
 
     //read - 질문글 전체 목록 조회 & 검색
     @GetMapping("/board/questions")
-    public List<BriefQuestionResponse> getQuestions(@RequestParam(required = false) Boolean workYn, @ApiIgnore @AuthUser Member user, @RequestParam(required = false) Integer cid,
-                                                    @RequestParam(required = false) String key, @RequestParam(required = false) String value,
-                                                    @RequestParam(required = false) String order, Pageable pageable) {
-        return questionService.getQuestions(workYn, user, cid, key, value, order, pageable);
+//    public List<BriefQuestionResponse> getQuestions(@RequestParam Boolean workYn, @ApiIgnore @AuthUser Member user, @RequestParam(required = false) Integer cid,
+//                                                    @RequestParam(required = false) String key, @RequestParam(required = false) String value,
+//                                                    @RequestParam(required = false) String order, Pageable pageable) {
+//        return questionService.getQuestions(workYn, user, cid, key, value, order, pageable);
+//    }
+    public ResponseEntity<?> getQuestions(
+            @RequestParam Map<String, String> params,
+            Pageable pageable,
+            @AuthUser Member user
+    ) {
+        return new ResponseEntity<>(questionSelectService.getQuestions(params, pageable, user), HttpStatus.OK);
     }
 
     //read - 질문글 상세 조회

@@ -10,6 +10,7 @@ public interface LikeRepository extends JpaRepository<Like,Long> {
 
     //사용자 입장에서 해당 게시글 좋아요 여부
     Boolean existsByBoardTypeAndPostIdAndMember(BoardType boardType, Long postId, Member member);
+    boolean existsByPostIdAndMember(long postId, Member liker);
 
     //좋아요 삭제
     Like findByBoardTypeAndPostIdAndMember(BoardType boardType, Long postId, Member member);
