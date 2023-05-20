@@ -12,8 +12,10 @@ import com.ktds.dsquare.board.like.LikeRepository;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.response.BriefQuestionInfo;
+import com.ktds.dsquare.board.qna.dto.response.QuestionInfo;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
+import com.ktds.dsquare.common.exception.PostNotFoundException;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -76,6 +79,18 @@ public class QuestionSelectService {
                 .map(question -> createBriefResponse(question, user))
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public QuestionInfo getQuestion(long id, Member user) {
+        Question question = questionRepository.findById(id)
+                .orElseThrow(PostNotFoundException::new);
+        if (question.getDeleteYn())
+            return QuestionInfo.toDto(question);
+
+        question.increaseViewCnt();
+        return createDetailedResponse(question, user);
+    }
+
     public Specification<Question> searchWith(Map<String, String> params) {
         return ((root, query, builder) -> { // Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder
             List<Predicate> predicates = new ArrayList<>();
@@ -154,6 +169,19 @@ public class QuestionSelectService {
                 commentCnt,
                 answerCnt,
                 isManagerAnswered,
+                isLiked
+        );
+    }
+    public QuestionInfo createDetailedResponse(Question question, Member user) {
+        long commentCnt;
+        boolean isLiked;
+
+        commentCnt = commentRepository.countByPostId(question.getId());
+        isLiked = likeRepository.existsByPostIdAndMember(question.getId(), user);
+
+        return QuestionInfo.toDto(
+                question,
+                commentCnt,
                 isLiked
         );
     }

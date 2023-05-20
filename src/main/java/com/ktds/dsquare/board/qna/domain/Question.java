@@ -67,7 +67,7 @@ public class Question extends Post {
 
     public void increaseViewCnt() { this.viewCnt += 1; }
 
-    public List<String> getTagList() {
+    public List<String> getTagList() { // TODO skeptical Question is responsible for Tag
         return questionTags == null
                 ? List.of()
                 : questionTags.stream()

@@ -2,8 +2,8 @@ package com.ktds.dsquare.board.qna.controller;
 
 import com.ktds.dsquare.board.qna.dto.request.QuestionRegisterRequest;
 import com.ktds.dsquare.board.qna.dto.request.QuestionRequest;
+import com.ktds.dsquare.board.qna.dto.response.QuestionInfo;
 import com.ktds.dsquare.board.qna.dto.response.QuestionRegisterResponse;
-import com.ktds.dsquare.board.qna.dto.response.QuestionResponse;
 import com.ktds.dsquare.board.qna.service.QuestionSelectService;
 import com.ktds.dsquare.board.qna.service.QuestionService;
 import com.ktds.dsquare.common.annotation.AuthUser;
@@ -53,9 +53,13 @@ public class QuestionController {
     }
 
     //read - 질문글 상세 조회
-    @GetMapping("/board/questions/{qid}")
-    public ResponseEntity<QuestionResponse> getQnADetail(@AuthUser Member user, @PathVariable("qid") Long qid) {
-        return ResponseEntity.ok(questionService.getQuestionDetail(user, qid));
+//    @GetMapping("/board/questions/{qid}")
+//    public ResponseEntity<QuestionResponse> getQnADetail(@AuthUser Member user, @PathVariable("qid") Long qid) {
+//        return ResponseEntity.ok(questionService.getQuestionDetail(user, qid));
+//    }
+    @GetMapping("/board/questions/{id}")
+    public ResponseEntity<QuestionInfo> getQuestion(@PathVariable long id, @AuthUser Member user) {
+        return new ResponseEntity<>(questionSelectService.getQuestion(id, user), HttpStatus.OK);
     }
 
 
