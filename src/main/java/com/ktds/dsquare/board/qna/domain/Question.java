@@ -73,10 +73,10 @@ public class Question extends Post {
 
     public void increaseViewCnt() { this.viewCnt += 1; }
 
-    public List<String> getTagList() { // TODO skeptical Question is responsible for Tag
-        return questionTags == null
+    public List<String> getTagList() { // TODO skeptical Question is responsible for Tag, Or this is just DDD?
+        return tags == null
                 ? List.of()
-                : questionTags.stream()
+                : tags.stream()
                 .map(tag -> tag.getTag().getName())
                 .collect(Collectors.toList());
     }
