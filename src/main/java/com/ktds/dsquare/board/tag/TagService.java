@@ -2,7 +2,6 @@ package com.ktds.dsquare.board.tag;
 
 import com.ktds.dsquare.board.Post;
 import com.ktds.dsquare.board.carrot.Carrot;
-import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.tag.repository.*;
 import com.ktds.dsquare.board.talk.Talk;
@@ -75,6 +74,7 @@ public class TagService {
         return existings;
     }
     @Transactional
+    // TODO split method - create(register)Tag / linkTag
     public List<PostTag> registerTags(List<String> tags, Post post) {
         if (ObjectUtils.isEmpty(tags) || post == null) {
             return null;

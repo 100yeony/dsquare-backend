@@ -9,7 +9,7 @@ import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.request.QuestionRegisterRequest;
-import com.ktds.dsquare.board.qna.dto.request.QuestionRequest;
+import com.ktds.dsquare.board.qna.dto.request.QuestionUpdateRequest;
 import com.ktds.dsquare.board.qna.dto.response.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.dto.response.CategoryResponse;
 import com.ktds.dsquare.board.qna.dto.response.QuestionRegisterResponse;
@@ -19,8 +19,6 @@ import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.board.tag.PostTag;
-import com.ktds.dsquare.board.tag.QuestionTag;
-import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.board.tag.TagService;
 import com.ktds.dsquare.common.annotation.Notify;
 import com.ktds.dsquare.common.enums.NotifType;
@@ -38,11 +36,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -204,35 +202,51 @@ public class QuestionService {
     }
 
     // 질문글 수정
+//    @Transactional
+//    public void updateQuestion(Long qid, QuestionRequest request, MultipartFile newAttachment) {
+//        Question question = questionRepository.findByDeleteYnAndId(false, qid)
+//                .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + qid));
+//        Category category = categoryRepository.findById(request.getCid())
+//                .orElseThrow(()-> new EntityNotFoundException("category not found. category is " + request.getCid()));
+//
+//        updateQuestionAttachment(request.getAttachment(), newAttachment, question);
+//
+//        // 태그 수정
+//        List<QuestionTag> oldQTs = question.getQuestionTags();
+//        List<Tag> oldTags = new ArrayList<>();
+//        for(QuestionTag oldQT : oldQTs) {
+//            oldTags.add(oldQT.getTag());
+//        }
+//        List<String> newTags = request.getTags();
+//
+//        for(Tag oldTag : oldTags) {
+//            String oldTagName = oldTag.getName();
+//            if(newTags.contains(oldTagName))
+//                newTags.remove(oldTagName);
+//            else
+//                tagService.deleteTagRelation(question, oldTag);
+//        }
+//        tagService.insertNewTags(newTags, question);
+//    }
     @Transactional
-    public void updateQuestion(Long qid, QuestionRequest request, MultipartFile newAttachment) {
-        Question question = questionRepository.findByDeleteYnAndId(false, qid)
-                .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + qid));
-        Category category = categoryRepository.findById(request.getCid())
-                .orElseThrow(()-> new EntityNotFoundException("category not found. category is " + request.getCid()));
+    public QuestionRegisterResponse updateQuestion(
+            long id,
+            QuestionUpdateRequest request,
+            MultipartFile newAttachment
+    ) {
+        Question question = questionRepository.findById(id)
+                .orElseThrow(EntityNotFoundException::new);
+        question.update(request);
 
-        question.updateQuestion(request.getTitle(), request.getContent(), category);
-        updateQuestionAttachment(request.getAttachment(), newAttachment, question);
+        // Update tagging
+        List<PostTag> tags = tagService.registerTags(request.getTags(), question);
+        // Update attachment
+        Attachment savedAttachment = updateQuestionAttachment(request.getAttachment(), newAttachment, question);
 
-        // 태그 수정
-        List<QuestionTag> oldQTs = question.getQuestionTags();
-        List<Tag> oldTags = new ArrayList<>();
-        for(QuestionTag oldQT : oldQTs) {
-            oldTags.add(oldQT.getTag());
-        }
-        List<String> newTags = request.getTags();
-
-        for(Tag oldTag : oldTags) {
-            String oldTagName = oldTag.getName();
-            if(newTags.contains(oldTagName))
-                newTags.remove(oldTagName);
-            else
-                tagService.deleteTagRelation(question, oldTag);
-        }
-        tagService.insertNewTags(newTags, question);
+        return QuestionRegisterResponse.toDto(question, tags, savedAttachment);
     }
     @Transactional
-    public void updateQuestionAttachment(
+    public Attachment updateQuestionAttachment(
             AttachmentDto attachment,
             MultipartFile newAttachment,
             Question question
@@ -240,7 +254,7 @@ public class QuestionService {
         // 1. Handle changes in existing attachment
         attachmentService.updateAttachment(attachment, question.getAttachment());
         // 2. Handle attachment newly getting in
-        saveAttachment(newAttachment, question);
+        return saveAttachment(newAttachment, question);
     }
 
     // 질문글 삭제

@@ -5,6 +5,7 @@ import com.ktds.dsquare.board.Post;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.qna.dto.request.QuestionRegisterRequest;
 import com.ktds.dsquare.board.qna.dto.request.QuestionRequest;
+import com.ktds.dsquare.board.qna.dto.request.QuestionUpdateRequest;
 import com.ktds.dsquare.board.tag.PostTag;
 import com.ktds.dsquare.board.tag.QuestionTag;
 import com.ktds.dsquare.common.file.Attachment;
@@ -13,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -39,15 +41,18 @@ public class Question extends Post {
     private String content;
 
     @Column(nullable = false)
+    @ColumnDefault("now()")
     private LocalDateTime createDate;       // now로 설정
     private LocalDateTime lastUpdateDate;
 
     @Column(nullable = false)
+    @ColumnDefault("0")
     private Long viewCnt;       // 기본값 0
 
     @OneToOne(mappedBy = "post", fetch = FetchType.LAZY)
     private Attachment attachment;
     @Column(nullable = false)
+    @ColumnDefault("false")
     private Boolean deleteYn;       // 기본값 false
 
     @JsonBackReference //직렬화 X
@@ -58,6 +63,7 @@ public class Question extends Post {
     @OneToMany(mappedBy = "post", cascade = { CascadeType.REMOVE })
     private List<QuestionTag> questionTags;
 
+    @ColumnDefault("0")
     private Long likeCnt;
 
 
@@ -112,6 +118,12 @@ public class Question extends Post {
         this.category = category;
     }
 
+    public void update(QuestionUpdateRequest request) {
+        this.title = request.getTitle();
+        this.content = request.getContent();
+        this.lastUpdateDate = LocalDateTime.now();
+    }
+
 
     public static Question toEntity(QuestionRegisterRequest dto) {
         return Question.builder()
@@ -130,7 +142,7 @@ public class Question extends Post {
             Category category,
             Member writer
     ) {
-        Question newQuestion = Question.toEntity(dto);
+        Question newQuestion = toEntity(dto);
         newQuestion.category = category;
         newQuestion.writer = writer;
         return newQuestion;

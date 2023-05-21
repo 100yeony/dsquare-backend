@@ -1,7 +1,7 @@
 package com.ktds.dsquare.board.qna.controller;
 
 import com.ktds.dsquare.board.qna.dto.request.QuestionRegisterRequest;
-import com.ktds.dsquare.board.qna.dto.request.QuestionRequest;
+import com.ktds.dsquare.board.qna.dto.request.QuestionUpdateRequest;
 import com.ktds.dsquare.board.qna.dto.response.QuestionInfo;
 import com.ktds.dsquare.board.qna.dto.response.QuestionRegisterResponse;
 import com.ktds.dsquare.board.qna.service.QuestionSelectService;
@@ -64,14 +64,22 @@ public class QuestionController {
 
 
     // 질문글 수정
-    @PatchMapping("/board/questions/{qid}")
-    public ResponseEntity<Void> updateQuestion(
-            @PathVariable("qid") Long qid,
-            @RequestPart("question") QuestionRequest request,
+//    @PatchMapping("/board/questions/{qid}")
+//    public ResponseEntity<Void> updateQuestion(
+//            @PathVariable("qid") Long qid,
+//            @RequestPart("question") QuestionRequest request,
+//            @RequestPart(name = "attachment", required = false) MultipartFile newAttachment
+//    ) {
+//        questionService.updateQuestion(qid, request, newAttachment);
+//        return ResponseEntity.status(HttpStatus.OK).build();
+//    }
+    @PatchMapping("/board/questions/{id}")
+    public ResponseEntity<QuestionRegisterResponse> updateQuestion(
+            @PathVariable long id,
+            @RequestPart("question") QuestionUpdateRequest request,
             @RequestPart(name = "attachment", required = false) MultipartFile newAttachment
     ) {
-        questionService.updateQuestion(qid, request, newAttachment);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return new ResponseEntity<>(questionService.updateQuestion(id, request, newAttachment), HttpStatus.OK);
     }
 
     // 질문글 삭제
