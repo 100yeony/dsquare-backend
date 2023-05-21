@@ -2,7 +2,6 @@ package com.ktds.dsquare.board.qna.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.board.tag.PostTag;
 import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.common.file.dto.AttachmentDto;
 import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
@@ -44,7 +43,7 @@ public class QuestionRegisterResponse {
     // -------------------------
 
 
-    public static QuestionRegisterResponse toDto(Question entity, List<PostTag> tags, Attachment attachment) {
+    public static QuestionRegisterResponse toDto(Question entity, Attachment attachment) {
         return QuestionRegisterResponse.builder()
                 .qid(entity.getId())
                 .category(CategoryResponse.toDto(entity.getCategory()))
@@ -53,9 +52,9 @@ public class QuestionRegisterResponse {
                 .content(entity.getContent())
                 .attachment(AttachmentDto.toDto(entity.getAttachment()))
                 .tags(
-                        ObjectUtils.isEmpty(tags)
+                        ObjectUtils.isEmpty(entity.getTags())
                         ? null
-                        : tags.stream()
+                        : entity.getTags().stream()
                                 .map(postTag -> postTag.getTag().getName())
                                 .collect(Collectors.toList())
                 )

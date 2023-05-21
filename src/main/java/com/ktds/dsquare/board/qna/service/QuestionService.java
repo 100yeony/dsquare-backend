@@ -18,7 +18,7 @@ import com.ktds.dsquare.board.qna.dto.*;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
-import com.ktds.dsquare.board.tag.PostTag;
+import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.board.tag.TagService;
 import com.ktds.dsquare.common.annotation.Notify;
 import com.ktds.dsquare.common.enums.NotifType;
@@ -80,11 +80,12 @@ public class QuestionService {
         question = questionRepository.save(question);
 
         // Tagging
-        List<PostTag> tagRelations = tagService.registerTags(request.getTags(), question);
+        List<Tag> tagList = tagService.registerTags(request.getTags());
+        question.doTagging(tagList);
         // Handle attachment
         Attachment savedAttachment = saveAttachment(attachment, question);
 
-        return QuestionRegisterResponse.toDto(question, tagRelations, savedAttachment);
+        return QuestionRegisterResponse.toDto(question, savedAttachment);
     }
     @Transactional
     public Attachment saveAttachment(MultipartFile attachment, Question question) throws RuntimeException {
@@ -236,14 +237,15 @@ public class QuestionService {
     ) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
-        question.update(request);
 
-        // Update tagging
-        List<PostTag> tags = tagService.registerTags(request.getTags(), question);
+        // Handle tags
+        List<Tag> savedTags = tagService.registerTags(request.getTags());
         // Update attachment
         Attachment savedAttachment = updateQuestionAttachment(request.getAttachment(), newAttachment, question);
+        // TODO do identically - link attachment in post. not linking post in attachment.
 
-        return QuestionRegisterResponse.toDto(question, tags, savedAttachment);
+        question.update(request, savedTags);
+        return QuestionRegisterResponse.toDto(question, savedAttachment);
     }
     @Transactional
     public Attachment updateQuestionAttachment(

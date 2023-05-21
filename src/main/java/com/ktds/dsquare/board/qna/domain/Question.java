@@ -8,6 +8,7 @@ import com.ktds.dsquare.board.qna.dto.request.QuestionRequest;
 import com.ktds.dsquare.board.qna.dto.request.QuestionUpdateRequest;
 import com.ktds.dsquare.board.tag.PostTag;
 import com.ktds.dsquare.board.tag.QuestionTag;
+import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.member.Member;
 import lombok.AllArgsConstructor;
@@ -17,9 +18,11 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.util.ObjectUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -111,17 +114,26 @@ public class Question extends Post {
 
 
     // ==================================================
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "post", cascade = { CascadeType.PERSIST, CascadeType.REMOVE }, orphanRemoval = true)
     private List<PostTag> tags;
 
     public void selectCategory(Category category) {
         this.category = category;
     }
 
-    public void update(QuestionUpdateRequest request) {
+    public void update(QuestionUpdateRequest request, List<Tag> tagList) {
         this.title = request.getTitle();
         this.content = request.getContent();
+        doTagging(tagList);
         this.lastUpdateDate = LocalDateTime.now();
+    }
+
+    public void doTagging(List<Tag> tagList) {
+        if (tags == null) tags = new ArrayList<>();
+        else tags.clear();
+
+        if (!ObjectUtils.isEmpty(tagList))
+            tagList.forEach(tag -> tags.add(PostTag.toEntity(this, tag)));
     }
 
 
