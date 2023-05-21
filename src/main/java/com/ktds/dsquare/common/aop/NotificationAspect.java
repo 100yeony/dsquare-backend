@@ -4,6 +4,7 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.ktds.dsquare.board.Post;
 import com.ktds.dsquare.board.PostSelectService;
 import com.ktds.dsquare.board.comment.dto.CommentRegisterResponse;
+import com.ktds.dsquare.board.comment.dto.NestedCommentRegisterResponse;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.AnswerRegisterResponse;
@@ -58,15 +59,15 @@ public class NotificationAspect {
             sendNotification(notify.type().cast(rtnVal), value);
         }
     }
-    private void sendNotification(Object obj, NotifType type) {
+    private void sendNotification(Object information, NotifType type) {
         try {
-            long[] receiverList = extractReceiverList(obj, type);
+            long[] receiverList = extractReceiverList(information, type);
             if (ObjectUtils.isEmpty(receiverList)) {
                 log.info("There's no one to receive notification.");
                 return;
             }
 
-            Map<String, String> data = makeNotificationData(obj, type);
+            Map<String, String> data = makeNotificationData(information, type);
             notificationSendService.sendNotification(receiverList, type, data);
         } catch (ClassCastException e) {
             log.error("Impossible class casting!", e);
@@ -75,18 +76,22 @@ public class NotificationAspect {
             log.error("Couldn't send notification.", e);
         }
     }
+
     private long[] extractReceiverList(Object obj, NotifType type) {
         long[] receiverList = null;
         switch (type) {
             case ANSWER_REGISTRATION:
-                receiverList = collectReceiverKey((AnswerRegisterResponse)obj);
+                receiverList = collectReceiverKey((AnswerRegisterResponse)obj); // TODO is casting necessary if object class is identified automatically?
                 break;
             case COMMENT_REGISTRATION:
                 receiverList = collectReceiverKey((CommentRegisterResponse)obj);
                 break;
             case NESTED_COMMENT_REGISTRATION:
+                receiverList = collectReceiverKey((NestedCommentRegisterResponse)obj);
+                break;
             case SPECIALITY_QUESTION_REGISTRATION:
                 receiverList = collectReceiverKey((QuestionRegisterResponse)obj);
+                break;
             case REQUEST_CHOICE:
             default:
                 log.error("Not supported notification type.");
@@ -124,8 +129,17 @@ public class NotificationAspect {
         receiverList = new long[] { source.getCategory().getManagerId() };
         return receiverList;
     }
+    private long[] collectReceiverKey(NestedCommentRegisterResponse source) {
+        return new long[] { source.getOriginWriter().getId() };
+    }
 
     private Map<String, String> makeNotificationData(Object information, NotifType type) {
+        /*
+        TODO refactor
+        Map<String, String> data
+            = createNotificationDataBase(type); // must include "title", "body", and "type"(Notification Type)
+            // and post ID & thumbnail ?...
+         */
         Map<String, String> data = null;
         switch (type) {
             case ANSWER_REGISTRATION:
@@ -138,6 +152,12 @@ public class NotificationAspect {
                 data = extractData((QuestionRegisterResponse)information);
                 break;
             case NESTED_COMMENT_REGISTRATION:
+                /*
+                TODO refactor
+                data.putAll(extractData(...));
+                 */
+                data = extractData((NestedCommentRegisterResponse)information);
+                break;
             case REQUEST_CHOICE:
             default:
                 log.warn("Not supported notification. Type: [{}]", type);
@@ -181,6 +201,20 @@ public class NotificationAspect {
                 StringUtils.hasText(information.getWriterInfo().getProfileImage())
                         ? information.getWriterInfo().getProfileImage() : ""
         ); // TODO seems to update DB also
+        return data;
+    }
+    private Map<String, String> extractData(NestedCommentRegisterResponse information) {
+        Map<String, String> data = new HashMap<>(); // TODO refactor
+        data.put("title", "댓글 등록 알림");
+        data.put("body", "회원님의 댓글을 언급한 새로운 댓글이 작성되었습니다.");
+
+        data.put("postId", String.valueOf(information.getPostId()));
+        data.put("origCommentId", "empty"/* String.valueOf(information.<...>) */);
+        data.put("writerId", String.valueOf(information.getWriter().getId()));
+        data.put("thumbnail",
+                StringUtils.hasText(information.getWriter().getProfileImage())
+                    ? information.getWriter().getProfileImage() : ""
+        );
         return data;
     }
 
