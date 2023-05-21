@@ -83,10 +83,15 @@ public class QuestionController {
     }
 
     // 질문글 삭제
-    @DeleteMapping("/board/questions/{qid}")
-    public ResponseEntity<Void> deleteQuestion(@PathVariable("qid") Long qid){
-        questionService.deleteQuestion(qid);
-        return ResponseEntity.status(HttpStatus.OK).build();
+//    @DeleteMapping("/board/questions/{qid}")
+//    public ResponseEntity<Void> deleteQuestion(@PathVariable("qid") Long qid){
+//        questionService.deleteQuestion(qid);
+//        return ResponseEntity.status(HttpStatus.OK).build();
+//    }
+    @DeleteMapping("/board/questions/{id}")
+    public ResponseEntity<Void> deleteQuestion(@PathVariable long id) {
+        questionService.deleteQuestion(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

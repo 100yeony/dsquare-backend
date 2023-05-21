@@ -4,6 +4,10 @@ package com.ktds.dsquare.board.qna.controller;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.AnswerRequest;
 import com.ktds.dsquare.board.qna.dto.AnswerResponse;
+import com.ktds.dsquare.board.qna.dto.AnswerRegisterResponse;
+import com.ktds.dsquare.board.qna.dto.request.AnswerRegisterRequest;
+import com.ktds.dsquare.board.qna.dto.request.AnswerRequest;
+import com.ktds.dsquare.board.qna.dto.response.AnswerResponse;
 import com.ktds.dsquare.board.qna.service.AnswerService;
 import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.member.Member;
@@ -22,14 +26,23 @@ public class AnswerController {
     private final AnswerService answerService;
 
     //create - 답변글 작성
-    @PostMapping("/board/questions/{qid}/answers")
+//    @PostMapping("/board/questions/{qid}/answers")
+//    public ResponseEntity<AnswerRegisterResponse> createAnswer(
+//            @PathVariable("qid") Long qid,
+//            @RequestPart(name = "answer") AnswerRequest request,
+//            @RequestPart(required = false) MultipartFile attachment,
+//            @AuthUser Member user
+//    ) {
+//        return new ResponseEntity<>(answerService.createAnswer(qid, request, attachment, user), HttpStatus.CREATED);
+//    }
+    @PostMapping("/board/questions/{id}/answers")
     public ResponseEntity<AnswerRegisterResponse> createAnswer(
-            @PathVariable("qid") Long qid,
-            @RequestPart(name = "answer") AnswerRequest request,
+            @PathVariable long id,
+            @RequestPart("answer") AnswerRegisterRequest request,
             @RequestPart(required = false) MultipartFile attachment,
             @AuthUser Member user
     ) {
-        return new ResponseEntity<>(answerService.createAnswer(qid, request, attachment, user), HttpStatus.CREATED);
+        return new ResponseEntity<>(answerService.createAnswer(id, request, attachment, user), HttpStatus.CREATED);
     }
 
     //qid와 연결된 답변 모두 조회

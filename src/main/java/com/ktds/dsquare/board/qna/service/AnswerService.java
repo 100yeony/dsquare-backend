@@ -6,11 +6,10 @@ import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeRepository;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
+import com.ktds.dsquare.board.qna.dto.AnswerRegisterResponse;
+import com.ktds.dsquare.board.qna.dto.request.AnswerRegisterRequest;
 import com.ktds.dsquare.board.qna.dto.request.AnswerRequest;
 import com.ktds.dsquare.board.qna.dto.response.AnswerResponse;
-import com.ktds.dsquare.board.qna.dto.AnswerRegisterResponse;
-import com.ktds.dsquare.board.qna.dto.AnswerRequest;
-import com.ktds.dsquare.board.qna.dto.AnswerResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.common.annotation.Notify;
@@ -45,11 +44,25 @@ public class AnswerService {
     // 답변글 작성
     @Transactional
     @Notify(value = NotifType.ANSWER_REGISTRATION, type = AnswerRegisterResponse.class)
-    public AnswerRegisterResponse createAnswer(Long qid, AnswerRequest dto, MultipartFile attachment, Member user) {
-        Question question = questionRepository.findByDeleteYnAndId(false, qid)
-                .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + qid));
-        Answer answer = Answer.toEntity(dto, user, question);
-        saveAttachment(attachment, answer);
+//    public AnswerRegisterResponse createAnswer(Long qid, AnswerRequest dto, MultipartFile attachment, Member user) {
+//        Question question = questionRepository.findByDeleteYnAndId(false, qid)
+//                .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + qid));
+//        Answer answer = Answer.toEntity(dto, user, question);
+//        saveAttachment(attachment, answer);
+//        return AnswerRegisterResponse.toDto(answerRepository.save(answer));
+//    }
+    public AnswerRegisterResponse createAnswer(long id, AnswerRegisterRequest request, MultipartFile attachment, Member user) {
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new PostNotFoundException("Question not found. Question ID: " + id));
+        if (question.getDeleteYn())
+            throw new RuntimeException("Bad request. Post(Answer) has been deleted.");
+
+        Answer answer = Answer.toEntity(request, question, user);
+
+        // Handle attachment
+        Attachment savedAttachment = attachmentService.saveAttachment(user, attachment);
+        answer.registerAttachment(savedAttachment);
+
         return AnswerRegisterResponse.toDto(answerRepository.save(answer));
     }
     @Transactional // TODO code duplication

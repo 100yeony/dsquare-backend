@@ -3,12 +3,17 @@ package com.ktds.dsquare.board.qna.domain;
 
 import com.ktds.dsquare.board.Post;
 import com.ktds.dsquare.board.enums.BoardType;
+import com.ktds.dsquare.board.qna.dto.request.AnswerRegisterRequest;
 import com.ktds.dsquare.board.qna.dto.request.AnswerRequest;
 import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.member.Member;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -29,6 +34,7 @@ public class Answer extends Post {
     private String content;
 
     @Column(nullable = false)
+    @CreatedDate
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
 
@@ -36,12 +42,14 @@ public class Answer extends Post {
     private Attachment attachment;
 
     @Column(nullable = false)
+    @ColumnDefault("false")
     private boolean deleteYn;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question")
     private Question question;
 
+    @ColumnDefault("0")
     private Long likeCnt;
 
     public static Answer toEntity(AnswerRequest dto, Member writer, Question question){
@@ -71,6 +79,28 @@ public class Answer extends Post {
     }
 
     public void cancleLike(){ this.likeCnt -= 1; }
+
+
+    // ==================================================
+
+    public void registerAttachment(Attachment attachment) {
+        this.attachment = attachment;
+    }
+
+
+    public static Answer toEntity(AnswerRegisterRequest dto) {
+        Assert.notNull(dto, "Answer cannot be created from null info!");
+
+        return Answer.builder()
+                .content(dto.getContent())
+                .build();
+    }
+    public static Answer toEntity(AnswerRegisterRequest dto, Question question, Member writer) {
+        Answer answer = toEntity(dto);
+        answer.question = question;
+        answer.writer = writer;
+        return answer;
+    }
 
 }
 
