@@ -166,6 +166,7 @@ public class NotificationAspect {
     }
     private Map<String, String> extractData(AnswerRegisterResponse information) {
         Map<String, String> data = new HashMap<>();
+        data.put("board", "QNA"); // BoardType.QUESTION or BoardType.ANSWER is incongruent
         data.put("title", "답변 등록 알림");
         data.put("body", "회원님의 질문에 새로운 답변이 등록되었습니다.");
 
@@ -179,6 +180,7 @@ public class NotificationAspect {
     }
     private Map<String, String> extractData(CommentRegisterResponse information) {
         Map<String, String> data = new HashMap<>();
+        data.put("board", information.getBoardType().toString());
         data.put("title", "댓글 등록 알림");
         data.put("body", "회원님의 게시글에 새로운 댓글이 등록되었습니다.");
 
@@ -192,6 +194,7 @@ public class NotificationAspect {
     }
     private Map<String, String> extractData(QuestionRegisterResponse information) {
         Map<String, String> data = new HashMap<>();
+        data.put("board", "QNA");
         data.put("title", "담당 분야 질문 등록 알림");
         data.put("body", "담당 분야에 새로운 질문이 등록되었습니다.");
 
@@ -205,6 +208,7 @@ public class NotificationAspect {
     }
     private Map<String, String> extractData(NestedCommentRegisterResponse information) {
         Map<String, String> data = new HashMap<>(); // TODO refactor
+        data.put("board", information.getBoardType().toString());
         data.put("title", "댓글 등록 알림");
         data.put("body", "회원님의 댓글을 언급한 새로운 댓글이 작성되었습니다.");
 

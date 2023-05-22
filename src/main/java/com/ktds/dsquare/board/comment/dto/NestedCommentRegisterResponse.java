@@ -1,6 +1,7 @@
 package com.ktds.dsquare.board.comment.dto;
 
 import com.ktds.dsquare.board.comment.Comment;
+import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import lombok.*;
 
@@ -18,6 +19,7 @@ public class NestedCommentRegisterResponse {
     private LocalDateTime createDate;
 
     private long postId;
+    private BoardType boardType;
     private BriefMemberInfo originWriter;
 
 
@@ -28,6 +30,7 @@ public class NestedCommentRegisterResponse {
                 .content(entity.getContent())
                 .createDate(entity.getCreateDate())
                 .postId(entity.getPostId())
+                .boardType(entity.getBoardType())
                 .originWriter(BriefMemberInfo.toDto(entity.getOriginWriter()))
                 .build();
     }
