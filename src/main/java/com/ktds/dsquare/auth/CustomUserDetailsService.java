@@ -22,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         log.debug("loadUserByUsername ---------------------");
         log.debug("username : {}", username);
 
-        Member member = memberRepository.findByEmail(username)
+        Member member = memberRepository.findByEmailAndWithdrawDate(username, null)
                 .orElseThrow(() -> new UsernameNotFoundException("No such user with username [ " + username + "]"));
         member.getRole().forEach(role -> {});
         return new CustomUserDetails(member);

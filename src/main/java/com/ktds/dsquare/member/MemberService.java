@@ -68,17 +68,17 @@ public class MemberService {
     private static Specification<Member> searchWith(Map<String, String> params) {
         return ((root, query, builder) -> { // Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder
             List<Predicate> predicates = new ArrayList<>();
+            predicates.add(builder.isNull(root.get("withdrawDate")));
             if (params.containsKey("email"))
                 predicates.add(
                         builder.equal(root.get("email"), params.get("email"))
                 );
-
             return builder.and(predicates.toArray(new Predicate[0]));
         });
     }
 
     public MemberInfo selectMember(Long id) {
-        Member member = memberRepository.findById(id)
+        Member member = memberRepository.findByIdAndWithdrawDate(id, null)
                 .orElseThrow(() -> new UserNotFoundException("No such member with ID " + id));
         return MemberInfo.toDto(member);
     }
@@ -87,7 +87,7 @@ public class MemberService {
     // TODO consider another fit exception
     @Transactional
     public MemberInfo updateMember(Long id, MemberUpdateRequest request) {
-        Member member = memberRepository.findById(id)
+        Member member = memberRepository.findByIdAndWithdrawDate(id, null)
                 .orElseThrow(() -> new UserNotFoundException("No such member with ID " + id));
         if(request.getTid() != null) {
             Team newTeam = teamRepository.findById(request.getTid())
@@ -109,7 +109,7 @@ public class MemberService {
 
     @Transactional
     public FileSavedDto updateMember(Long id, MultipartFile image, Member user) throws IOException {
-        Member member = memberRepository.findById(id)
+        Member member = memberRepository.findByIdAndWithdrawDate(id, null)
                 .orElseThrow(() -> new UserNotFoundException("No such member with ID " + id));
         Assert.state(member == user, "Illegal resource access");
 
@@ -128,7 +128,7 @@ public class MemberService {
     }
     @Transactional
     public MemberInfo updateMemberForAdmin(Long id, MemberUpdateRequestForAdmin request) {
-        Member member = memberRepository.findById(id)
+        Member member = memberRepository.findByIdAndWithdrawDate(id, null)
                 .orElseThrow(() -> new UserNotFoundException("No such member with ID " + id));
         member.update(request.getRole());
         return MemberInfo.toDto(member);
@@ -136,7 +136,7 @@ public class MemberService {
 
     @Transactional
     public void withdrawMember(Long id, Member user) {
-        Member member = memberRepository.findById(id)
+        Member member = memberRepository.findByIdAndWithdrawDate(id, null)
             .orElseThrow(() -> new UserNotFoundException("No such member with ID " + id));
         if(member.getWithdrawDate() != null)
             throw new UserNotFoundException("Users who have already withdrawn.");
@@ -169,7 +169,7 @@ public class MemberService {
     @Transactional
     public void findPassword(String email, String tempPassword) {
         try {
-            Member member = memberRepository.findByEmail(email).orElse(null);
+            Member member = memberRepository.findByEmailAndWithdrawDate(email, null).orElse(null);
             if (member == null)
                 return;
 
@@ -182,7 +182,7 @@ public class MemberService {
 
     @Transactional
     public void changePassword(PasswordChangeRequest passwordChangeRequest) throws MemberException, IllegalArgumentException {
-        Member member = memberRepository.findByEmail(passwordChangeRequest.getEmail())
+        Member member = memberRepository.findByEmailAndWithdrawDate(passwordChangeRequest.getEmail(), null)
                 .orElseThrow(() -> new MemberNotFoundException(passwordChangeRequest.getEmail()));
 
         passwordChangeRequest.encodePassword(passwordEncoder);

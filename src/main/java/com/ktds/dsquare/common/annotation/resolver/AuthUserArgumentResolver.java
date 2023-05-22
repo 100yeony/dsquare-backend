@@ -31,7 +31,7 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails principal = (UserDetails)authentication.getPrincipal();
-        return memberRepository.findByEmail(principal.getUsername())
+        return memberRepository.findByEmailAndWithdrawDate(principal.getUsername(), null)
                 .orElseThrow(() -> new RuntimeException("Something is wrong with security session."));
     }
 
