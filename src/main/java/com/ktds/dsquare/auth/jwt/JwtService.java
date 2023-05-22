@@ -38,7 +38,7 @@ public class JwtService {
     public Map<String, String> generateTokens(UserDetails principal) {
         Map<String, String> tokens = JwtUtil.generateTokens(principal);
 
-        Member member = memberRepository.findByEmail(principal.getUsername()).orElse(null);
+        Member member = memberRepository.findByEmailAndWithdrawDate(principal.getUsername(), null).orElse(null);
         AuthToken record = authTokenRepository.findByMember(member).orElse(null);
 
         if (ObjectUtils.isEmpty(record))
@@ -57,7 +57,7 @@ public class JwtService {
     public Member authenticate(String authHeader) throws JWTVerificationException {
         DecodedJWT jwt = verifyToken(authHeader);
         String username = getClaim(jwt, "username");
-        return memberRepository.findByEmail(username)
+        return memberRepository.findByEmailAndWithdrawDate(username, null)
                 .orElseThrow(() -> new UsernameNotFoundException("No such user with username [ " + username + "]"));
     }
     public DecodedJWT verifyToken(String token) throws JWTVerificationException {
@@ -73,7 +73,7 @@ public class JwtService {
         String refreshToken = request.getRefreshToken();
         try {
             DecodedJWT jwt = JwtUtil.verifyRefreshToken(refreshToken);
-            Member member = memberRepository.findByEmail(getClaim(jwt, "username"))
+            Member member = memberRepository.findByEmailAndWithdrawDate(getClaim(jwt, "username"), null)
                     .orElseThrow(() -> new UsernameNotFoundException(""));
             AuthToken authToken = authTokenRepository.findByMember(member)
                     .orElseThrow(LoginRequiredException::new);

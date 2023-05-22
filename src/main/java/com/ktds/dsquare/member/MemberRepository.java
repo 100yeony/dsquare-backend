@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,7 +13,8 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long>, JpaSpecificationExecutor<Member> {
 
     List<Member> findAll(Specification<Member> spec);
-    Optional<Member> findByEmail(String email);
+    Optional<Member> findByEmailAndWithdrawDate(String email, LocalDateTime withdrawDate);
+    Optional<Member> findByIdAndWithdrawDate(Long id, LocalDateTime withdrawDate);
 
     //궁금해요 검색 기능 관련
     List<Member> findByNameContaining(String name);
