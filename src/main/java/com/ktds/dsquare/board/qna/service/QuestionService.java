@@ -8,16 +8,15 @@ import com.ktds.dsquare.board.paging.PagingService;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Category;
 import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.board.qna.dto.BriefQuestionResponse;
-import com.ktds.dsquare.board.qna.dto.CategoryResponse;
-import com.ktds.dsquare.board.qna.dto.QuestionRequest;
-import com.ktds.dsquare.board.qna.dto.QuestionResponse;
+import com.ktds.dsquare.board.qna.dto.*;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
 import com.ktds.dsquare.board.tag.QuestionTag;
 import com.ktds.dsquare.board.tag.Tag;
 import com.ktds.dsquare.board.tag.TagService;
+import com.ktds.dsquare.common.annotation.Notify;
+import com.ktds.dsquare.common.enums.NotifType;
 import com.ktds.dsquare.common.exception.DeleteQuestionException;
 import com.ktds.dsquare.common.exception.PostNotFoundException;
 import com.ktds.dsquare.common.exception.UserNotFoundException;
@@ -63,7 +62,8 @@ public class QuestionService {
 
     //create - 질문글 작성
     @Transactional
-    public void createQuestion(QuestionRequest dto, MultipartFile attachment, Member writer) throws RuntimeException {
+    @Notify(value = NotifType.SPECIALITY_QUESTION_REGISTRATION, type = QuestionRegisterResponse.class)
+    public QuestionRegisterResponse createQuestion(QuestionRequest dto, MultipartFile attachment, Member writer) throws RuntimeException {
         Category category = categoryRepository.findById(dto.getCid()).orElseThrow(() -> new EntityNotFoundException("Category does not exist"));
         Question question = Question.toEntity(dto, writer, category);
 
@@ -71,6 +71,7 @@ public class QuestionService {
 
         questionRepository.save(question);
         tagService.insertNewTags(dto.getTags(), question);
+        return QuestionRegisterResponse.toDto(question);
     }
     @Transactional
     public void saveAttachment(MultipartFile attachment, Question question) throws RuntimeException {

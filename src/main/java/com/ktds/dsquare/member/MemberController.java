@@ -3,6 +3,7 @@ package com.ktds.dsquare.member;
 import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.common.exception.MemberException;
 import com.ktds.dsquare.common.mailing.MailService;
+import com.ktds.dsquare.common.notification.service.NotificationInquiryService;
 import com.ktds.dsquare.member.dto.request.*;
 import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import com.ktds.dsquare.member.dto.response.MemberInfo;
@@ -26,6 +27,7 @@ public class MemberController {
     private final MemberService memberService;
     private final AccountService accountService;
     private final MailService mailService;
+    private final NotificationInquiryService notificationInquiryService;
 
 
     @PostMapping("/account/signup/authenticate")
@@ -61,6 +63,13 @@ public class MemberController {
     @GetMapping("/member/members/{id}")
     public ResponseEntity<MemberInfo> getMember(@PathVariable Long id) {
         return new ResponseEntity<>(memberService.selectMember(id), HttpStatus.OK);
+    }
+    /**
+     * 회원 정보 조회 (받은 알림)
+     */
+    @GetMapping("/member/members/{id}/notification")
+    public ResponseEntity<?> getNotifications(@PathVariable long id) {
+        return new ResponseEntity<>(notificationInquiryService.getReceivedNotification(id), HttpStatus.OK);
     }
     /**
      * 회원 존재 여부 확인 (중복 확인)

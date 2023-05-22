@@ -6,6 +6,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,6 +47,10 @@ public class MemberSelectService {
             return Collections.emptyList();
 
         return memberRepository.findAll(searchWith(Map.of(key.toLowerCase(), value)));
+    }
+
+    public Member selectWithId(long id) {
+        return memberRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
 }

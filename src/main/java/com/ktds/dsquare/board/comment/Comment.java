@@ -29,17 +29,17 @@ public class Comment {
     private String content;
 
     @Enumerated(EnumType.STRING)
-    private BoardType boardType;
+    private BoardType boardType; // TODO probably be deleted
 
     @Column(nullable = false)
-    private Long postId;
+    private Long postId; // TODO shouldn't be <Post> ?
 
     @Column(nullable = false)
     private LocalDateTime createDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "origin_writer")
-    private Member originWriter;
+    private Member originWriter; // TODO shouldn't be <Comment> ?
 
     public static Comment toEntity(CommentRegisterDto request, Member writer, BoardType boardType, Long postId) {
         LocalDateTime now = LocalDateTime.now();

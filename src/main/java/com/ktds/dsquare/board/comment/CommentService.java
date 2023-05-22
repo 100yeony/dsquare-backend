@@ -38,7 +38,7 @@ public class CommentService {
 
     // 댓글 작성
     @Transactional
-    @Notify(NotifType.COMMENT_REGISTRATION)
+    @Notify(value = NotifType.COMMENT_REGISTRATION, type = CommentRegisterResponse.class)
     public CommentRegisterResponse createComment(String boardTypeName, Long postId, CommentRegisterDto request, Member user) {
         if(request.getContent().equals(""))
             throw new LackOfDataException("There is no content.");
@@ -51,7 +51,8 @@ public class CommentService {
 
     // 대댓글 작성
     @Transactional
-    public void createNestedComment(String boardTypeName, Long postId, NestedCommentRegisterDto request, Member user) {
+    @Notify(value = NotifType.NESTED_COMMENT_REGISTRATION, type = NestedCommentRegisterResponse.class)
+    public NestedCommentRegisterResponse createNestedComment(String boardTypeName, Long postId, NestedCommentRegisterDto request, Member user) {
         if(request.getContent().equals(""))
             throw new LackOfDataException("There is no content.");
         if(!checkAvailability(boardTypeName, postId))
@@ -59,7 +60,7 @@ public class CommentService {
         Member originWriter = memberRepository.findById(request.getOriginWriterId()).orElseThrow(() -> new UserNotFoundException("Origin Writer Not Found"));
         BoardType boardType = BoardType.findBoardType(boardTypeName);
         Comment comment = Comment.toNestedEntity(request, user, boardType, postId, originWriter);
-        commentRepository.save(comment);
+        return NestedCommentRegisterResponse.toDto(commentRepository.save(comment));
     }
 
     // 댓글 조회(글에 달린 댓글 전체 조회)
