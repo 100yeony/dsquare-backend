@@ -125,6 +125,9 @@ public class NotificationAspect {
         return receiverList;
     }
     private List<Long> collectReceiverKey(QuestionRegisterResponse source) {
+        if (source.getCategory().getManagerId() == null)
+            return List.of();
+
         List<Long> receiverList = null;
         // ...
         receiverList = List.of(source.getCategory().getManagerId());
