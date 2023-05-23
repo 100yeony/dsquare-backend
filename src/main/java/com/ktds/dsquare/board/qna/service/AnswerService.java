@@ -20,12 +20,16 @@ import com.ktds.dsquare.common.file.AttachmentService;
 import com.ktds.dsquare.common.file.dto.AttachmentDto;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -82,6 +86,34 @@ public class AnswerService {
             answerResponses.add(AnswerResponse.toDto(answer, answer.getLikeCnt(), likeYn, commentCnt));
         }
         return answerResponses;
+    }
+    public List<AnswerResponse> getAnswers(long questionId, Member user) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new PostNotFoundException("Question Not Found. Question ID: " + questionId));
+
+        List<Answer> answers = answerRepository.findAll(searchWith(question));
+        return answers.stream()
+                .map(answer -> createResponse(answer, user))
+                .collect(Collectors.toList());
+    }
+
+    public Specification<Answer> searchWith(Question question) {
+        return ((root, query, builder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(builder.isFalse(root.get("deleteYn")));
+
+            if (question != null)
+                predicates.add(builder.equal(root.get("question"), question));
+
+            return builder.and(predicates.toArray(new Predicate[0]));
+        });
+    }
+
+    public AnswerResponse createResponse(Answer answer, Member user) {
+        long postId = answer.getId();
+        long commentCnt = commentRepository.countByPostId(postId);
+        boolean likeYn = likeRepository.existsByPostIdAndMember(postId, user);
+        return AnswerResponse.toDto(answer, commentCnt, likeYn);
     }
 
     //답변글 상세 조회

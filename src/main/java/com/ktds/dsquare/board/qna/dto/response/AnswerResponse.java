@@ -18,18 +18,27 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Component
 public class AnswerResponse {
+
     private Long aid;
+    private Long qid;
     private BriefMemberInfo writerInfo;
+    private String content;
+
+    private AttachmentDto attachment;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+9")
     private LocalDateTime createDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+9")
     private LocalDateTime lastUpdateDate;
-    private String content;
-    private AttachmentDto attachment;
-    private Long qid;
-    private Long likeCnt;
-    private Boolean likeYn;
+
+    // -------------------------
+    // Additional information
     private Long commentCnt;
+    private Long likeCnt;
+
+    private Boolean likeYn;
+    // -------------------------
+
 
     /*
     TODO refactor
@@ -49,6 +58,23 @@ public class AnswerResponse {
                 .likeCnt(likeCnt)
                 .likeYn(likeYn)
                 .commentCnt(commentCnt)
+                .build();
+    }
+
+    // ==============================
+
+    public static AnswerResponse toDto(Answer entity, long commentCnt, boolean likeYn) {
+        return AnswerResponse.builder()
+                .aid(entity.getId())
+                .qid(entity.getQuestion().getId())
+                .writerInfo(BriefMemberInfo.toDto(entity.getWriter()))
+                .content(entity.getContent())
+                .attachment(AttachmentDto.toDto(entity.getAttachment()))
+                .createDate(entity.getCreateDate())
+                .lastUpdateDate(entity.getLastUpdateDate())
+                .commentCnt(commentCnt)
+                .likeCnt(entity.getLikeCnt())
+                .likeYn(likeYn)
                 .build();
     }
 

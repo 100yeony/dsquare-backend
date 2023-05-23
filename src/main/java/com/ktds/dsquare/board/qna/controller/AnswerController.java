@@ -35,27 +35,31 @@ public class AnswerController {
 //    ) {
 //        return new ResponseEntity<>(answerService.createAnswer(qid, request, attachment, user), HttpStatus.CREATED);
 //    }
-    @PostMapping("/board/questions/{id}/answers")
+    @PostMapping("/board/questions/{questionId}/answers")
     public ResponseEntity<AnswerRegisterResponse> createAnswer(
-            @PathVariable long id,
+            @PathVariable long questionId,
             @RequestPart("answer") AnswerRegisterRequest request,
             @RequestPart(required = false) MultipartFile attachment,
             @AuthUser Member user
     ) {
-        return new ResponseEntity<>(answerService.createAnswer(id, request, attachment, user), HttpStatus.CREATED);
+        return new ResponseEntity<>(answerService.createAnswer(questionId, request, attachment, user), HttpStatus.CREATED);
     }
 
     //qid와 연결된 답변 모두 조회
-    @GetMapping("/board/questions/{qid}/answers")
-    public List<AnswerResponse> getAnswersByQid(@PathVariable Question qid, @AuthUser Member user) {
-        return answerService.getAnswersByQuestion(qid, user);
+//    @GetMapping("/board/questions/{qid}/answers")
+//    public List<AnswerResponse> getAnswersByQid(@PathVariable Question qid, @AuthUser Member user) { // TODO returns 500 if question doesn't exist
+//        return answerService.getAnswersByQuestion(qid, user);
+//    }
+    @GetMapping("/board/questions/{id}/answers")
+    public ResponseEntity<List<AnswerResponse>> getAnswers(@PathVariable long id, @AuthUser Member user) {
+        return new ResponseEntity<>(answerService.getAnswers(id, user), HttpStatus.OK);
     }
 
-    //답변 상세 조회
-    @GetMapping("/board/answers/{aid}")
-    public AnswerResponse getAnswerDetail(@PathVariable Long aid, @AuthUser Member user){
-        return answerService.getAnswerDetail(aid, user);
-    }
+//    //답변 상세 조회
+//    @GetMapping("/board/answers/{aid}")
+//    public AnswerResponse getAnswerDetail(@PathVariable Long aid, @AuthUser Member user){
+//        return answerService.getAnswerDetail(aid, user);
+//    }
 
     // 답변글 수정
     @PatchMapping("/board/questions/{qid}/answers/{aid}")
