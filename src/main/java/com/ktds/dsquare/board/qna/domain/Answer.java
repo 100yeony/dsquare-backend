@@ -5,6 +5,7 @@ import com.ktds.dsquare.board.Post;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.qna.dto.request.AnswerRegisterRequest;
 import com.ktds.dsquare.board.qna.dto.request.AnswerRequest;
+import com.ktds.dsquare.board.qna.dto.request.AnswerUpdateRequest;
 import com.ktds.dsquare.common.file.Attachment;
 import com.ktds.dsquare.member.Member;
 import lombok.*;
@@ -85,6 +86,10 @@ public class Answer extends Post {
 
     public void registerAttachment(Attachment attachment) {
         this.attachment = attachment;
+    }
+
+    public void update(AnswerUpdateRequest request) {
+        this.content = request.getContent();
     }
 
 

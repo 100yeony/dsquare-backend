@@ -2,11 +2,9 @@ package com.ktds.dsquare.board.qna.controller;
 
 
 import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.board.qna.dto.AnswerRequest;
-import com.ktds.dsquare.board.qna.dto.AnswerResponse;
 import com.ktds.dsquare.board.qna.dto.AnswerRegisterResponse;
 import com.ktds.dsquare.board.qna.dto.request.AnswerRegisterRequest;
-import com.ktds.dsquare.board.qna.dto.request.AnswerRequest;
+import com.ktds.dsquare.board.qna.dto.request.AnswerUpdateRequest;
 import com.ktds.dsquare.board.qna.dto.response.AnswerResponse;
 import com.ktds.dsquare.board.qna.service.AnswerService;
 import com.ktds.dsquare.common.annotation.AuthUser;
@@ -62,15 +60,24 @@ public class AnswerController {
 //    }
 
     // 답변글 수정
+//    @PostMapping("/board/questions/{qid}/answers/{aid}")
+//    public ResponseEntity<Void> updateAnswer(
+//            @PathVariable Long qid,
+//            @PathVariable Long aid,
+//            @RequestPart(name = "answer") AnswerRequest request,
+//            @RequestPart(name = "attachment", required = false) MultipartFile newAttachment
+//    ) {
+//        answerService.updateAnswer(qid, aid, request, newAttachment);
+//        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+//    }
     @PatchMapping("/board/questions/{qid}/answers/{aid}")
-    public ResponseEntity<Void> updateAnswer(
-            @PathVariable Long qid,
-            @PathVariable Long aid,
-            @RequestPart(name = "answer") AnswerRequest request,
+    public ResponseEntity<AnswerRegisterResponse> updateAnswer(
+            @PathVariable("qid") long questionId,
+            @PathVariable("aid") long answerId,
+            @RequestPart(name = "answer") AnswerUpdateRequest request,
             @RequestPart(name = "attachment", required = false) MultipartFile newAttachment
     ) {
-        answerService.updateAnswer(qid, aid, request, newAttachment);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        return new ResponseEntity<>(answerService.updateAnswer(questionId, answerId, request, newAttachment), HttpStatus.OK);
     }
 
     // 답변글 삭제

@@ -2,6 +2,7 @@ package com.ktds.dsquare.board.qna.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.qna.domain.Answer;
+import com.ktds.dsquare.common.file.dto.AttachmentDto;
 import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import lombok.*;
 
@@ -17,6 +18,7 @@ public class AnswerRegisterResponse {
     private Long qid;
     private BriefMemberInfo writerInfo;
     private String content;
+    private AttachmentDto attachment;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+9")
     private LocalDateTime createDate;
@@ -28,6 +30,7 @@ public class AnswerRegisterResponse {
                 .qid(entity.getQuestion().getId())
                 .writerInfo(BriefMemberInfo.toDto(entity.getWriter()))
                 .content(entity.getContent())
+                .attachment(AttachmentDto.toDto(entity.getAttachment()))
                 .createDate(entity.getCreateDate())
                 .build();
     }

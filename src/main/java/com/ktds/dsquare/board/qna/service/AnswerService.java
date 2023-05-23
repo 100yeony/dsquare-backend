@@ -8,7 +8,7 @@ import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.AnswerRegisterResponse;
 import com.ktds.dsquare.board.qna.dto.request.AnswerRegisterRequest;
-import com.ktds.dsquare.board.qna.dto.request.AnswerRequest;
+import com.ktds.dsquare.board.qna.dto.request.AnswerUpdateRequest;
 import com.ktds.dsquare.board.qna.dto.response.AnswerResponse;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;
@@ -24,7 +24,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -69,11 +68,17 @@ public class AnswerService {
 
         return AnswerRegisterResponse.toDto(answerRepository.save(answer));
     }
-    @Transactional // TODO code duplication
+//    @Transactional // TODO code duplication
+//    public void saveAttachment(MultipartFile attachment, Answer answer) {
+//        Attachment savedAttachment = attachmentService.saveAttachment(answer.getWriter(), attachment, answer);
+//        if (savedAttachment != null)
+//            savedAttachment.linkPost(answer);
+//    }
+    @Transactional
     public void saveAttachment(MultipartFile attachment, Answer answer) {
         Attachment savedAttachment = attachmentService.saveAttachment(answer.getWriter(), attachment, answer);
         if (savedAttachment != null)
-            savedAttachment.linkPost(answer);
+            answer.registerAttachment(savedAttachment);
     }
 
     // 답변글 전체 조회(질문 번호로 조회)
@@ -127,16 +132,30 @@ public class AnswerService {
 
 
     // 답변글 수정
+//    @Transactional
+//    public void updateAnswer(Long qid, Long aid, AnswerRequest request, MultipartFile newAttachment) {
+//        // TODO validate qid <> aid.qid
+//        Answer answer = answerRepository.findByDeleteYnAndId(false, aid)
+//                .orElseThrow(() -> new PostNotFoundException("Answer Not Found. Answer ID: "+aid));
+//        if(answer==null){
+//            throw new EntityNotFoundException("answer not found. aid is " + aid);
+//        }
+//        answer.updateAnswer(request.getContent());
+//        updateAttachment(request.getAttachment(), newAttachment, answer);
+//    }
     @Transactional
-    public void updateAnswer(Long qid, Long aid, AnswerRequest request, MultipartFile newAttachment) {
-        // TODO validate qid <> aid.qid
-        Answer answer = answerRepository.findByDeleteYnAndId(false, aid)
-                .orElseThrow(() -> new PostNotFoundException("Answer Not Found. Answer ID: "+aid));
-        if(answer==null){
-            throw new PostNotFoundException("answer not found. aid is " + aid);
-        }
-        answer.updateAnswer(request.getContent());
+    public AnswerRegisterResponse updateAnswer(long questionId, long answerId, AnswerUpdateRequest request, MultipartFile newAttachment) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new PostNotFoundException("Question Not Found. Question ID: " + questionId));
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new PostNotFoundException("No such answer with ID " + answerId));
+        if (answer.getQuestion() != question)
+            throw new RuntimeException("Bad Request.");
+
+        answer.update(request);
         updateAttachment(request.getAttachment(), newAttachment, answer);
+
+        return AnswerRegisterResponse.toDto(answer);
     }
     @Transactional
     public void updateAttachment(AttachmentDto attachment, MultipartFile newAttachment, Answer answer) {
