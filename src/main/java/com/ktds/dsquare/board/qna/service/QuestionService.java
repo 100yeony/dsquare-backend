@@ -14,7 +14,6 @@ import com.ktds.dsquare.board.qna.dto.response.BriefQuestionResponse;
 import com.ktds.dsquare.board.qna.dto.response.CategoryResponse;
 import com.ktds.dsquare.board.qna.dto.response.QuestionRegisterResponse;
 import com.ktds.dsquare.board.qna.dto.response.QuestionResponse;
-import com.ktds.dsquare.board.qna.dto.*;
 import com.ktds.dsquare.board.qna.repository.AnswerRepository;
 import com.ktds.dsquare.board.qna.repository.CategoryRepository;
 import com.ktds.dsquare.board.qna.repository.QuestionRepository;

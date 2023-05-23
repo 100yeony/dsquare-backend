@@ -7,8 +7,8 @@ import com.ktds.dsquare.board.comment.dto.CommentRegisterResponse;
 import com.ktds.dsquare.board.comment.dto.NestedCommentRegisterResponse;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.board.qna.dto.AnswerRegisterResponse;
-import com.ktds.dsquare.board.qna.dto.QuestionRegisterResponse;
+import com.ktds.dsquare.board.qna.dto.response.AnswerRegisterResponse;
+import com.ktds.dsquare.board.qna.dto.response.QuestionRegisterResponse;
 import com.ktds.dsquare.board.qna.service.AnswerSelectService;
 import com.ktds.dsquare.board.qna.service.QuestionSelectService;
 import com.ktds.dsquare.common.annotation.Notify;
@@ -106,7 +106,7 @@ public class NotificationAspect {
         long[] receiverList = null;
 
         Post post = postSelectService.selectWithId(source.getPostId());
-        switch (post.getDtype()) {
+        switch (post.getType()) {
             case QUESTION:
                 Question question = questionSelectService.selectWithId(post.getId());
                 receiverList = new long[] { question.getWriter().getId() };
@@ -198,7 +198,7 @@ public class NotificationAspect {
         data.put("title", "담당 분야 질문 등록 알림");
         data.put("body", "담당 분야에 새로운 질문이 등록되었습니다.");
 
-        data.put("postId", String.valueOf(information.getId()));
+        data.put("postId", String.valueOf(information.getQid()));
         data.put("writerId", String.valueOf(information.getWriterInfo().getId()));
         data.put("thumbnail",
                 StringUtils.hasText(information.getWriterInfo().getProfileImage())

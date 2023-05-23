@@ -1,12 +1,5 @@
 package com.ktds.dsquare.board.qna.service;
 
-import com.ktds.dsquare.board.qna.domain.Question;
-import com.ktds.dsquare.board.qna.repository.QuestionRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import javax.persistence.EntityNotFoundException;
-
 import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.like.LikeRepository;
 import com.ktds.dsquare.board.qna.domain.Category;
@@ -78,6 +71,11 @@ public class QuestionSelectService {
         return questions.stream()
                 .map(question -> createBriefResponse(question, user))
                 .collect(Collectors.toList());
+    }
+
+    public Question selectWithId(long id) {
+        return questionRepository.findById(id)
+                .orElseThrow(() -> new PostNotFoundException("No such question with ID " + id));
     }
 
     @Transactional
