@@ -2,6 +2,7 @@ package com.ktds.dsquare.board.card.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.card.Card;
+import com.ktds.dsquare.board.card.dto.CardSelectionInfo;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
 import com.ktds.dsquare.member.dto.response.TeamInfo;

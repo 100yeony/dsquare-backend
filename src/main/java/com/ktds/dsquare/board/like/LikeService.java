@@ -1,6 +1,6 @@
 package com.ktds.dsquare.board.like;
 
-import com.ktds.dsquare.board.card.CardService;
+import com.ktds.dsquare.board.card.service.CardService;
 import com.ktds.dsquare.board.carrot.CarrotService;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.dto.LikeRegisterRequest;

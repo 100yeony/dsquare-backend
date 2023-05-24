@@ -1,11 +1,14 @@
-package com.ktds.dsquare.board.card;
+package com.ktds.dsquare.board.card.service;
 
+import com.ktds.dsquare.board.card.Card;
+import com.ktds.dsquare.board.card.CardRepository;
+import com.ktds.dsquare.board.card.CardSpecification;
 import com.ktds.dsquare.board.card.dto.request.CardRegisterRequest;
 import com.ktds.dsquare.board.card.dto.request.CardUpdateRequest;
 import com.ktds.dsquare.board.card.dto.response.BriefCardResponse;
 import com.ktds.dsquare.board.card.dto.response.CardRegisterResponse;
 import com.ktds.dsquare.board.card.dto.response.CardResponse;
-import com.ktds.dsquare.board.card.dto.response.CardSelectionInfo;
+import com.ktds.dsquare.board.card.dto.CardSelectionInfo;
 import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;

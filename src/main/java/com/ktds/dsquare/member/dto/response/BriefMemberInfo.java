@@ -22,7 +22,9 @@ public class BriefMemberInfo {
 
 
     public static BriefMemberInfo toDto(Member entity) {
-        return BriefMemberInfo.builder()
+        return entity == null
+                ? null
+                : BriefMemberInfo.builder()
                 .id(entity.getId())
                 .email(entity.getEmail())
                 .nickname(entity.getNickname())

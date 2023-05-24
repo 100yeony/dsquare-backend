@@ -1,4 +1,4 @@
-package com.ktds.dsquare.board.card.dto.response;
+package com.ktds.dsquare.board.card.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.card.Card;
@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class CardSelectionInfo {
 
     private Boolean selectionYn;
@@ -21,6 +21,14 @@ public class CardSelectionInfo {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+9")
     private LocalDateTime selectedDate;
 
+
+    public static CardSelectionInfo toDto(Card entity) {
+        return CardSelectionInfo.builder()
+                .selectionYn(entity.getSelectionYn())
+                .cardOwner(BriefMemberInfo.toDto(entity.getCardOwner()))
+                .selectedDate(entity.getSelectedDate())
+                .build();
+    }
     public static CardSelectionInfo toDto(Card entity, BriefMemberInfo cardOwner){
         return CardSelectionInfo.builder()
                 .selectionYn(entity.getSelectionYn())
@@ -28,4 +36,5 @@ public class CardSelectionInfo {
                 .selectedDate(entity.getSelectedDate())
                 .build();
     }
+
 }

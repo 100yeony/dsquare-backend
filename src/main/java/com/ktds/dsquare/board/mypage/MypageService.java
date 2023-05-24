@@ -2,7 +2,7 @@ package com.ktds.dsquare.board.mypage;
 
 import com.ktds.dsquare.board.card.Card;
 import com.ktds.dsquare.board.card.CardRepository;
-import com.ktds.dsquare.board.card.CardService;
+import com.ktds.dsquare.board.card.service.CardService;
 import com.ktds.dsquare.board.card.dto.response.BriefCardResponse;
 import com.ktds.dsquare.board.carrot.Carrot;
 import com.ktds.dsquare.board.carrot.CarrotRepository;
