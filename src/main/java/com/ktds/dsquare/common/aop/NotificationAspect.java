@@ -25,6 +25,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.ktds.dsquare.board.enums.BoardType.Constant.*;
@@ -61,7 +62,7 @@ public class NotificationAspect {
     }
     private void sendNotification(Object information, NotifType type) {
         try {
-            long[] receiverList = extractReceiverList(information, type);
+            List<Long> receiverList = extractReceiverList(information, type);
             if (ObjectUtils.isEmpty(receiverList)) {
                 log.info("There's no one to receive notification.");
                 return;
@@ -77,8 +78,8 @@ public class NotificationAspect {
         }
     }
 
-    private long[] extractReceiverList(Object obj, NotifType type) {
-        long[] receiverList = null;
+    private List<Long> extractReceiverList(Object obj, NotifType type) {
+        List<Long> receiverList = null;
         switch (type) {
             case ANSWER_REGISTRATION:
                 receiverList = collectReceiverKey((AnswerRegisterResponse)obj); // TODO is casting necessary if object class is identified automatically?
@@ -98,22 +99,22 @@ public class NotificationAspect {
         }
         return receiverList;
     }
-    private long[] collectReceiverKey(AnswerRegisterResponse source) {
+    private List<Long> collectReceiverKey(AnswerRegisterResponse source) {
         Question question = questionSelectService.selectWithId(source.getQid());
-        return new long[] { question.getWriter().getId() };
+        return List.of(question.getWriter().getId());
     }
-    private long[] collectReceiverKey(CommentRegisterResponse source) {
-        long[] receiverList = null;
+    private List<Long> collectReceiverKey(CommentRegisterResponse source) {
+        List<Long> receiverList = null;
 
         Post post = postSelectService.selectWithId(source.getPostId());
         switch (post.getType()) {
             case QUESTION:
                 Question question = questionSelectService.selectWithId(post.getId());
-                receiverList = new long[] { question.getWriter().getId() };
+                receiverList = List.of(question.getWriter().getId());
                 break;
             case ANSWER:
                 Answer answer = answerSelectService.selectWithId(post.getId());
-                receiverList = new long[] { answer.getWriter().getId() };
+                receiverList = List.of(answer.getWriter().getId());
                 break;
             case TALK:
             case CARROT:
@@ -123,14 +124,17 @@ public class NotificationAspect {
         }
         return receiverList;
     }
-    private long[] collectReceiverKey(QuestionRegisterResponse source) {
-        long[] receiverList = null;
+    private List<Long> collectReceiverKey(QuestionRegisterResponse source) {
+        if (source.getCategory().getManagerId() == null)
+            return List.of();
+
+        List<Long> receiverList = null;
         // ...
-        receiverList = new long[] { source.getCategory().getManagerId() };
+        receiverList = List.of(source.getCategory().getManagerId());
         return receiverList;
     }
-    private long[] collectReceiverKey(NestedCommentRegisterResponse source) {
-        return new long[] { source.getOriginWriter().getId() };
+    private List<Long> collectReceiverKey(NestedCommentRegisterResponse source) {
+        return List.of(source.getOriginWriter().getId());
     }
 
     private Map<String, String> makeNotificationData(Object information, NotifType type) {

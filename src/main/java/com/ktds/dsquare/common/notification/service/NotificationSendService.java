@@ -39,10 +39,10 @@ public class NotificationSendService {
     private final MemberSelectService memberSelectService;
 
 
-    public void sendNotification(long[] receiverList, NotifType type) throws FirebaseMessagingException {
+    public void sendNotification(List<Long> receiverList, NotifType type) throws FirebaseMessagingException {
         sendNotification(receiverList, type, Collections.emptyMap());
     }
-    public void sendNotification(long[] receiverList, NotifType type, Map<String, String> data) throws FirebaseMessagingException {
+    public void sendNotification(List<Long> receiverList, NotifType type, Map<String, String> data) throws FirebaseMessagingException {
         if (receiverList == null) {
             throw new IllegalArgumentException("Receiver list cannot be null. (Empty at least)");
         }
@@ -53,7 +53,7 @@ public class NotificationSendService {
         List<RegistrationToken> registrationTokens = collectRegistrationToken(receiverList);
         sendNotification(type, registrationTokens, data);
     }
-    private List<RegistrationToken> collectRegistrationToken(long[] receiverList) {
+    private List<RegistrationToken> collectRegistrationToken(List<Long> receiverList) {
         List<RegistrationToken> registrationTokens = new ArrayList<>();
         for (long receiverId : receiverList) {
             Member member = memberSelectService.selectWithId(receiverId); // TODO consider efficiency...
