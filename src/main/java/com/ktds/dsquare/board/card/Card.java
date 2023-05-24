@@ -1,20 +1,21 @@
 package com.ktds.dsquare.board.card;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ktds.dsquare.board.Post;
-import com.ktds.dsquare.board.card.dto.CardRegisterRequest;
-import com.ktds.dsquare.board.card.dto.CardUpdateRequest;
+import com.ktds.dsquare.board.card.dto.request.CardRegisterRequest;
+import com.ktds.dsquare.board.card.dto.request.CardUpdateRequest;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.team.Team;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,63 +25,56 @@ import java.time.LocalDateTime;
 @Table(name = "COMM_CARD")
 public class Card extends Post {
 
-    @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer")
     private Member writer;
 
-    @JsonBackReference //직렬화 X
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "proj_team")
     private Team projTeam;
 
     @Column(nullable = false, length = 50)
     private String title;
-
     @Column(nullable = false, length = 300)
     private String content;
 
-    private Integer teammateCnt;
-
-    private String teammates;
-
     @Column(nullable = false)
+    private Integer teammateCnt;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> teammates;
+
+    @ColumnDefault("now()")
     private LocalDateTime createDate;
 
     private LocalDateTime lastUpdateDate;
 
-    @Column(nullable = false)
+    @ColumnDefault("0")
     private Long viewCnt;
 
-    private Boolean selectionYn;
+    @ColumnDefault("0")
+    private Long likeCnt;
 
-    @JsonBackReference //직렬화 X
+    @ColumnDefault("false")
+    private Boolean selectionYn;
+    private LocalDateTime selectedDate;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "card_owner")
     private Member cardOwner;
 
-    private LocalDateTime selectedDate;
-
-    @Column(nullable = false)
+    @ColumnDefault("false")
     private Boolean deleteYn;
 
-    private Long likeCnt;
 
     public static Card toEntity(CardRegisterRequest dto, Member writer, Team projTeam){
-        String teammates = dto.getTeammates().toString();
-        LocalDateTime now = LocalDateTime.now();
         return Card.builder()
                 .writer(writer)
                 .projTeam(projTeam)
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .teammateCnt(dto.getTeammateCnt())
-                .teammates(teammates)
-                .createDate(now.plusHours(9))
-                .viewCnt(0L)
-                .deleteYn(false)
-                .likeCnt(0L)
-                .selectionYn(false)
+                .teammates(dto.getTeammates())
+                .createDate(LocalDateTime.now().plusHours(9))
                 .build();
     }
 
@@ -92,13 +86,12 @@ public class Card extends Post {
     }
 
     public void updateCard(Team projTeam, CardUpdateRequest dto){
-        String teammates = dto.getTeammates().toString();
         LocalDateTime now = LocalDateTime.now();
         this.projTeam = projTeam;
         this.title = dto.getTitle();
         this.content = dto.getContent();
         this.teammateCnt = dto.getTeammateCnt();
-        this.teammates = teammates;
+        this.teammates = dto.getTeammates();
         this.lastUpdateDate = now.plusHours(9);
     }
 

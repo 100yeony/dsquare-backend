@@ -1,6 +1,6 @@
 package com.ktds.dsquare.board.mypage;
 
-import com.ktds.dsquare.board.card.dto.BriefCardResponse;
+import com.ktds.dsquare.board.card.dto.response.BriefCardResponse;
 import com.ktds.dsquare.board.carrot.dto.BriefCarrotResponse;
 import com.ktds.dsquare.board.comment.dto.MyCommentInfo;
 import com.ktds.dsquare.board.qna.dto.response.AnswerResponse;

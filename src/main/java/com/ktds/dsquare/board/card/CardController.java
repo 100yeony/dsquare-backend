@@ -1,9 +1,10 @@
 package com.ktds.dsquare.board.card;
 
-import com.ktds.dsquare.board.card.dto.BriefCardResponse;
-import com.ktds.dsquare.board.card.dto.CardRegisterRequest;
-import com.ktds.dsquare.board.card.dto.CardResponse;
-import com.ktds.dsquare.board.card.dto.CardUpdateRequest;
+import com.ktds.dsquare.board.card.dto.response.BriefCardResponse;
+import com.ktds.dsquare.board.card.dto.request.CardRegisterRequest;
+import com.ktds.dsquare.board.card.dto.response.CardRegisterResponse;
+import com.ktds.dsquare.board.card.dto.response.CardResponse;
+import com.ktds.dsquare.board.card.dto.request.CardUpdateRequest;
 import com.ktds.dsquare.common.annotation.AuthUser;
 import com.ktds.dsquare.member.Member;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +23,8 @@ public class CardController {
 
     //create - 카드주세요 글 작성
     @PostMapping("/board/cards")
-    public ResponseEntity<Void> createCard(@RequestBody CardRegisterRequest request, @AuthUser Member user){
-        cardService.createCard(request, user);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<CardRegisterResponse> createCard(@RequestBody CardRegisterRequest request, @AuthUser Member user){
+        return new ResponseEntity<>(cardService.createCard(request, user), HttpStatus.CREATED);
     }
 
     //read - 카드주세요 글 전체 목록 조회 & 검색

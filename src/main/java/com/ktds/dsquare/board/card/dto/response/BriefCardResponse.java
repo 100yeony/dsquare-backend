@@ -1,4 +1,4 @@
-package com.ktds.dsquare.board.card.dto;
+package com.ktds.dsquare.board.card.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.card.Card;
@@ -22,7 +22,7 @@ public class BriefCardResponse {
     private String title;
     private String content;
     private Integer teammateCnt;
-    private String teammates;
+    private String teammates; // TODO need to be changed
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+9")
     private LocalDateTime createDate;
     private Long viewCnt;
@@ -40,7 +40,7 @@ public class BriefCardResponse {
                 .title(entity.getTitle())
                 .content(entity.getContent())
                 .teammateCnt(entity.getTeammateCnt())
-                .teammates(entity.getTeammates())
+                .teammates(entity.getTeammates().toString())
                 .createDate(entity.getCreateDate())
                 .viewCnt(entity.getViewCnt())
                 .likeCnt(likeCnt)

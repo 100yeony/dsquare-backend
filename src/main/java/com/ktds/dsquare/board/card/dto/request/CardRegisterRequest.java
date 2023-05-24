@@ -1,4 +1,4 @@
-package com.ktds.dsquare.board.card.dto;
+package com.ktds.dsquare.board.card.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CardUpdateRequest {
+public class CardRegisterRequest {
 
     private Long projTeamId;
     private String title;

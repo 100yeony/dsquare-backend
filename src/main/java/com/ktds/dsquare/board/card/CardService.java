@@ -1,6 +1,11 @@
 package com.ktds.dsquare.board.card;
 
-import com.ktds.dsquare.board.card.dto.*;
+import com.ktds.dsquare.board.card.dto.request.CardRegisterRequest;
+import com.ktds.dsquare.board.card.dto.request.CardUpdateRequest;
+import com.ktds.dsquare.board.card.dto.response.BriefCardResponse;
+import com.ktds.dsquare.board.card.dto.response.CardRegisterResponse;
+import com.ktds.dsquare.board.card.dto.response.CardResponse;
+import com.ktds.dsquare.board.card.dto.response.CardSelectionInfo;
 import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
@@ -40,12 +45,12 @@ public class CardService {
 
     //create - 카드주세요 글 작성
     @Transactional
-    public void createCard(CardRegisterRequest dto, Member user) {
-        Team projTeam = teamRepository.findById(dto.getProjTeamId())
+    public CardRegisterResponse createCard(CardRegisterRequest request, Member user) {
+        Team projTeam = teamRepository.findById(request.getProjTeamId())
                 .orElseThrow(() -> new EntityNotFoundException("team is not found"));
 
-        Card card = Card.toEntity(dto, user, projTeam);
-        cardRepository.save(card);
+        Card card = Card.toEntity(request, user, projTeam);
+        return CardRegisterResponse.toDto(cardRepository.save(card));
     }
 
     //read - 카드주세요 글 전체 조회 & 검색

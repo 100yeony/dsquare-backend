@@ -1,4 +1,4 @@
-package com.ktds.dsquare.board.card.dto;
+package com.ktds.dsquare.board.card.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.card.Card;

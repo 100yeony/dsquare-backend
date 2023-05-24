@@ -1,4 +1,4 @@
-package com.ktds.dsquare.board.card.dto;
+package com.ktds.dsquare.board.card.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ktds.dsquare.board.card.Card;
@@ -52,7 +52,7 @@ public class CardResponse {
                 .title(entity.getTitle())
                 .content(entity.getContent())
                 .teammateCnt(entity.getTeammateCnt())
-                .teammates(entity.getTeammates())
+                .teammates(entity.getTeammates().toString())
                 .createDate(entity.getCreateDate())
                 .lastUpdateDate(entity.getLastUpdateDate())
                 .viewCnt(entity.getViewCnt())
