@@ -14,7 +14,10 @@ import com.ktds.dsquare.member.team.Team;
 import com.ktds.dsquare.member.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -50,31 +53,40 @@ public class CardService {
 
     //read - 카드주세요 글 전체 조회 & 검색
     public List<BriefCardResponse> getCards(boolean isSelected, Long projTeamId, Member user, String order, Pageable pageable){
-        Pageable page = pagingService.orderPage(order, pageable);
-        Page<Card> cards;
+        Pageable page = orderPage(order, pageable, isSelected);
+        Specification<Card> filter = Specification.where(CardSpecification.equalNotDeleted(false));
 
+        //검색
         if(projTeamId != null){
-            //검색
             Team team = teamRepository.findById(projTeamId)
                     .orElseThrow(()-> new EntityNotFoundException("team not found"));
-            if(isSelected){
-                cards = cardRepository.findByDeleteYnAndSelectionYnAndProjTeamOrderByCreateDateDesc(false, true, team, page);
-            } else {
-                cards = cardRepository.findByDeleteYnAndSelectionYnAndProjTeamOrderByCreateDateDesc(false, false, team, page);
-            }
-        }else{
-            //전체조회
-            if(isSelected){
-                cards = cardRepository.findByDeleteYnAndSelectionYnOrderBySelectedDateDesc(false, isSelected, page);
-            } else{
-                cards = cardRepository.findByDeleteYnAndSelectionYnOrderByCreateDateDesc(false, false, page);
-            }
+            filter = filter.and(CardSpecification.equalProjTeam(projTeamId)).and(CardSpecification.isSelectedCard(isSelected));
         }
-        return cards.stream()
+        //전체조회
+        if(projTeamId == null){
+            filter = filter.and(CardSpecification.isSelectedCard(isSelected));
+        }
+
+        Page<Card> cardList = cardRepository.findAll(filter, page);
+
+        return cardList.stream()
                 .map(c -> makeBriefCardRes(c, user, projTeamId))
                 .collect(Collectors.toList());
     }
 
+    public Pageable orderPage(String order, Pageable pageable, boolean isSelected) {
+        Sort sort;
+        if (order == null || order.equals("create")) {
+            sort = Sort.by("createDate").descending();
+        } else if (order.equals("like") && isSelected) {
+            sort = Sort.by(Sort.Order.desc("likeCnt"), Sort.Order.desc("selectedDate"));
+        } else if (order.equals("like") && !isSelected) {
+            sort = Sort.by(Sort.Order.desc("likeCnt"), Sort.Order.desc("createDate"));
+        } else {
+            throw new RuntimeException("Invalid order. Using create || like");
+        }
+        return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+    }
 
     public BriefCardResponse makeBriefCardRes(Card C, Member user, Long projTeamId){
         Member owner = C.getCardOwner();
