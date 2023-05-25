@@ -6,6 +6,8 @@ import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.like.LikeRepository;
 import com.ktds.dsquare.board.paging.PagingService;
+import com.ktds.dsquare.common.annotation.Notify;
+import com.ktds.dsquare.common.enums.NotifType;
 import com.ktds.dsquare.common.exception.PostNotFoundException;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.dto.response.BriefMemberInfo;
@@ -125,10 +127,12 @@ public class CardService {
 
     //update - 카드주세요 선정
     @Transactional
-    public void giveCard(Long cardId, Member user){
+    @Notify(value = NotifType.REQUEST_CHOICE, type = Long.class)
+    public Long giveCard(Long cardId, Member user){
         Card card = cardRepository.findByDeleteYnAndId(false, cardId)
                 .orElseThrow(()->new PostNotFoundException("card not found. Card ID: "+cardId));
         card.selectCard(user, true);
+        return card.getId();
     }
 
     //update - 카드주세요 글 수정

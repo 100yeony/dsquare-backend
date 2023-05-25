@@ -3,8 +3,11 @@ package com.ktds.dsquare.common.aop;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.ktds.dsquare.board.Post;
 import com.ktds.dsquare.board.PostSelectService;
+import com.ktds.dsquare.board.card.Card;
+import com.ktds.dsquare.board.card.CardRepository;
 import com.ktds.dsquare.board.comment.dto.CommentRegisterResponse;
 import com.ktds.dsquare.board.comment.dto.NestedCommentRegisterResponse;
+import com.ktds.dsquare.board.enums.BoardType;
 import com.ktds.dsquare.board.qna.domain.Answer;
 import com.ktds.dsquare.board.qna.domain.Question;
 import com.ktds.dsquare.board.qna.dto.AnswerRegisterResponse;
@@ -41,6 +44,8 @@ public class NotificationAspect {
     private final PostSelectService postSelectService;
     private final QuestionSelectService questionSelectService;
     private final AnswerSelectService answerSelectService;
+
+    private final CardRepository cardRepository;
 
 
     /**
@@ -94,6 +99,8 @@ public class NotificationAspect {
                 receiverList = collectReceiverKey((QuestionRegisterResponse)obj);
                 break;
             case REQUEST_CHOICE:
+                receiverList = collectReceiverKey((Long)obj);
+                break;
             default:
                 log.error("Not supported notification type.");
         }
@@ -136,6 +143,10 @@ public class NotificationAspect {
     private List<Long> collectReceiverKey(NestedCommentRegisterResponse source) {
         return List.of(source.getOriginWriter().getId());
     }
+    private List<Long> collectReceiverKey(Long source) {
+        Card card = cardRepository.findById(source).orElseThrow(() -> new RuntimeException("Something's wrong."));
+        return List.of(card.getWriter().getId());
+    }
 
     private Map<String, String> makeNotificationData(Object information, NotifType type) {
         /*
@@ -163,6 +174,7 @@ public class NotificationAspect {
                 data = extractData((NestedCommentRegisterResponse)information);
                 break;
             case REQUEST_CHOICE:
+                data = extractData((Long)information);
             default:
                 log.warn("Not supported notification. Type: [{}]", type);
         }
@@ -223,6 +235,21 @@ public class NotificationAspect {
                 StringUtils.hasText(information.getWriter().getProfileImage())
                     ? information.getWriter().getProfileImage() : ""
         );
+        return data;
+    }
+    private Map<String, String> extractData(Long information) {
+        Map<String, String> data = new HashMap<>();
+        data.put("board", BoardType.CARD.toString());
+        data.put("title", "축하합니다!");
+        data.put("body", "요청이 선정되었습니다!");
+
+        Card card = cardRepository.findById(information).orElseThrow(() -> new RuntimeException("Something's wrong."));
+        data.put("postId", String.valueOf(card.getId()));
+        data.put("writerId", String.valueOf(card.getWriter().getId()));
+        data.put("thumbnail",
+                StringUtils.hasText(card.getWriter().getProfileImage())
+                    ? card.getWriter().getProfileImage() : ""
+        ); // TODO need to be whom, this request is chosen by.
         return data;
     }
 
