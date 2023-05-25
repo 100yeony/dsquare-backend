@@ -49,9 +49,13 @@ public class CardController {
     }
 
     //read - 카드주세요 글 상세 조회
-    @GetMapping("board/cards/{cardId}")
-    public ResponseEntity<CardResponse> getCardDetail(@PathVariable("cardId") Long cardId, @AuthUser Member user){
-        return new ResponseEntity<>(cardService.getCardDetail(cardId, user), HttpStatus.OK);
+//    @GetMapping("board/cards/{cardId}")
+//    public ResponseEntity<CardResponse> getCardDetail(@PathVariable("cardId") Long cardId, @AuthUser Member user){
+//        return new ResponseEntity<>(cardService.getCardDetail(cardId, user), HttpStatus.OK);
+//    }
+    @GetMapping("/board/cards/{id}")
+    public ResponseEntity<CardInfo> getCard(@PathVariable long id, @AuthUser Member user) {
+        return new ResponseEntity<>(cardSelectService.getCard(id, user), HttpStatus.OK);
     }
 
     //update - 카드주세요 글 수정

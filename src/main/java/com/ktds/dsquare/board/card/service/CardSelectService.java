@@ -5,6 +5,7 @@ import com.ktds.dsquare.board.card.CardRepository;
 import com.ktds.dsquare.board.card.dto.CardInfo;
 import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.like.LikeRepository;
+import com.ktds.dsquare.common.exception.PostNotFoundException;
 import com.ktds.dsquare.member.Member;
 import com.ktds.dsquare.member.team.Team;
 import com.ktds.dsquare.member.team.TeamRepository;
@@ -20,6 +21,7 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.Predicate;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +86,18 @@ public class CardSelectService {
         boolean likeYn = likeRepository.existsByPostIdAndMember(card.getId(), user);
 
         return CardInfo.toDto(card, commentCnt, likeYn);
+    }
+
+    public Card selectWithId(long id) {
+        return cardRepository.findById(id)
+                .orElseThrow(()->new PostNotFoundException("card not found. Card ID: " + id));
+    }
+
+    @Transactional
+    public CardInfo getCard(long id, Member user) {
+        Card card = selectWithId(id);
+        card.increaseViewCnt();
+        return createInfo(card, user);
     }
 
 }
