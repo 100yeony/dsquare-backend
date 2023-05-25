@@ -5,7 +5,7 @@ import com.ktds.dsquare.board.card.dto.request.CardRegisterRequest;
 import com.ktds.dsquare.board.card.dto.request.CardUpdateRequest;
 import com.ktds.dsquare.board.card.dto.response.BriefCardResponse;
 import com.ktds.dsquare.board.card.dto.response.CardRegisterResponse;
-import com.ktds.dsquare.board.card.dto.response.CardResponse;
+import com.ktds.dsquare.board.card.dto.response.CardUpdateResponse;
 import com.ktds.dsquare.board.card.service.CardSelectService;
 import com.ktds.dsquare.board.card.service.CardService;
 import com.ktds.dsquare.common.annotation.AuthUser;
@@ -59,10 +59,17 @@ public class CardController {
     }
 
     //update - 카드주세요 글 수정
-    @PatchMapping("board/cards/{cardId}")
-    public ResponseEntity<CardResponse> updateCard(@PathVariable("cardId") Long cardId, @RequestBody(required = false) CardUpdateRequest request){
-            cardService.updateCard(cardId, request);
-        return ResponseEntity.status(HttpStatus.OK).build();
+//    @PatchMapping("board/cards/{cardId}")
+//    public ResponseEntity<CardResponse> updateCard(@PathVariable("cardId") Long cardId, @RequestBody(required = false) CardUpdateRequest request){
+//            cardService.updateCard(cardId, request);
+//        return ResponseEntity.status(HttpStatus.OK).build();
+//    }
+    @PatchMapping("/board/cards/{id}")
+    public ResponseEntity<CardUpdateResponse> updateCard(
+            @PathVariable long id,
+            @RequestBody CardUpdateRequest request
+    ) {
+        return new ResponseEntity<>(cardService.updateCard(id, request), HttpStatus.OK);
     }
 
     //update - 카드주세요 선정

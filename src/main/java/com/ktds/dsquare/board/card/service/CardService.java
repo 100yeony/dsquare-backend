@@ -9,6 +9,7 @@ import com.ktds.dsquare.board.card.dto.response.BriefCardResponse;
 import com.ktds.dsquare.board.card.dto.response.CardRegisterResponse;
 import com.ktds.dsquare.board.card.dto.response.CardResponse;
 import com.ktds.dsquare.board.card.dto.CardSelectionInfo;
+import com.ktds.dsquare.board.card.dto.response.CardUpdateResponse;
 import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
@@ -41,13 +42,19 @@ import java.util.stream.Collectors;
 @PersistenceContext
 public class CardService {
 
+    private final EntityManager em;
+
+    /*** Service ***/
+    private final CardSelectService cardSelectService;
+    private final CommentService commentService;
+    private final PagingService pagingService;
+
+    /*** Repository ***/
     private final CardRepository cardRepository;
     private final TeamRepository teamRepository;
     private final CommentRepository commentRepository;
-    private final CommentService commentService;
     private final LikeRepository likeRepository;
-    private final PagingService pagingService;
-    private final EntityManager em;
+
 
     //create - 카드주세요 글 작성
     @Transactional
@@ -140,14 +147,26 @@ public class CardService {
     }
 
     //update - 카드주세요 글 수정
+//    @Transactional
+//    public void updateCard(Long cardId, CardUpdateRequest request){
+//        Card card = cardRepository.findByDeleteYnAndId(false, cardId)
+//                .orElseThrow(()->new PostNotFoundException("card not found. Card ID: "+cardId));
+//        Team projTeam = teamRepository.findById(request.getProjTeamId())
+//                .orElseThrow(() -> new EntityNotFoundException("team is not found"));
+//
+//        card.updateCard(projTeam, request);
+//    }
     @Transactional
-    public void updateCard(Long cardId, CardUpdateRequest request){
-        Card card = cardRepository.findByDeleteYnAndId(false, cardId)
-                .orElseThrow(()->new PostNotFoundException("card not found. Card ID: "+cardId));
-        Team projTeam = teamRepository.findById(request.getProjTeamId())
-                .orElseThrow(() -> new EntityNotFoundException("team is not found"));
+    public CardUpdateResponse updateCard(long id, CardUpdateRequest request) {
+        Card card = cardSelectService.selectWithId(id);
+        updateCard(card, request);
+        return CardUpdateResponse.toDto(card);
+    }
+    public void updateCard(Card card, CardUpdateRequest request) {
+        Team updatedProjTeam = teamRepository.findById(request.getProjTeamId())
+                .orElseThrow(() -> new EntityNotFoundException("No such team with ID " + request.getProjTeamId()));
 
-        card.updateCard(projTeam, request);
+        card.update(updatedProjTeam, request);
     }
 
     //delete - 카드주세요 글 삭제

@@ -85,14 +85,15 @@ public class Card extends Post {
         this.selectedDate = now.plusHours(9);
     }
 
-    public void updateCard(Team projTeam, CardUpdateRequest dto){
-        LocalDateTime now = LocalDateTime.now();
-        this.projTeam = projTeam;
+    public void update(Team updatedProjTeam, CardUpdateRequest dto){
+        this.projTeam = updatedProjTeam;
+
         this.title = dto.getTitle();
         this.content = dto.getContent();
         this.teammateCnt = dto.getTeammateCnt();
         this.teammates = dto.getTeammates();
-        this.lastUpdateDate = now.plusHours(9);
+
+        this.lastUpdateDate = LocalDateTime.now().plusHours(9);
     }
 
     public void deleteCard(){
@@ -106,4 +107,5 @@ public class Card extends Post {
     public void like() { this.likeCnt += 1; }
 
     public void cancleLike(){ this.likeCnt -= 1; }
+
 }
