@@ -4,6 +4,7 @@ import com.ktds.dsquare.board.card.dto.CardInfo;
 import com.ktds.dsquare.board.card.dto.request.CardRegisterRequest;
 import com.ktds.dsquare.board.card.dto.request.CardUpdateRequest;
 import com.ktds.dsquare.board.card.dto.response.BriefCardResponse;
+import com.ktds.dsquare.board.card.dto.response.CardChooseResponse;
 import com.ktds.dsquare.board.card.dto.response.CardRegisterResponse;
 import com.ktds.dsquare.board.card.dto.response.CardUpdateResponse;
 import com.ktds.dsquare.board.card.service.CardSelectService;
@@ -73,10 +74,14 @@ public class CardController {
     }
 
     //update - 카드주세요 선정
-    @PatchMapping("board/cards/{cardId}/chosen")
-    public ResponseEntity<Void> giveCard(@PathVariable("cardId") Long cardId, @AuthUser Member user){
-        cardService.giveCard(cardId, user);
-        return ResponseEntity.status(HttpStatus.OK).build();
+//    @PatchMapping("board/cards/{cardId}/chosen")
+//    public ResponseEntity<Void> giveCard(@PathVariable("cardId") Long cardId, @AuthUser Member user){
+//        cardService.giveCard(cardId, user);
+//        return ResponseEntity.status(HttpStatus.OK).build();
+//    }
+    @PatchMapping("/board/cards/{id}/chosen")
+    public ResponseEntity<CardChooseResponse> giveCard(@PathVariable long id, @AuthUser Member user) {
+        return new ResponseEntity<>(cardService.giveCard(id, user), HttpStatus.OK);
     }
 
     //delete - 카드주세요 글 삭제

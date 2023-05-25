@@ -66,25 +66,6 @@ public class Card extends Post {
     private Boolean deleteYn;
 
 
-    public static Card toEntity(CardRegisterRequest dto, Member writer, Team projTeam){
-        return Card.builder()
-                .writer(writer)
-                .projTeam(projTeam)
-                .title(dto.getTitle())
-                .content(dto.getContent())
-                .teammateCnt(dto.getTeammateCnt())
-                .teammates(dto.getTeammates())
-                .createDate(LocalDateTime.now().plusHours(9))
-                .build();
-    }
-
-    public void selectCard(Member cardOwner, Boolean selectionYn){
-        LocalDateTime now = LocalDateTime.now();
-        this.cardOwner = cardOwner;
-        this.selectionYn = selectionYn;
-        this.selectedDate = now.plusHours(9);
-    }
-
     public void update(Team updatedProjTeam, CardUpdateRequest dto){
         this.projTeam = updatedProjTeam;
 
@@ -96,16 +77,34 @@ public class Card extends Post {
         this.lastUpdateDate = LocalDateTime.now().plusHours(9);
     }
 
-    public void deleteCard(){
-        this.deleteYn = true;
-    }
-
     public void increaseViewCnt() {
         this.viewCnt += 1;
     }
 
     public void like() { this.likeCnt += 1; }
-
     public void cancleLike(){ this.likeCnt -= 1; }
+
+    public void getChosen(Member by){
+        this.cardOwner = by;
+        this.selectedDate = LocalDateTime.now().plusHours(9);
+        this.selectionYn = true;
+    }
+
+    public void deleteCard(){
+        this.deleteYn = true;
+    }
+
+
+    public static Card toEntity(CardRegisterRequest dto, Member writer, Team projTeam){
+        return Card.builder()
+                .writer(writer)
+                .projTeam(projTeam)
+                .title(dto.getTitle())
+                .content(dto.getContent())
+                .teammateCnt(dto.getTeammateCnt())
+                .teammates(dto.getTeammates())
+                .createDate(LocalDateTime.now().plusHours(9))
+                .build();
+    }
 
 }

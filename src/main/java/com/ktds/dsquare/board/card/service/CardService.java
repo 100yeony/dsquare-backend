@@ -3,13 +3,10 @@ package com.ktds.dsquare.board.card.service;
 import com.ktds.dsquare.board.card.Card;
 import com.ktds.dsquare.board.card.CardRepository;
 import com.ktds.dsquare.board.card.CardSpecification;
+import com.ktds.dsquare.board.card.dto.CardSelectionInfo;
 import com.ktds.dsquare.board.card.dto.request.CardRegisterRequest;
 import com.ktds.dsquare.board.card.dto.request.CardUpdateRequest;
-import com.ktds.dsquare.board.card.dto.response.BriefCardResponse;
-import com.ktds.dsquare.board.card.dto.response.CardRegisterResponse;
-import com.ktds.dsquare.board.card.dto.response.CardResponse;
-import com.ktds.dsquare.board.card.dto.CardSelectionInfo;
-import com.ktds.dsquare.board.card.dto.response.CardUpdateResponse;
+import com.ktds.dsquare.board.card.dto.response.*;
 import com.ktds.dsquare.board.comment.CommentRepository;
 import com.ktds.dsquare.board.comment.CommentService;
 import com.ktds.dsquare.board.enums.BoardType;
@@ -139,11 +136,17 @@ public class CardService {
     }
 
     //update - 카드주세요 선정
+//    @Transactional
+//    public void giveCard(Long cardId, Member user){
+//        Card card = cardRepository.findByDeleteYnAndId(false, cardId)
+//                .orElseThrow(()->new PostNotFoundException("card not found. Card ID: "+cardId));
+//        card.selectCard(user, true);
+//    }
     @Transactional
-    public void giveCard(Long cardId, Member user){
-        Card card = cardRepository.findByDeleteYnAndId(false, cardId)
-                .orElseThrow(()->new PostNotFoundException("card not found. Card ID: "+cardId));
-        card.selectCard(user, true);
+    public CardChooseResponse giveCard(long id, Member user) {
+        Card card = cardSelectService.selectWithId(id);
+        card.getChosen(user);
+        return CardChooseResponse.toDto(card);
     }
 
     //update - 카드주세요 글 수정
