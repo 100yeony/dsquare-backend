@@ -62,5 +62,4 @@ public class Tag {
     public void removeCarrot(Carrot carrot) {
         this.carrotTags.remove(carrot);
     }
-
 }
