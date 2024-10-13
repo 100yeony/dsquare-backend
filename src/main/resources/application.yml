@@ -7,11 +7,11 @@ spring:
   ### Datasource ###
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ENC(bQWBd/3H35fMSMCCkUF5vCIwwbCxXSz9)
-    username: ENC(XOkA2cixZdqL+Jibs+cgPkBz9H6PW5pT)
-    password: ENC(yB57VToJuPGUMmTU6mtp5GaVyJclxfEr)
+    url: jdbc:postgresql://localhost:5532/dsquare
+    username: postgres
+    password: new1234!
 
-  ### Spring Data JPA ###
+### Spring Data JPA ###
   jpa:
     hibernate:
       ddl-auto: update
